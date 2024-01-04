@@ -13,7 +13,11 @@ class ItemWidget extends StatelessWidget {
     return Card(
       child: SizedBox(
         height: 100,
-        child: Center(child: Text(text)),
+        child: Center(
+          child: Text(
+            text,
+          ),
+        ),
       ),
     );
   }
