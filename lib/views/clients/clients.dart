@@ -1,30 +1,31 @@
+import 'package:agendador_bronzeamento/views/clients/components/client_details.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 
-class Clientes extends StatefulWidget {
-  const Clientes({super.key});
+class Clients extends StatefulWidget {
+  const Clients({super.key});
 
   @override
-  State<Clientes> createState() => _ClientesState();
+  State<Clients> createState() => _ClientsState();
 }
 
-class _ClientesState extends State<Clientes> {
+class _ClientsState extends State<Clients> {
   final List<Map> _databaseClients = [
-    {"group": "A", "name": "Ana Maria do Santos"},
-    {"group": "A", "name": "Angela Pinheiro Ribeiro"},
-    {"group": "A", "name": "Andressa Semegova"},
-    {"group": "C", "name": "Carla Pereira Neves"},
-    {"group": "C", "name": "Cândida Conrado"},
-    {"group": "C", "name": "Coimbra Astúcia"},
-    {"group": "C", "name": "Cleuza Batista Quintino"},
-    {"group": "F", "name": "Fernanda Almeida de Carvalho"},
-    {"group": "F", "name": "Fabiana Fonseca"},
-    {"group": "F", "name": "Fábia do Amaral"},
-    {"group": "R", "name": "Rhayssa Andrade Costa"},
-    {"group": "R", "name": "Rafaela Cerlat"},
-    {"group": "W", "name": "Wanessa Julliana Silva"},
-    {"group": "W", "name": "Wanna Guimarães"},
-    {"group": "W", "name": "Watta Ribeiro"}
+    {"name": "Ana Maria do Santos"},
+    {"name": "Angela Pinheiro Ribeiro"},
+    {"name": "Andressa Semegova"},
+    {"name": "Carla Pereira Neves"},
+    {"name": "Cândida Conrado"},
+    {"name": "Coimbra Astúcia"},
+    {"name": "Cleuza Batista Quintino"},
+    {"name": "Fernanda Almeida de Carvalho"},
+    {"name": "Fabiana Fonseca"},
+    {"name": "Fábia do Amaral"},
+    {"name": "Rhayssa Andrade Costa"},
+    {"name": "Rafaela Cerlat"},
+    {"name": "Wanessa Julliana Silva"},
+    {"name": "Wanna Guimarães"},
+    {"name": "Watta Ribeiro"}
   ];
 
   final List<Map> _clientsToShow = List.empty(growable: true);
@@ -60,7 +61,7 @@ class _ClientesState extends State<Clientes> {
       floatingActionButton: _searchClient
           ? null
           : FloatingActionButton(
-              onPressed: () {},
+              onPressed: () => widget.key,
               foregroundColor: Colors.white,
               backgroundColor: Colors.pink,
               child: const Icon(Icons.add),
@@ -69,7 +70,7 @@ class _ClientesState extends State<Clientes> {
         elements: _clientsToShow.isEmpty && !_searchClient
             ? _databaseClients
             : _clientsToShow,
-        groupBy: (element) => element['group'],
+        groupBy: (element) => element['name'][0].toString().toUpperCase(),
         groupSeparatorBuilder: (String groupByValue) => Container(
           decoration: BoxDecoration(
             color: Colors.pink,

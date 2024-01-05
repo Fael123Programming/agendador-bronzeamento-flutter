@@ -1,14 +1,14 @@
-import 'package:agendador_bronzeamento/views/configuracoes/components/setting_item.dart';
+import 'package:agendador_bronzeamento/views/settings/components/setting_item.dart';
 import 'package:flutter/material.dart';
 
-class Configuracoes extends StatefulWidget {
-  const Configuracoes({super.key});
+class Settings extends StatefulWidget {
+  const Settings({super.key});
 
   @override
-  State<Configuracoes> createState() => _ConfiguracoesState();
+  State<Settings> createState() => _SettingsState();
 }
 
-class _ConfiguracoesState extends State<Configuracoes> {
+class _SettingsState extends State<Settings> {
   final List<Widget> settingItems = [
     SettingItem(title: 'Gerais', icon: Icons.settings, onTap: () {}),
     SettingItem(title: 'Sobre', icon: Icons.info, onTap: () {}),

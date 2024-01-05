@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'components/item_widget.dart';
 
-class Macas extends StatefulWidget {
-  const Macas({super.key});
+class Beds extends StatefulWidget {
+  const Beds({super.key});
 
   @override
-  State<Macas> createState() => _MacasState();
+  State<Beds> createState() => _BedsState();
 }
 
-class _MacasState extends State<Macas> {
+class _BedsState extends State<Beds> {
   int items = 14;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Macas'),
+      ),
       body: Center(
         child: LayoutBuilder(
           builder: (context, constraints) {

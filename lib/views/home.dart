@@ -1,22 +1,22 @@
-import 'package:agendador_bronzeamento/views/macas/macas.dart';
-import 'package:agendador_bronzeamento/views/clientes/clientes.dart';
-import 'package:agendador_bronzeamento/views/configuracoes/configuracoes.dart';
+import 'package:agendador_bronzeamento/views/beds/beds.dart';
+import 'package:agendador_bronzeamento/views/clients/clients.dart';
+import 'package:agendador_bronzeamento/views/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-class App extends StatefulWidget {
-  const App({super.key});
+class Home extends StatefulWidget {
+  const Home({super.key});
 
   @override
-  State<App> createState() => _AppState();
+  State<Home> createState() => _HomeState();
 }
 
-class _AppState extends State<App> {
+class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Macas(),
-    Clientes(),
-    Configuracoes()
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Beds(),
+    const Clients(),
+    const Settings()
   ];
 
   void _onItemTapped(int index) {
@@ -28,9 +28,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
