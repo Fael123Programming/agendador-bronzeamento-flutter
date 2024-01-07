@@ -1,16 +1,25 @@
-import 'package:agendador_bronzeamento/views/clients/components/client_details.dart';
+import 'package:agendador_bronzeamento/views/home.dart';
+import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
-import 'package:agendador_bronzeamento/views/home.dart';
 
 class CustomRouter {
   static Route onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
+      // case '/':
+      //   return MaterialPageRoute(
+      //     builder: (context) => const Home(),
+      //     settings: const RouteSettings(
+      //       name: RoutePaths.home,
+      //     ),
+      //   );
+      case RoutePaths.home:
         return MaterialPageRoute(
-          settings: const RouteSettings(name: '/'),
-          builder: (_) => const Scaffold(),
+          builder: (context) => const Home(),
+          settings: const RouteSettings(
+            name: RoutePaths.home,
+          ),
         );
       case RoutePaths.splash:
         return MaterialPageRoute(
@@ -20,14 +29,6 @@ class CustomRouter {
             arguments: settings.arguments,
           ),
         );
-      case RoutePaths.home:
-        return MaterialPageRoute(
-          builder: (context) => const Home(),
-          settings: const RouteSettings(
-            name: RoutePaths.home,
-          ),
-        );
-
       default:
         return _errorRoute();
     }
@@ -36,8 +37,14 @@ class CustomRouter {
   static Route onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutePaths.clientDetails:
+        Map<String, dynamic>? clientArgs;
+        if (settings.arguments != null) {
+          clientArgs = settings.arguments as Map<String, dynamic>;
+        }
         return MaterialPageRoute(
-          builder: (context) => const ClientDetails(),
+          builder: (context) => ClientDetails(
+            clientData: clientArgs,
+          ),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
         );
       default:

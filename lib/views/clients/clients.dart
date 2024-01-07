@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/views/clients/components/client_details.dart';
+import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 
@@ -11,21 +11,81 @@ class Clients extends StatefulWidget {
 
 class _ClientsState extends State<Clients> {
   final List<Map> _databaseClients = [
-    {"name": "Ana Maria do Santos"},
-    {"name": "Angela Pinheiro Ribeiro"},
-    {"name": "Andressa Semegova"},
-    {"name": "Carla Pereira Neves"},
-    {"name": "Cândida Conrado"},
-    {"name": "Coimbra Astúcia"},
-    {"name": "Cleuza Batista Quintino"},
-    {"name": "Fernanda Almeida de Carvalho"},
-    {"name": "Fabiana Fonseca"},
-    {"name": "Fábia do Amaral"},
-    {"name": "Rhayssa Andrade Costa"},
-    {"name": "Rafaela Cerlat"},
-    {"name": "Wanessa Julliana Silva"},
-    {"name": "Wanna Guimarães"},
-    {"name": "Watta Ribeiro"}
+    {
+      'name': 'Ana Maria do Santos',
+      'phone_number': '(64) 99211-3720',
+      'observations': '',
+    },
+    {
+      'name': 'Angela Pinheiro Ribeiro',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Andressa Semegova',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Carla Pereira Neves',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Cândida Conrado',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Coimbra Astúcia',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Cleuza Batista Quintino',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Fernanda Almeida de Carvalho',
+      'phone_number': '(64) 99211-3720',
+      'observations': '',
+    },
+    {
+      'name': 'Fabiana Fonseca',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Fábia do Amaral',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Rhayssa Andrade Costa',
+      'phone_number': '(64) 99211-3720',
+      'observations': '',
+    },
+    {
+      'name': 'Rafaela Cerlat',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Wanessa Julliana Silva',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Wanna Guimarães',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
+    {
+      'name': 'Watta Ribeiro',
+      'phone_number': '(64) 99211-3720',
+      'observations': 'Tem alergia e sensibilidade na pele',
+    },
   ];
 
   final List<Map> _clientsToShow = List.empty(growable: true);
@@ -61,7 +121,8 @@ class _ClientsState extends State<Clients> {
       floatingActionButton: _searchClient
           ? null
           : FloatingActionButton(
-              onPressed: () => widget.key,
+              onPressed: () =>
+                  Navigator.pushNamed(context, RoutePaths.clientDetails),
               foregroundColor: Colors.white,
               backgroundColor: Colors.pink,
               child: const Icon(Icons.add),
@@ -94,6 +155,8 @@ class _ClientsState extends State<Clients> {
         itemBuilder: (context, dynamic element) => Container(
           margin: const EdgeInsets.all(10),
           child: ListTile(
+            onTap: () => Navigator.pushNamed(context, RoutePaths.clientDetails,
+                arguments: element),
             tileColor: Colors.pink[50],
             title: Text(element["name"]),
             leading: const Icon(Icons.person_2),
@@ -104,9 +167,9 @@ class _ClientsState extends State<Clients> {
           ),
         ),
         itemComparator: (item1, item2) =>
-            item1['name'].compareTo(item2['name']), // optional
-        floatingHeader: true, // optional
-        order: GroupedListOrder.ASC, // optional
+            item1['name'].compareTo(item2['name']),
+        floatingHeader: true,
+        order: GroupedListOrder.ASC,
       ),
     );
   }
@@ -116,11 +179,13 @@ class _ClientsState extends State<Clients> {
       onChanged: (String s) {
         setState(() {
           _clientsToShow.clear();
-          _clientsToShow.addAll(_databaseClients.where((element) =>
-              element['name']
-                  .toString()
-                  .toLowerCase()
-                  .contains(s.toLowerCase())));
+          _clientsToShow.addAll(
+            _databaseClients.where(
+              (element) => element['name'].toString().toLowerCase().contains(
+                    s.toLowerCase(),
+                  ),
+            ),
+          );
         });
       },
       autofocus: true,
@@ -130,15 +195,16 @@ class _ClientsState extends State<Clients> {
         fontSize: 20,
       ),
       textInputAction: TextInputAction.search,
-      decoration: const InputDecoration(
-        enabledBorder: UnderlineInputBorder(
+      decoration: InputDecoration(
+        icon: Image.asset('assets/tanning.png', width: 30, height: 30),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
         ),
         hintText: 'Pesquisar cliente',
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.grey,
           fontSize: 20,
         ),
