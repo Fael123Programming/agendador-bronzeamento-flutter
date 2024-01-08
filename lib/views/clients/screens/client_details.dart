@@ -8,7 +8,7 @@ import 'dart:async';
 
 class ClientDetails extends StatefulWidget {
   // final Map<String, dynamic>? clientData;
-  final Map<String, dynamic>? clientData;
+  final Map<dynamic, dynamic>? clientData;
 
   const ClientDetails({super.key, this.clientData});
 
@@ -19,7 +19,7 @@ class ClientDetails extends StatefulWidget {
 class _ClientDetailsState extends State<ClientDetails> {
   final _formKey = GlobalKey<FormState>();
   final nameFieldController = TextEditingController();
-  final phoneNumberInputController = GlobalKey<PhoneNumberInputState>();
+  final phoneNumberInputController = TextEditingController();
   final obervationsController = TextEditingController();
   late FocusNode nameFocusNode, phoneFocusNode, observationsFocusNode;
 
@@ -32,11 +32,9 @@ class _ClientDetailsState extends State<ClientDetails> {
     if (widget.clientData == null) {
       nameFocusNode.requestFocus();
     } else {
-      nameFieldController.text = widget.clientData!['name'].toString();
-      phoneNumberInputController.currentState!.textFormFieldController.text =
-          widget.clientData!['phone_number'].toString();
-      obervationsController.text =
-          widget.clientData!['observations'].toString();
+      nameFieldController.text = widget.clientData!['name'];
+      phoneNumberInputController.text = widget.clientData!['phone_number'];
+      obervationsController.text = widget.clientData!['observations'];
     }
   }
 
@@ -72,7 +70,7 @@ class _ClientDetailsState extends State<ClientDetails> {
                         height: 25,
                       ),
                       PhoneNumberInput(
-                        key: phoneNumberInputController,
+                        controller: phoneNumberInputController,
                         focusNode: phoneFocusNode,
                         onEditingComplete: () =>
                             observationsFocusNode.requestFocus(),

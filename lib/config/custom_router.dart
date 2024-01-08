@@ -37,9 +37,9 @@ class CustomRouter {
   static Route onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutePaths.clientDetails:
-        Map<String, dynamic>? clientArgs;
+        Map<dynamic, dynamic>? clientArgs;
         if (settings.arguments != null) {
-          clientArgs = settings.arguments as Map<String, dynamic>;
+          clientArgs = settings.arguments as Map<dynamic, dynamic>;
         }
         return MaterialPageRoute(
           builder: (context) => ClientDetails(

@@ -155,8 +155,11 @@ class _ClientsState extends State<Clients> {
         itemBuilder: (context, dynamic element) => Container(
           margin: const EdgeInsets.all(10),
           child: ListTile(
-            onTap: () => Navigator.pushNamed(context, RoutePaths.clientDetails,
-                arguments: element),
+            onTap: () => Navigator.pushNamed(
+              context,
+              RoutePaths.clientDetails,
+              arguments: element,
+            ),
             tileColor: Colors.pink[50],
             title: Text(element["name"]),
             leading: const Icon(Icons.person_2),

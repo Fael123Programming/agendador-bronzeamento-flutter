@@ -8,9 +8,12 @@ class PhoneNumberInput extends StatefulWidget {
   final Function()? onEditingComplete;
   final TextEditingController? controller;
 
-  const PhoneNumberInput(
-      {Key? key, this.focusNode, this.onEditingComplete, this.controller})
-      : super(key: key);
+  const PhoneNumberInput({
+    Key? key,
+    this.focusNode,
+    this.onEditingComplete,
+    this.controller,
+  }) : super(key: key);
 
   @override
   PhoneNumberInputState createState() => PhoneNumberInputState();
