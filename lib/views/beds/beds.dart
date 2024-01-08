@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'components/item_widget.dart';
+import 'package:agendador_bronzeamento/views/beds/components/bed_card.dart';
 
 class Beds extends StatefulWidget {
   const Beds({super.key});
@@ -9,38 +9,54 @@ class Beds extends StatefulWidget {
 }
 
 class _BedsState extends State<Beds> {
-  int items = 14;
+  final List<BedCard> _bedCards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _bedCards.add(
+      BedCard(
+        clientName: 'Mariana Souza Farias',
+        bedNumber: 1,
+        onFinished: () => setState(() => _bedCards.removeAt(0)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Macas'),
+        title: _bedCards.isEmpty ? Container() : const Text('Macas'),
       ),
       body: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: SafeArea(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: List.generate(
-                      items,
-                      (index) => ItemWidget(
-                        text: 'Maca ${index + 1}',
+        child: _bedCards.isEmpty
+            ? const Text(
+                'Sem clientes \nem macas',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
+              )
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: SafeArea(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: List.from(_bedCards),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
