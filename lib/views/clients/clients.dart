@@ -153,6 +153,12 @@ class _ClientsState extends State<Clients> {
           ),
         ),
         itemBuilder: (context, dynamic element) => Container(
+          decoration: BoxDecoration(
+            color: Colors.pink[50],
+            borderRadius: const BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
           margin: const EdgeInsets.all(10),
           child: ListTile(
             onTap: () => Navigator.pushNamed(
@@ -160,13 +166,12 @@ class _ClientsState extends State<Clients> {
               RoutePaths.clientDetails,
               arguments: element,
             ),
-            tileColor: Colors.pink[50],
             title: Text(element["name"]),
-            leading: const Icon(Icons.person_2),
-            // leading: CircleAvatar(
-            // backgroundImage: AssetImage("..."),
-            // backgroundColor: Colors.pink[50],
-            // ),
+            // leading: const Icon(Icons.person_2),
+            leading: const CircleAvatar(
+              backgroundImage: AssetImage("assets/girl.jpg"),
+              // backgroundColor: Colors.pink[50],
+            ),
           ),
         ),
         itemComparator: (item1, item2) =>

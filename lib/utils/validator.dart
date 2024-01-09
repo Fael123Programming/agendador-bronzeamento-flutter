@@ -7,4 +7,11 @@ class Validator {
     }
     return null;
   }
+
+  static bool isInteger(String? str) {
+    if (str == null) {
+      return false;
+    }
+    return int.tryParse(str) != null;
+  }
 }

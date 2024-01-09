@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/views/beds/components/turn_around_blocks/turn_around_blocks.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks/turn_around_blocks.dart';
 import 'package:flutter/material.dart';
 
 class BedCard extends StatefulWidget {
@@ -6,19 +6,18 @@ class BedCard extends StatefulWidget {
   final int bedNumber;
   final void Function() onFinished;
 
-  const BedCard(
-      {super.key,
-      required this.clientName,
-      required this.bedNumber,
-      required this.onFinished});
+  const BedCard({
+    super.key,
+    required this.clientName,
+    required this.bedNumber,
+    required this.onFinished,
+  });
 
   @override
   State<BedCard> createState() => _BedCardState();
 }
 
 class _BedCardState extends State<BedCard> {
-  int filled = 4, total = 4;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,7 +50,7 @@ class _BedCardState extends State<BedCard> {
             ],
           ),
           TurnAroundBlocks(
-            blocks: 2,
+            blocks: 4,
             durationPerBlock: Duration(seconds: 10),
             onFinished: widget.onFinished,
           )

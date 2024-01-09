@@ -47,12 +47,10 @@ class _SplashState extends State<Splash> {
                 height: 80,
               ),
             ),
-            showCircularProgressIndicator
-                ? Container(
-                    margin: const EdgeInsets.only(top: 50),
-                    child: const CircularProgressIndicator(),
-                  )
-                : Container()
+            Container(
+              margin: const EdgeInsets.only(top: 50),
+              child: const CircularProgressIndicator(),
+            ),
           ],
         ),
       ),

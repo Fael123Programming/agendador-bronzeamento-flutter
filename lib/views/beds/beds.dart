@@ -1,5 +1,6 @@
+import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:agendador_bronzeamento/views/beds/components/bed_card.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 
 class Beds extends StatefulWidget {
   const Beds({super.key});
@@ -59,7 +60,7 @@ class _BedsState extends State<Beds> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),
         foregroundColor: Colors.white,
         backgroundColor: Colors.pink,
         child: const Icon(Icons.add),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:agendador_bronzeamento/views/beds/components/turn_around_blocks/block.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks/block.dart';
 import 'package:flutter/material.dart';
 
 class TurnAroundBlocks extends StatefulWidget {
@@ -8,11 +8,12 @@ class TurnAroundBlocks extends StatefulWidget {
   final Duration durationPerBlock;
   final void Function() onFinished;
 
-  const TurnAroundBlocks(
-      {super.key,
-      required this.blocks,
-      required this.durationPerBlock,
-      required this.onFinished});
+  const TurnAroundBlocks({
+    super.key,
+    required this.blocks,
+    required this.durationPerBlock,
+    required this.onFinished,
+  });
 
   @override
   State<TurnAroundBlocks> createState() => _TurnAroundBlocksState();
@@ -62,17 +63,15 @@ class _TurnAroundBlocksState extends State<TurnAroundBlocks> {
           onTap: widget.onFinished,
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.pink,
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
             ),
             padding: const EdgeInsets.all(5),
-            child: const Text(
-              'Terminar',
-              style: TextStyle(
-                color: Colors.white,
-              ),
+            child: const Icon(
+              Icons.done_all,
+              size: 22,
+              color: Colors.green,
             ),
           ),
         );
@@ -87,17 +86,15 @@ class _TurnAroundBlocksState extends State<TurnAroundBlocks> {
           },
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.green,
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
             ),
             padding: const EdgeInsets.all(5),
-            child: const Text(
-              'Próxima',
-              style: TextStyle(
-                color: Colors.white,
-              ),
+            child: const Icon(
+              Icons.double_arrow,
+              size: 22,
+              color: Colors.pink,
             ),
           ),
         );
@@ -122,9 +119,9 @@ class _TurnAroundBlocksState extends State<TurnAroundBlocks> {
         setState(() => _tempDuration -= _second);
       } else {
         timer.cancel();
-        setState(() => _currentFinished = true);
         (_blocks[_finishedBlocks++]['controller'] as BlockController)
             .switchColor();
+        setState(() => _currentFinished = true);
       }
     });
   }

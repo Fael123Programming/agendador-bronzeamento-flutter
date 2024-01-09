@@ -20,18 +20,31 @@ class _BlockState extends State<Block> {
   }
 
   Color? color = Colors.pink[100];
+  IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 15,
-      height: 15,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(30),
+        ),
+        color: color,
+      ),
+      padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.all(5),
-      color: color,
+      child: Icon(
+        icon,
+        size: 10,
+        color: Colors.white,
+      ),
     );
   }
 
   void switchColor() {
-    setState(() => color = Colors.pink);
+    setState(() {
+      color = Colors.pink;
+      icon = Icons.done;
+    });
   }
 }
