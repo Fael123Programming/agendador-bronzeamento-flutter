@@ -18,6 +18,7 @@ class SearchClientInput extends StatefulWidget {
 
 class _SearchClientInputState extends State<SearchClientInput> {
   final controller = TextEditingController();
+  final suggestionCount = 1;
   late TextEditingController textFormFieldController;
   List<Map> usersToShow = [];
 
@@ -175,7 +176,7 @@ class _SearchClientInputState extends State<SearchClientInput> {
                   name.toLowerCase(),
                 ),
           )
-          .take(3),
+          .take(suggestionCount),
     );
     return toReturn;
   }
