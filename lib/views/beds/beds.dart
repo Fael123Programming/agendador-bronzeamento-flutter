@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/config/route_paths.dart';
+import 'package:agendador_bronzeamento/views/beds/service/bed_card_service.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 
@@ -10,30 +11,31 @@ class Beds extends StatefulWidget {
 }
 
 class _BedsState extends State<Beds> {
-  final List<BedCard> _bedCards = [];
+  List<BedCard>? bedCards;
 
   @override
   void initState() {
     super.initState();
-    _bedCards.add(
-      BedCard(
-        clientName: 'Mariana Souza Farias',
-        bedNumber: 1,
-        onFinished: () => setState(() => _bedCards.removeAt(0)),
-      ),
-    );
+    getBedCardList();
+  }
+
+  getBedCardList() {
+    bedCards = BedCardService.fetchBedCards();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _bedCards.isEmpty ? Container() : const Text('Macas'),
+        title: bedCards == null || bedCards!.isEmpty
+            ? Container()
+            : const Text('Macas'),
       ),
       body: Center(
-        child: _bedCards.isEmpty
+        child: bedCards == null || bedCards!.isEmpty
             ? const Text(
-                'Sem clientes \nem macas',
+                'Sem clientes\nem macas',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -51,7 +53,7 @@ class _BedsState extends State<Beds> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: List.from(_bedCards),
+                          children: List.from(bedCards!),
                         ),
                       ),
                     ),
