@@ -4,6 +4,7 @@ import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/general.dart';
 
 class CustomRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -57,6 +58,15 @@ class CustomRouter {
           builder: (context) => BedDetails(
             bedData: bedArgs,
           ),
+          settings: const RouteSettings(name: RoutePaths.clientDetails),
+        );
+      case RoutePaths.general:
+        // Map<dynamic, dynamic>? bedArgs;
+        // if (settings.arguments != null) {
+        //   bedArgs = settings.arguments as Map<dynamic, dynamic>;
+        // }
+        return MaterialPageRoute(
+          builder: (context) => const General(),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
         );
       default:

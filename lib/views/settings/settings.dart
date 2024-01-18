@@ -1,4 +1,5 @@
-import 'package:agendador_bronzeamento/views/settings/components/setting_item.dart';
+import 'package:agendador_bronzeamento/config/route_paths.dart';
+import 'package:agendador_bronzeamento/views/settings/widgets/setting_item.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -9,13 +10,20 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  final List<Widget> settingItems = [
-    SettingItem(title: 'Gerais', icon: Icons.settings, onTap: () {}),
-    SettingItem(title: 'Sobre', icon: Icons.info, onTap: () {}),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> settingItems = [
+      SettingItem(
+        title: 'Gerais',
+        icon: Icons.settings,
+        onTap: () => Navigator.pushNamed(context, RoutePaths.general),
+      ),
+      SettingItem(
+        title: 'Sobre',
+        icon: Icons.info,
+        onTap: () {},
+      ),
+    ];
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configurações'),
@@ -23,7 +31,7 @@ class _SettingsState extends State<Settings> {
       body: Center(
         child: SafeArea(
           child: ListView.separated(
-            itemCount: 2,
+            itemCount: settingItems.length,
             separatorBuilder: (BuildContext context, int index) =>
                 const Divider(),
             itemBuilder: (BuildContext context, int index) {
