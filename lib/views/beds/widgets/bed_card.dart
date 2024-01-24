@@ -1,105 +1,47 @@
-import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks/turn_around_blocks.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class BedCard extends StatefulWidget {
-  final String clientName;
-  final int bedNumber;
-  final void Function() onAllBlocksFinished;
+class BedCardController extends GetxController {
+  final int totalCircles = 4;
+  Duration totalDuration = const Duration(seconds: 10);
+  Rx<Duration> remainingTime = const Duration(seconds: 10).obs;
+  RxInt paintedCircles = 0.obs;
+  Rx<Color> color = Colors.white.obs;
+  Timer? timer;
+  RxBool stopped = false.obs;
 
-  const BedCard({
-    super.key,
-    required this.clientName,
-    required this.bedNumber,
-    required this.onAllBlocksFinished,
-  });
+  void startTimer() {
+    color.value = Colors.white;
+    paintedCircles.value++;
+    stopped.value = false;
+    remainingTime.value = Duration(seconds: totalDuration.inSeconds);
+    timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (remainingTime.value.inSeconds > 1) {
+        remainingTime.value = remainingTime.value - const Duration(seconds: 1);
+      } else {
+        timer?.cancel();
+        color.value = Colors.pink;
+        stopped.value = true;
+      }
+    });
+  }
 
   @override
-  State<BedCard> createState() => _BedCardState();
+  void onClose() {
+    timer?.cancel();
+    super.onClose();
+  }
 }
 
-class _BedCardState extends State<BedCard> {
-  Color borderColor = Colors.white;
-  TurnAroundBlocksController turnController = TurnAroundBlocksController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dismissible(
-      background: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(30),
-          ),
-          color: Colors.red,
-        ),
-        alignment: AlignmentDirectional.center,
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
-        ),
-      ),
-      onDismissed: (direction) {
-        widget.onAllBlocksFinished();
-        dispose();
-      },
-      key: ValueKey<String>(widget.clientName),
-      child: GestureDetector(
-        onTap: turnController.verify,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.pink[50],
-            border: Border.all(color: borderColor),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
-            ),
-          ),
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.clientName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '#${widget.bedNumber}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              TurnAroundBlocks(
-                blocks: 4,
-                durationPerBlock: Duration(seconds: 1),
-                onAllBlocksFinished: widget.onAllBlocksFinished,
-                onBlockFinished: switchBorderColor,
-                controller: turnController,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void switchBorderColor() {
-    setState(() =>
-        borderColor = borderColor == Colors.white ? Colors.pink : Colors.white);
-  }
+class BedCard {
+  final controller = BedCardController();
+  final String clientName;
+  final int bedNumber;
+  final RxBool dismissed = false.obs;
+ 
+  BedCard({
+    required this.clientName, 
+    required this.bedNumber, 
+  });
 }
