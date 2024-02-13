@@ -1,27 +1,24 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TimeEntity extends StatefulWidget {
-  final String hintText;
-  final TextEditingController controller;
+class SecsPickerController extends GetxController {
+  RxString secs = '0'.obs;
+}
+
+class SecsPicker extends StatelessWidget {
   final Function()? onEditingComplete;
   final FocusNode? focusNode;
 
-  const TimeEntity({
+  const SecsPicker({
     super.key,
     this.focusNode,
     this.onEditingComplete,
-    required this.hintText,
-    required this.controller,
   });
 
   @override
-  State<TimeEntity> createState() => _TimeEntityState();
-}
-
-class _TimeEntityState extends State<TimeEntity> {
-  @override
   Widget build(BuildContext context) {
+    final SecsPickerController controller = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
@@ -49,19 +46,15 @@ class _TimeEntityState extends State<TimeEntity> {
                     } else {
                       valStr = '0';
                     }
-                    setState(() {
-                      widget.controller.text = valStr;
-                    });
+                    controller.secs = valStr.obs;
                   },
-                  onEditingComplete: widget.onEditingComplete,
-                  focusNode: widget.focusNode,
-                  controller: widget.controller,
+                  onEditingComplete: onEditingComplete,
+                  focusNode: focusNode,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  // autofocus: true,
-                  decoration: InputDecoration.collapsed(
-                    hintText: widget.hintText,
-                    hintStyle: const TextStyle(
+                  decoration: const InputDecoration.collapsed(
+                    hintText: 'secs',
+                    hintStyle: TextStyle(
                       color: Colors.grey,
                     ),
                   ),

@@ -1,31 +1,21 @@
-import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/time_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/secs_picker.dart';
 
-class TimePicker extends StatefulWidget {
-  final Duration duration;
+class TimePicker extends StatelessWidget {
   final FocusNode hourFocusNode;
-  final TextEditingController hoursController;
-  final TextEditingController minsController;
-  final TextEditingController secsController;
+  final FocusNode minsFocusNode = FocusNode();
+  final FocusNode secsFocusNode = FocusNode();
   final Function() onEditingComplete;
 
-  const TimePicker({
+  TimePicker({
     super.key,
-    required this.duration,
     required this.hourFocusNode,
-    required this.hoursController,
-    required this.minsController,
-    required this.secsController,
     required this.onEditingComplete,
   });
 
-  @override
-  State<TimePicker> createState() => _TimePickerState();
-}
-
-class _TimePickerState extends State<TimePicker> {
-  late FocusNode minsFocusNode;
-  late FocusNode secsFocusNode;
+  
   final collonBox = const SizedBox(
     child: Text(
       ':',
@@ -37,20 +27,6 @@ class _TimePickerState extends State<TimePicker> {
   );
 
   @override
-  void initState() {
-    super.initState();
-    minsFocusNode = FocusNode();
-    secsFocusNode = FocusNode();
-  }
-
-  @override
-  void dispose() {
-    minsFocusNode.dispose();
-    secsFocusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -60,25 +36,19 @@ class _TimePickerState extends State<TimePicker> {
           color: Colors.pink,
           size: 25,
         ),
-        TimeEntity(
-          hintText: 'hrs',
-          controller: widget.hoursController,
-          focusNode: widget.hourFocusNode,
+        HoursPicker(
+          focusNode: hourFocusNode,
           onEditingComplete: () => minsFocusNode.requestFocus(),
         ),
         collonBox,
-        TimeEntity(
-          hintText: 'mins',
-          controller: widget.minsController,
+        MinsPicker(
           focusNode: minsFocusNode,
           onEditingComplete: () => secsFocusNode.requestFocus(),
         ),
         collonBox,
-        TimeEntity(
-          hintText: 'secs',
+        SecsPicker(
           focusNode: secsFocusNode,
-          controller: widget.secsController,
-          onEditingComplete: widget.onEditingComplete,
+          onEditingComplete: onEditingComplete,
         ),
       ],
     );

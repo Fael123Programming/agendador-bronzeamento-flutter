@@ -1,34 +1,22 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TurnAroundInput extends StatefulWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
-  final TextEditingController? controller;
-
-  const TurnAroundInput(
-      {Key? key, this.focusNode, this.onEditingComplete, this.controller})
-      : super(key: key);
-
-  @override
-  State<TurnAroundInput> createState() => _TurnAroundInputState();
+class TurnAroundInputController extends GetxController {
+  RxString text = ''.obs;
 }
 
-class _TurnAroundInputState extends State<TurnAroundInput> {
-  final controller = TextEditingController();
-  late TextEditingController textFormFieldController;
+class TurnAroundInput extends StatelessWidget {
+  final FocusNode? focusNode;
+  final Function()? onEditingComplete;
+
+  const TurnAroundInput({super.key, this.focusNode, this.onEditingComplete});
 
   @override
-  void initState() {
-    super.initState();
-    textFormFieldController =
-        widget.controller != null ? widget.controller! : controller;
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    final TurnAroundInputController textController = Get.find();
     return Center(
       child: Container(
         width: width * 0.4,
@@ -53,19 +41,16 @@ class _TurnAroundInputState extends State<TurnAroundInput> {
               ),
               Expanded(
                 child: TextFormField(
+                  initialValue: textController.text.value,
                   textAlign: TextAlign.start,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
                       bool invalidValue = false;
                       if (!Validator.isInteger(value)) {
-                        setState(() {
-                          widget.controller?.text = '';
-                        });
+                        textController.text = ''.obs;
                         invalidValue = true;
                       } else if (int.parse(value) < 1) {
-                        setState(() {
-                          widget.controller?.text = '';
-                        });
+                        textController.text = ''.obs;
                         invalidValue = true;
                       }
                       if (invalidValue) {
@@ -80,9 +65,8 @@ class _TurnAroundInputState extends State<TurnAroundInput> {
                       }
                     }
                   },
-                  onEditingComplete: widget.onEditingComplete,
-                  focusNode: widget.focusNode,
-                  controller: textFormFieldController,
+                  onEditingComplete: onEditingComplete,
+                  focusNode: focusNode,
                   keyboardType: TextInputType.number,
                   keyboardAppearance: Brightness.light,
                   decoration: const InputDecoration.collapsed(

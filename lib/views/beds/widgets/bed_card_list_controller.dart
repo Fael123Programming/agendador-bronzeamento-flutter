@@ -3,28 +3,28 @@ import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:get/get.dart';
 
 class BedCardListController extends GetxController {
-  final RxList<BedCard> bedCards = <BedCard>[].obs;
+  RxList<BedCard> bedCards = <BedCard>[].obs;
+  var bedCardsToRemove = <BedCard>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    // List<BedCard> _bedCards = BedCardService.fetchBedCards();
-    bedCards.addAll(BedCardService.fetchBedCards());
+    // bedCards.addAll(BedCardService.fetchBedCards(this));
   }
 
-  // void addBedCard(String clientName, int bedNumber) {
-  //   bedCards.add(BedCard(clientName: clientName, bedNumber: bedNumber));
-  // }
-
-  void removeCard(int index) {
-    bedCards.removeAt(index);
+  void add(BedCard card) {
+    bedCards.add(card);
   }
 
-  void dismissCard(int index) {
-    bedCards[index].dismissed.value = true;
+  BedCard? findBedCardByClientName(String clientName) {
+    try {
+      return bedCards.where((card) => card.clientName == clientName).first;
+    } catch(err) {
+      return null;
+    }
   }
 
-  void handleEvent(int index) {
-
+  bool removeCardByClientName(String clientName) {
+    return bedCards.remove(findBedCardByClientName(clientName));
   }
 }
