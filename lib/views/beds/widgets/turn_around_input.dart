@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TurnAroundInputController extends GetxController {
-  RxString text = ''.obs;
+  final TextEditingController turnAround = TextEditingController();
 }
 
 class TurnAroundInput extends StatelessWidget {
@@ -14,9 +14,9 @@ class TurnAroundInput extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final TurnAroundInputController turnAroundController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    final TurnAroundInputController textController = Get.find();
     return Center(
       child: Container(
         width: width * 0.4,
@@ -41,16 +41,16 @@ class TurnAroundInput extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
-                  initialValue: textController.text.value,
+                  controller: turnAroundController.turnAround,
                   textAlign: TextAlign.start,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
                       bool invalidValue = false;
                       if (!Validator.isInteger(value)) {
-                        textController.text = ''.obs;
+                        turnAroundController.turnAround.text = '';
                         invalidValue = true;
                       } else if (int.parse(value) < 1) {
-                        textController.text = ''.obs;
+                        turnAroundController.turnAround.text = '';
                         invalidValue = true;
                       }
                       if (invalidValue) {

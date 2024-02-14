@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:agendador_bronzeamento/models/user.dart';
 
-class SearchClientInput extends StatefulWidget {
+const suggestionCount = 1;
+
+class SearchClientInputController extends GetxController {
+  final TextEditingController controller = TextEditingController();
+  RxList<User> usersToShow = <User>[].obs;
+}
+
+class SearchClientInput extends StatelessWidget {
   final FocusNode? focusNode;
   final Function()? onEditingComplete;
-  final TextEditingController? controller;
 
   const SearchClientInput({
     Key? key,
     this.focusNode,
     this.onEditingComplete,
-    this.controller,
   }) : super(key: key);
-
+  
   @override
-  State<SearchClientInput> createState() => _SearchClientInputState();
-}
-
-class _SearchClientInputState extends State<SearchClientInput> {
-  final controller = TextEditingController();
-  final suggestionCount = 1;
-  late TextEditingController textFormFieldController;
-  List<Map> usersToShow = [];
-
-  @override
-  void initState() {
-    super.initState();
-    textFormFieldController =
-        widget.controller != null ? widget.controller! : controller;
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
+    final SearchClientInputController searchController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    focusNode?.requestFocus();
+
     return Column(
       children: [
         Center(
@@ -59,16 +52,16 @@ class _SearchClientInputState extends State<SearchClientInput> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      onChanged: (value) => setState(() {
+                      onChanged: (value) {
                         if (value.isNotEmpty) {
-                          usersToShow = _fetchUsersThatMatch(value);
+                          searchController.usersToShow = _fetchUsersThatMatch(value).obs;
                         } else {
-                          usersToShow = [];
+                          searchController.usersToShow = <User>[].obs;
                         }
-                      }),
-                      onEditingComplete: widget.onEditingComplete,
-                      focusNode: widget.focusNode,
-                      controller: textFormFieldController,
+                      },
+                      onEditingComplete: onEditingComplete,
+                      focusNode: focusNode,
+                      controller: searchController.controller,
                       // autofocus: true,
                       decoration: const InputDecoration.collapsed(
                         hintText: 'Cliente',
@@ -83,117 +76,44 @@ class _SearchClientInputState extends State<SearchClientInput> {
             ),
           ),
         ),
-        Column(
-          children: _drawUsersCards(usersToShow),
-        )
+        Obx(() => Column(
+          children: _drawUsersCards(searchController.usersToShow.toList(), context),
+        ))
       ],
     );
   }
 
-  List<Map> _fetchUsersThatMatch(String name) {
-    final List<Map> databaseClients = [
-      {
-        'name': 'Ana Maria do Santos',
-        'phone_number': '(64) 99211-3720',
-        'observations': '',
-      },
-      {
-        'name': 'Angela Pinheiro Ribeiro',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Andressa Semegova',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Carla Pereira Neves',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Cândida Conrado',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Coimbra Astúcia',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Cleuza Batista Quintino',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Fernanda Almeida de Carvalho',
-        'phone_number': '(64) 99211-3720',
-        'observations': '',
-      },
-      {
-        'name': 'Fabiana Fonseca',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Fábia do Amaral',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Rhayssa Andrade Costa',
-        'phone_number': '(64) 99211-3720',
-        'observations': '',
-      },
-      {
-        'name': 'Rafaela Cerlat',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Wanessa Julliana Silva',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Wanna Guimarães',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-      {
-        'name': 'Watta Ribeiro',
-        'phone_number': '(64) 99211-3720',
-        'observations': 'Tem alergia e sensibilidade na pele',
-      },
-    ];
-    List<Map> toReturn = [];
-    toReturn.addAll(
-      databaseClients
+  List<User> _fetchUsersThatMatch(String name) {
+    final UserController userController = Get.find();
+    List<User> userstoReturn = [];
+    userstoReturn.addAll(
+      userController
+          .users
+          !.toList()
           .where(
-            (element) => element['name'].toString().toLowerCase().contains(
+            (user) => user.name.toLowerCase().contains(
                   name.toLowerCase(),
                 ),
           )
           .take(suggestionCount),
     );
-    return toReturn;
+    return userstoReturn;
   }
 
-  List<Widget> _drawUsersCards(List<Map> users) {
-    List<Widget> toReturn = [];
+  List<Widget> _drawUsersCards(List<User> users, BuildContext context) {
+    final SearchClientInputController searchController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    toReturn.addAll(
+    List<Widget> userCards = [];
+    userCards.addAll(
       users.map(
-        (e) => GestureDetector(
-          onTap: () => setState(() {
-            textFormFieldController.text = e['name'];
-            usersToShow = [];
+        (user) => GestureDetector(
+          onTap: () {
+            searchController.controller.text = user.name;
+            searchController.usersToShow = <User>[].obs;
             FocusScope.of(context).unfocus();
-            widget.onEditingComplete != null && widget.onEditingComplete!();
-          }),
+            onEditingComplete != null && onEditingComplete!();
+          },
           child: Center(
             child: Container(
               width: width * 0.8,
@@ -219,7 +139,7 @@ class _SearchClientInputState extends State<SearchClientInput> {
                     ),
                     Expanded(
                       child: Text(
-                        e['name'],
+                        user.name,
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -231,6 +151,6 @@ class _SearchClientInputState extends State<SearchClientInput> {
         ),
       ),
     );
-    return toReturn;
+    return userCards;
   }
 }

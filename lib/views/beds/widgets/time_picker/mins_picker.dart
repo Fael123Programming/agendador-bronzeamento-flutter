@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MinsPickerController extends GetxController {
-  RxString mins = '0'.obs;
+  final TextEditingController mins = TextEditingController();
 }
 
 class MinsPicker extends StatelessWidget {
@@ -39,6 +39,7 @@ class MinsPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
+                  controller: controller.mins,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -46,7 +47,7 @@ class MinsPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.mins = valStr.obs;
+                    controller.mins.text = valStr;
                   },
                   onEditingComplete: onEditingComplete,
                   focusNode: focusNode,

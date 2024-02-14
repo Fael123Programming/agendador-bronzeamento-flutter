@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HoursPickerController extends GetxController {
-  RxString hours = '0'.obs;
+  final TextEditingController hours = TextEditingController();
 }
 
 class HoursPicker extends StatelessWidget {
@@ -39,6 +39,7 @@ class HoursPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
+                  controller: controller.hours,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -46,7 +47,7 @@ class HoursPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.hours = valStr.obs;
+                    controller.hours.text = valStr;
                   },
                   onEditingComplete: onEditingComplete,
                   focusNode: focusNode,

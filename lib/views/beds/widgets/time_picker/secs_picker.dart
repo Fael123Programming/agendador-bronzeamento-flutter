@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SecsPickerController extends GetxController {
-  RxString secs = '0'.obs;
+  final TextEditingController secs = TextEditingController();
 }
 
 class SecsPicker extends StatelessWidget {
@@ -39,6 +39,7 @@ class SecsPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
+                  controller: controller.secs,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -46,7 +47,7 @@ class SecsPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.secs = valStr.obs;
+                    controller.secs.text = valStr;
                   },
                   onEditingComplete: onEditingComplete,
                   focusNode: focusNode,

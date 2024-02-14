@@ -70,7 +70,6 @@ class _General extends State<General> {
                     ),
                     TurnAroundInput(
                       focusNode: turnAroundFocusNode,
-                      controller: turnAroundController,
                     ),
                   ],
                 ),
@@ -101,11 +100,7 @@ class _General extends State<General> {
                 ),
               ),
               TimePicker(
-                duration: const Duration(minutes: 40, seconds: 0),
                 hourFocusNode: hourFocusNode,
-                hoursController: hoursController,
-                minsController: minsController,
-                secsController: secsController,
                 onEditingComplete: () {},
               ),
             ],

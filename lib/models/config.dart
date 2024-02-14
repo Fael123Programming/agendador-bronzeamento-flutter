@@ -5,42 +5,64 @@ import 'package:agendador_bronzeamento/utils/constants.dart';
 @HiveType(typeId: 1)
 class Config {
   Config({
-    required this.turnArounds,
-    required this.time
+    this.turnArounds = '0',
+    this.defaultHours = '0',
+    this.defaultMins = '0',
+    this.defaultSecs = '0'
   });
 
   @HiveField(0)
   String turnArounds;
 
   @HiveField(1)
-  String time;
+  String defaultHours;
+
+  @HiveField(2)
+  String defaultMins;
+
+  @HiveField(3)
+  String defaultSecs;
 }
 
-Future<Config> fetchConfig() async {
-  var box = await Hive.openBox(appBox);
-  var config = box.get(configObject);
-  if (config == null) {
-    var c = Config(turnArounds: '4', time: '10000');
-    await box.put(configObject, c);
-    return c;
-  } else {
-    return config;
+class ConfigAdapter extends TypeAdapter<Config> {
+  @override
+  final int typeId = 1;
+  
+  @override
+  Config read(BinaryReader reader) {
+    final turnArounds = reader.read();
+    final defaultHours = reader.read();
+    final defaultMins = reader.read();
+    final defaultSecs = reader.read();
+    return Config(
+      turnArounds: turnArounds,
+      defaultHours: defaultHours,
+      defaultMins: defaultMins,
+      defaultSecs: defaultSecs,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Config obj) {
+    writer.write(obj.turnArounds);
+    writer.write(obj.defaultHours);
+    writer.write(obj.defaultMins);
+    writer.write(obj.defaultSecs);
   }
 }
 
 class ConfigController extends GetxController {
-  Rx<Config>? configData;
+  Rx<Config>? config;
+  RxBool loaded = false.obs;
 
-  ConfigController() {
-    fetchConfig().then((value) => configData = value.obs);
-  }
-
-  bool isDataLoaded() {
-    try {
-      configData!.value;
-      return true;
-    } catch(err) {
-      return false;
+  Future<void> fetchConfig() async {
+    Box<Config> box = await Hive.openBox<Config>(appBox);
+    Config? c = box.get(configObject);
+    if (c == null) {
+      c = Config(turnArounds: '4', defaultHours: '0', defaultMins: '40', defaultSecs: '0');
+      await box.put(configObject, c);
     }
+    loaded = true.obs;
+    config = c.obs;
   }
 }
