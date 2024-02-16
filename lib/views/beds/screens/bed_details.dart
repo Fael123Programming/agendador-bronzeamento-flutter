@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/config.dart';
+import 'package:agendador_bronzeamento/utils/loading.dart';
 
 class BedDetails extends StatelessWidget {
   final Map<dynamic, dynamic>? bedData;
@@ -27,6 +28,8 @@ class BedDetails extends StatelessWidget {
     final FocusNode searchClientInputFocusNode = FocusNode(),
         turnAroundFocusNode = FocusNode(),
         timePickerFocusNode = FocusNode();
+
+    const twoSeconds = Duration(seconds: 2);
 
     return PopScope(
       onPopInvoked: (didPop) {
@@ -101,9 +104,7 @@ class BedDetails extends StatelessWidget {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('Tempo não pode ser zero'),
-                                    duration: Duration(
-                                      seconds: 2,
-                                    ),
+                                    duration: twoSeconds,
                                   ),
                                 );
                                 hoursController.hours.text = configController.config!.value.defaultHours;
@@ -124,14 +125,29 @@ class BedDetails extends StatelessWidget {
                             gradientOrientation: GradientOrientation.Horizontal,
                             onTap: (finish) {
                               finish();
+                              print('${searchController.controller.text.isEmpty}');
+                              if (searchController.controller.text.isEmpty) {
+                                Get.showSnackbar(
+                                  const GetSnackBar(
+                                    title: 'Cliente não Preenchida',
+                                    message: 'Por favor, preencha o campo de cliente',
+                                    duration: twoSeconds,
+                                    // backgroundColor: Color.fromARGB(255, 255, 17, 0),
+                                    backgroundColor: Color.fromARGB(255, 255, 17, 0),
+                                  )
+                                );
+                              } else {
                               Get.showSnackbar(
-                                GetSnackBar(
-                                  title: 'Adicionado com sucesso!',
-                                  message: searchController.controller.text,
-                                  duration: const Duration(seconds: 2),
+                                const GetSnackBar(
+                                  title: 'Maca adicionada com sucesso!',
+                                  messageText: Text(''),
+                                  duration: Duration(seconds: 1),
+                                    backgroundColor: Colors.pink,
                                 )
                               );
-                              // Navigator.pop(context);
+                              // Get.back();
+                              Navigator.pop(context);
+                              }
                             },
                             child: Text(
                               bedData == null ? 'Adicionar' : 'Salvar',
@@ -149,7 +165,7 @@ class BedDetails extends StatelessWidget {
               ),
             );
           } else {
-            return const Center(child: CircularProgressIndicator(color: Colors.pink,),);
+            return const Loading();
           }
         }),
       ),

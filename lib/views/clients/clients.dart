@@ -1,200 +1,125 @@
 import 'package:agendador_bronzeamento/config/route_paths.dart';
+import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:get/get.dart';
 
-class Clients extends StatefulWidget {
+
+class Clients extends StatelessWidget {
   const Clients({super.key});
 
   @override
-  State<Clients> createState() => _ClientsState();
-}
-
-class _ClientsState extends State<Clients> {
-  final List<Map> _databaseClients = [
-    {
-      'name': 'Ana Maria do Santos',
-      'phone_number': '(64) 99211-3720',
-      'observations': '',
-    },
-    {
-      'name': 'Angela Pinheiro Ribeiro',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Andressa Semegova',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Carla Pereira Neves',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Cândida Conrado',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Coimbra Astúcia',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Cleuza Batista Quintino',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Fernanda Almeida de Carvalho',
-      'phone_number': '(64) 99211-3720',
-      'observations': '',
-    },
-    {
-      'name': 'Fabiana Fonseca',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Fábia do Amaral',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Rhayssa Andrade Costa',
-      'phone_number': '(64) 99211-3720',
-      'observations': '',
-    },
-    {
-      'name': 'Rafaela Cerlat',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Wanessa Julliana Silva',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Wanna Guimarães',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-    {
-      'name': 'Watta Ribeiro',
-      'phone_number': '(64) 99211-3720',
-      'observations': 'Tem alergia e sensibilidade na pele',
-    },
-  ];
-
-  final List<Map> _clientsToShow = List.empty(growable: true);
-
-  bool _searchClient = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: _searchClient
-            ? _searchTextField()
-            : const Text(
-                'Clientes',
+  Widget build(context) {
+    final UserController userController = Get.find();
+    final RxList<User> clientsToShow = Get.put(<User>[].obs);
+    RxBool searchClient = false.obs;
+    
+    if (userController.loaded.value) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Obx(() => searchClient.value
+              ? searchTextField()
+              : const Text(
+                  'Clientes',
+                )),
+          actions: searchClient.value
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      searchClient = false.obs;
+                      clientsToShow.clear();
+                    },
+                    icon: const Icon(Icons.clear),
+                  )
+                ]
+              : [
+                  IconButton(
+                    onPressed: () => searchClient = true.obs,
+                    icon: const Icon(Icons.search),
+                  )
+                ],
+        ),
+        floatingActionButton: searchClient.value
+            ? null
+            : FloatingActionButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, RoutePaths.clientDetails),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.pink,
+                child: const Icon(Icons.add),
               ),
-        actions: _searchClient
-            ? [
-                IconButton(
-                  onPressed: () => setState(() {
-                    _searchClient = false;
-                    _clientsToShow.clear();
-                  }),
-                  icon: const Icon(Icons.clear),
-                )
-              ]
-            : [
-                IconButton(
-                  onPressed: () => setState(() => _searchClient = true),
-                  icon: const Icon(Icons.search),
-                )
-              ],
-      ),
-      floatingActionButton: _searchClient
-          ? null
-          : FloatingActionButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, RoutePaths.clientDetails),
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.pink,
-              child: const Icon(Icons.add),
+        body: GroupedListView<User, String>(
+          elements: clientsToShow.isEmpty && !searchClient.value
+              ? userController.users!.toList()
+              : clientsToShow.toList(),
+          groupBy: (user) => user.name[0].toString().toUpperCase(),
+          groupSeparatorBuilder: (String groupByValue) => Container(
+            decoration: BoxDecoration(
+              color: Colors.pink,
+              border: Border.all(
+                color: Colors.grey,
+              ),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
+              ),
             ),
-      body: GroupedListView<Map, String>(
-        elements: _clientsToShow.isEmpty && !_searchClient
-            ? _databaseClients
-            : _clientsToShow,
-        groupBy: (element) => element['name'][0].toString().toUpperCase(),
-        groupSeparatorBuilder: (String groupByValue) => Container(
-          decoration: BoxDecoration(
-            color: Colors.pink,
-            border: Border.all(
-              color: Colors.grey,
-            ),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(20),
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              groupByValue,
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
             ),
           ),
-          padding: const EdgeInsets.all(10),
-          child: Text(
-            groupByValue,
-            textAlign: TextAlign.start,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
+          itemBuilder: (context, User user) => Container(
+            decoration: BoxDecoration(
+              color: Colors.pink[50],
+              borderRadius: const BorderRadius.all(
+                Radius.circular(30),
+              ),
+            ),
+            margin: const EdgeInsets.all(10),
+            child: ListTile(
+              onTap: () => Navigator.pushNamed(
+                context,
+                RoutePaths.clientDetails,
+                arguments: user,
+              ),
+              title: Text(user.name),
+              // leading: const Icon(Icons.person_2),
+              leading: const CircleAvatar(
+                backgroundImage: AssetImage("assets/girl.jpg"),
+                // backgroundColor: Colors.pink[50],
+              ),
             ),
           ),
+          itemComparator: (user1, user2) =>
+              user1.name.compareTo(user2.name),
+          floatingHeader: true,
+          order: GroupedListOrder.ASC,
         ),
-        itemBuilder: (context, dynamic element) => Container(
-          decoration: BoxDecoration(
-            color: Colors.pink[50],
-            borderRadius: const BorderRadius.all(
-              Radius.circular(30),
-            ),
-          ),
-          margin: const EdgeInsets.all(10),
-          child: ListTile(
-            onTap: () => Navigator.pushNamed(
-              context,
-              RoutePaths.clientDetails,
-              arguments: element,
-            ),
-            title: Text(element["name"]),
-            // leading: const Icon(Icons.person_2),
-            leading: const CircleAvatar(
-              backgroundImage: AssetImage("assets/girl.jpg"),
-              // backgroundColor: Colors.pink[50],
-            ),
-          ),
-        ),
-        itemComparator: (item1, item2) =>
-            item1['name'].compareTo(item2['name']),
-        floatingHeader: true,
-        order: GroupedListOrder.ASC,
-      ),
-    );
+      );
+    } else {
+      return const Loading();
+    }
   }
 
-  Widget _searchTextField() {
+  Widget searchTextField() {
     return TextField(
       onChanged: (String s) {
-        setState(() {
-          _clientsToShow.clear();
-          _clientsToShow.addAll(
-            _databaseClients.where(
-              (element) => element['name'].toString().toLowerCase().contains(
+        RxList<User> clientsToShow = Get.find();
+        final UserController userController = Get.find();
+          clientsToShow.clear();
+          clientsToShow.addAll(
+            userController.users!.toList().where(
+              (user) => user.name.toString().toLowerCase().contains(
                     s.toLowerCase(),
                   ),
             ),
           );
-        });
       },
       autofocus: true,
       cursorColor: Colors.black,
