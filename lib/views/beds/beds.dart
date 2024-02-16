@@ -4,9 +4,8 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card_list_controller.dart';
 
 class Beds extends StatelessWidget {
-  Beds({super.key});
+  const Beds({super.key});
   
-
   @override
   Widget build(BuildContext context) {
     final BedCardListController bedCardListController = Get.put(BedCardListController());
@@ -16,7 +15,25 @@ class Beds extends StatelessWidget {
       ),
       body: Obx(() {
         if (bedCardListController.bedCards.isEmpty) {
-          return const Center(child: Text('Sem Macas', style: TextStyle(fontSize: 30),));
+          return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  Icon(
+                    Icons.hotel_outlined, 
+                    size: 80, 
+                    color: Colors.pink
+                  ), 
+                  Text(
+                    'Sem macas', 
+                    style: TextStyle(
+                      fontSize: 30, 
+                      color: Colors.pink
+                    ),
+                  )
+                ]
+              )
+            );
         } else {
           // bedCardListController.processItemsToRemove();
           return ListView(children: bedCardListController.bedCards);

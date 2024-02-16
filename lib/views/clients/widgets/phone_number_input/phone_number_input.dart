@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../utils/validator.dart';
 
-class PhoneNumberInput extends StatefulWidget {
+class PhoneNumberInput extends StatelessWidget {
   final FocusNode? focusNode;
   final Function()? onEditingComplete;
   final TextEditingController? controller;
@@ -16,17 +16,9 @@ class PhoneNumberInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  PhoneNumberInputState createState() => PhoneNumberInputState();
-}
-
-class PhoneNumberInputState extends State<PhoneNumberInput> {
-  final controller = TextEditingController();
-  late TextEditingController textFormFieldController;
-
-  @override
   Widget build(BuildContext context) {
-    textFormFieldController =
-        widget.controller != null ? widget.controller! : controller;
+    final TextEditingController textFormFieldController =
+        controller != null ? controller! : TextEditingController();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
@@ -54,8 +46,8 @@ class PhoneNumberInputState extends State<PhoneNumberInput> {
               ),
               Expanded(
                 child: TextFormField(
-                  onEditingComplete: widget.onEditingComplete,
-                  focusNode: widget.focusNode,
+                  onEditingComplete: onEditingComplete,
+                  focusNode: focusNode,
                   enableInteractiveSelection: false,
                   controller: textFormFieldController,
                   keyboardType: TextInputType.phone,

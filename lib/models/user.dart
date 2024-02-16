@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/utils/constants.dart';
@@ -8,6 +10,7 @@ class User {
     required this.name,
     required this.phoneNumber,
     required this.observations,
+    this.profileImage
   });
 
   @HiveField(0)
@@ -18,6 +21,9 @@ class User {
 
   @HiveField(2)
   String observations;
+
+  @HiveField(3)
+  Uint8List? profileImage; 
 }
 
 class UserAdapter extends TypeAdapter<User> {
@@ -29,10 +35,14 @@ class UserAdapter extends TypeAdapter<User> {
     final name = reader.read();
     final phoneNumber = reader.read();
     final observations = reader.read();
+    final profileImageLength = reader.readUint32();
+    final profileImage = reader.readList(profileImageLength);
+
     return User(
       name: name,
       phoneNumber: phoneNumber,
       observations: observations,
+      profileImage: profileImage.isEmpty ? null : Uint8List.fromList(profileImage.cast<int>())
     );
   }
 
@@ -41,6 +51,10 @@ class UserAdapter extends TypeAdapter<User> {
     writer.write(obj.name);
     writer.write(obj.phoneNumber);
     writer.write(obj.observations);
+    if (obj.profileImage != null) {
+      writer.writeUint32(obj.profileImage!.lengthInBytes);
+      writer.writeList(obj.profileImage!.toList());
+    }
   }
 }
 
@@ -57,5 +71,6 @@ class UserController extends GetxController {
   void addUser(User user) async {
     final Box<User> users = await Hive.openBox<User>(usersBox);
     await users.add(user);
+    await fetchUsers();
   }
 }

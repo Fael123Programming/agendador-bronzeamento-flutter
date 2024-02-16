@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/general.dart';
+import 'package:agendador_bronzeamento/models/user.dart';
 
 class CustomRouter {
   static Route onGenerateRoute(RouteSettings settings) {
@@ -39,13 +40,13 @@ class CustomRouter {
   static Route onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutePaths.clientDetails:
-        Map<dynamic, dynamic>? clientArgs;
+        User? clientData;
         if (settings.arguments != null) {
-          clientArgs = settings.arguments as Map<dynamic, dynamic>;
+          clientData = settings.arguments as User;
         }
         return MaterialPageRoute(
           builder: (context) => ClientDetails(
-            clientData: clientArgs,
+            clientData: clientData,
           ),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
         );

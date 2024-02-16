@@ -49,59 +49,82 @@ class Clients extends StatelessWidget {
                 backgroundColor: Colors.pink,
                 child: const Icon(Icons.add),
               ),
-        body: GroupedListView<User, String>(
-          elements: clientsToShow.isEmpty && !searchClient.value
-              ? userController.users!.toList()
-              : clientsToShow.toList(),
-          groupBy: (user) => user.name[0].toString().toUpperCase(),
-          groupSeparatorBuilder: (String groupByValue) => Container(
-            decoration: BoxDecoration(
-              color: Colors.pink,
-              border: Border.all(
-                color: Colors.grey,
+        body: Obx(() {
+          if (userController.users!.toList().isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  Icon(
+                    Icons.person_outline, 
+                    size: 80, 
+                    color: Colors.pink
+                  ), 
+                  Text(
+                    'Sem clientes', 
+                    style: TextStyle(
+                      fontSize: 30, 
+                      color: Colors.pink
+                    ),
+                  )
+                ]
+              )
+            );
+          } else {
+            return GroupedListView<User, String>(
+            elements: clientsToShow.isEmpty && !searchClient.value
+                ? userController.users!.toList()
+                : clientsToShow.toList(),
+            groupBy: (user) => user.name[0].toString().toUpperCase(),
+            groupSeparatorBuilder: (String groupByValue) => Container(
+              decoration: BoxDecoration(
+                color: Colors.pink,
+                border: Border.all(
+                  color: Colors.grey,
+                ),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
+                ),
               ),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(20),
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                groupByValue,
+                textAlign: TextAlign.start,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
               ),
             ),
-            padding: const EdgeInsets.all(10),
-            child: Text(
-              groupByValue,
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
+            itemBuilder: (context, User user) => Container(
+              decoration: BoxDecoration(
+                color: Colors.pink[50],
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(30),
+                ),
+              ),
+              margin: const EdgeInsets.all(10),
+              child: ListTile(
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  RoutePaths.clientDetails,
+                  arguments: user,
+                ),
+                title: Text(user.name),
+                // leading: const Icon(Icons.person_2),
+                leading: const CircleAvatar(
+                  backgroundImage: AssetImage("assets/girl.jpg"),
+                  // backgroundColor: Colors.pink[50],
+                ),
               ),
             ),
-          ),
-          itemBuilder: (context, User user) => Container(
-            decoration: BoxDecoration(
-              color: Colors.pink[50],
-              borderRadius: const BorderRadius.all(
-                Radius.circular(30),
-              ),
-            ),
-            margin: const EdgeInsets.all(10),
-            child: ListTile(
-              onTap: () => Navigator.pushNamed(
-                context,
-                RoutePaths.clientDetails,
-                arguments: user,
-              ),
-              title: Text(user.name),
-              // leading: const Icon(Icons.person_2),
-              leading: const CircleAvatar(
-                backgroundImage: AssetImage("assets/girl.jpg"),
-                // backgroundColor: Colors.pink[50],
-              ),
-            ),
-          ),
-          itemComparator: (user1, user2) =>
-              user1.name.compareTo(user2.name),
-          floatingHeader: true,
-          order: GroupedListOrder.ASC,
-        ),
-      );
+            itemComparator: (user1, user2) =>
+                user1.name.compareTo(user2.name),
+            floatingHeader: true,
+            order: GroupedListOrder.ASC,
+          );
+          }
+        }));
     } else {
       return const Loading();
     }

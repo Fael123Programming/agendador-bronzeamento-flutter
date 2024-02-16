@@ -2,53 +2,45 @@ import 'package:agendador_bronzeamento/views/clients/widgets/image_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/name_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/text_area_input.dart';
 import 'package:flutter/material.dart';
-import '../widgets/phone_number_input/phone_number_input.dart';
+import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/phone_number_input.dart';
+import 'package:get/get.dart';
 import 'package:nice_buttons/nice_buttons.dart';
+import 'package:agendador_bronzeamento/models/user.dart';
 import 'dart:async';
 
-class ClientDetails extends StatefulWidget {
-  // final Map<String, dynamic>? clientData;
-  final Map<dynamic, dynamic>? clientData;
-
-  const ClientDetails({super.key, this.clientData});
-
-  @override
-  State<ClientDetails> createState() => _ClientDetailsState();
+class HideHintTextController extends GetxController {
+  RxBool hide = false.obs;
 }
 
-class _ClientDetailsState extends State<ClientDetails> {
-  final _formKey = GlobalKey<FormState>();
+class ClientDetails extends StatelessWidget {
+  // final Map<String, dynamic>? clientData;
+  ClientDetails({super.key, this.clientData});
+
+  final User? clientData;
+
+  final formKey = GlobalKey<FormState>();
   final nameFieldController = TextEditingController();
   final phoneNumberInputController = TextEditingController();
   final obervationsController = TextEditingController();
-  late FocusNode nameFocusNode, phoneFocusNode, observationsFocusNode;
+  final FocusNode nameFocusNode = FocusNode(), phoneFocusNode = FocusNode(), observationsFocusNode = FocusNode();
 
   @override
-  void initState() {
-    super.initState();
-    nameFocusNode = FocusNode();
-    phoneFocusNode = FocusNode();
-    observationsFocusNode = FocusNode();
-    if (widget.clientData == null) {
+  Widget build(context) {
+    if (clientData == null) {
       nameFocusNode.requestFocus();
     } else {
-      nameFieldController.text = widget.clientData!['name'];
-      phoneNumberInputController.text = widget.clientData!['phone_number'];
-      obervationsController.text = widget.clientData!['observations'];
+      nameFieldController.text = clientData!.name;
+      phoneNumberInputController.text = clientData!.phoneNumber;
+      obervationsController.text = clientData!.observations;
     }
-  }
-
-  @override
-  void dispose() {
-    nameFocusNode.dispose();
-    phoneFocusNode.dispose();
-    observationsFocusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext ctx) {
+    Get.put(HideHintTextController());
     return PopScope(
+      onPopInvoked: (didPop) {
+        nameFocusNode.dispose();
+        phoneFocusNode.dispose();
+        observationsFocusNode.dispose();
+        Get.delete<HideHintTextController>();
+      },
       child: Scaffold(
         appBar: AppBar(),
         body: GestureDetector(
@@ -57,8 +49,9 @@ class _ClientDetailsState extends State<ClientDetails> {
             child: Column(
               children: [
                 const ImageInput(width: 120, height: 120),
-                Form(
-                  key: _formKey,
+                Obx(() =>
+                  Form(
+                  key: formKey,
                   child: Column(
                     children: <Widget>[
                       NameInput(
@@ -92,18 +85,31 @@ class _ClientDetailsState extends State<ClientDetails> {
                         endColor: Colors.pink,
                         borderColor: Colors.pink,
                         stretch: false,
-                        progress: true,
+                        progress: false,
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) {
-                          // print('On tap called');
-                          Timer(const Duration(seconds: 2), () {
-                            finish();
-                            // print('Finish');
-                            Navigator.pop(context);
-                          });
+                          if (formKey.currentState!.validate()) {
+                            Get.showSnackbar(
+                              const GetSnackBar(
+                                title: 'Cadastrado com sucesso!',
+                                messageText: Text(''),
+                                duration: Duration(seconds: 1),
+                                backgroundColor: Color.fromARGB(255, 0, 255, 8),
+                              )
+                            );
+                          } else {
+                            Get.showSnackbar(
+                              const GetSnackBar(
+                                title: 'Preencha os campos corretamente',
+                                messageText: Text(''),
+                                duration: Duration(seconds: 1),
+                                backgroundColor: Color.fromARGB(255, 255, 17, 0),
+                              )
+                            );
+                          }
                         },
                         child: Text(
-                          widget.clientData == null ? 'Adicionar' : 'Salvar',
+                          clientData == null ? 'Adicionar' : 'Salvar',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -112,7 +118,8 @@ class _ClientDetailsState extends State<ClientDetails> {
                       )
                     ],
                   ),
-                ),
+                )
+              ),
               ],
             ),
           ),
