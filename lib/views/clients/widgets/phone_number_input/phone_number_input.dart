@@ -1,24 +1,28 @@
+import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/br_phone_number_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../utils/validator.dart';
+import 'package:agendador_bronzeamento/utils/validator.dart';
+import 'package:get/get.dart';
+
+class PhoneNumberInputController extends GetxController {
+  final TextEditingController phoneNumber = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
+
+  PhoneNumberInputController({this.onEditingComplete});
+}
 
 class PhoneNumberInput extends StatelessWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
-  final TextEditingController? controller;
 
   const PhoneNumberInput({
     Key? key,
-    this.focusNode,
-    this.onEditingComplete,
-    this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController textFormFieldController =
-        controller != null ? controller! : TextEditingController();
+    final FormController formController = Get.find();
+    final PhoneNumberInputController phoneNumberController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
@@ -46,27 +50,29 @@ class PhoneNumberInput extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
-                  onEditingComplete: onEditingComplete,
-                  focusNode: focusNode,
+                  onEditingComplete: phoneNumberController.onEditingComplete,
+                  focusNode: phoneNumberController.focusNode,
                   enableInteractiveSelection: false,
-                  controller: textFormFieldController,
+                  controller: phoneNumberController.phoneNumber,
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration.collapsed(
                     hintText: 'Telefone',
                     hintStyle: TextStyle(
                       color: Colors.grey,
+                      fontSize: 12
                     ),
                   ),
                   inputFormatters: <TextInputFormatter>[
                     BrPhoneNumberFormatter()
                   ],
                   onTap: () {
-                    textFormFieldController.selection =
+                    phoneNumberController.phoneNumber.selection =
                         TextSelection.fromPosition(
                       TextPosition(
-                        offset: textFormFieldController.text.length,
+                        offset: phoneNumberController.phoneNumber.text.length,
                       ),
                     );
+                    formController.formKey.currentState?.reset();
                   },
                   validator: (value) => Validator.validatePhoneNumber(value),
                 ),

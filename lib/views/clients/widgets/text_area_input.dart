@@ -1,38 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TextAreaInput extends StatefulWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
-  final TextEditingController? controller;
-  final String hintText;
-  final IconData icon;
+class TextAreaInputController extends GetxController {
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
+  final TextEditingController textArea = TextEditingController();
+  String? hintText;
+  IconData? icon;
 
-  const TextAreaInput(
-      {Key? key,
-      this.focusNode,
-      this.onEditingComplete,
-      this.controller,
-      required this.hintText,
-      required this.icon})
-      : super(key: key);
-
-  @override
-  State<TextAreaInput> createState() => _TextAreaInputState();
+  TextAreaInputController({this.hintText, this.icon});
 }
 
-class _TextAreaInputState extends State<TextAreaInput> {
-  final controller = TextEditingController();
-  late TextEditingController textFormFieldController;
-
-  @override
-  void initState() {
-    super.initState();
-    textFormFieldController =
-        widget.controller != null ? widget.controller! : controller;
-  }
+class TextAreaInput extends StatelessWidget {
+  const TextAreaInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final TextAreaInputController textAreaController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -51,7 +35,7 @@ class _TextAreaInputState extends State<TextAreaInput> {
           Column(
             children: [
               Icon(
-                widget.icon,
+                textAreaController.icon,
                 color: Colors.grey,
               ),
             ],
@@ -63,14 +47,15 @@ class _TextAreaInputState extends State<TextAreaInput> {
             child: TextFormField(
               maxLines: 5,
               maxLength: 130,
-              onEditingComplete: widget.onEditingComplete,
-              focusNode: widget.focusNode,
-              controller: textFormFieldController,
+              onEditingComplete: textAreaController.onEditingComplete,
+              focusNode: textAreaController.focusNode,
+              controller: textAreaController.textArea,
               // autofocus: true,
               decoration: InputDecoration.collapsed(
-                hintText: widget.hintText,
+                hintText: textAreaController.hintText,
                 hintStyle: const TextStyle(
                   color: Colors.grey,
+                  fontSize: 12
                 ),
               ),
             ),

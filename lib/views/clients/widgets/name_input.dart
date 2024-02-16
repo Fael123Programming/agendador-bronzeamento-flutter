@@ -1,31 +1,22 @@
+import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class NameInput extends StatefulWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
-  final TextEditingController? controller;
+class NameInputController extends GetxController {
+  final FocusNode focusNode = FocusNode();
+  final TextEditingController name = TextEditingController();
+  Function()? onEditingComplete;
 
-  const NameInput(
-      {Key? key, this.focusNode, this.onEditingComplete, this.controller})
-      : super(key: key);
-
-  @override
-  State<NameInput> createState() => _NameInputState();
+  NameInputController({this.onEditingComplete});
 }
 
-class _NameInputState extends State<NameInput> {
-  final controller = TextEditingController();
-  late TextEditingController textFormFieldController;
-
-  @override
-  void initState() {
-    super.initState();
-    textFormFieldController =
-        widget.controller != null ? widget.controller! : controller;
-  }
+class NameInput extends StatelessWidget {
+  const NameInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final FormController formController = Get.find();
+    final NameInputController nameController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
@@ -52,16 +43,24 @@ class _NameInputState extends State<NameInput> {
               ),
               Expanded(
                 child: TextFormField(
-                  onEditingComplete: widget.onEditingComplete,
-                  focusNode: widget.focusNode,
-                  controller: textFormFieldController,
+                  onTap: () => formController.formKey.currentState?.reset(),
+                  onEditingComplete: nameController.onEditingComplete,
+                  focusNode: nameController.focusNode,
+                  controller: nameController.name,
                   // autofocus: true,
                   decoration: const InputDecoration.collapsed(
                     hintText: 'Nome',
                     hintStyle: TextStyle(
                       color: Colors.grey,
+                      fontSize: 12
                     ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'O campo de nome deve ser preenchido';
+                    }
+                    return null;
+                  }
                 ),
               ),
             ],
