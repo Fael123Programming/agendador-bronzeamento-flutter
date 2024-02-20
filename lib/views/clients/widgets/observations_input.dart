@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class TextAreaInputController extends GetxController {
+class ObservationsInputController extends GetxController {
   final FocusNode focusNode = FocusNode();
   Function()? onEditingComplete;
-  final TextEditingController textArea = TextEditingController();
+  final TextEditingController observations = TextEditingController();
   String? hintText;
   IconData? icon;
 
-  TextAreaInputController({this.hintText, this.icon});
+  ObservationsInputController({this.hintText, this.icon});
 }
 
-class TextAreaInput extends StatelessWidget {
-  const TextAreaInput({Key? key}) : super(key: key);
+class ObservationsInput extends StatelessWidget {
+  const ObservationsInput({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TextAreaInputController textAreaController = Get.find();
+    final ObservationsInputController observationsController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Container(
@@ -35,7 +35,7 @@ class TextAreaInput extends StatelessWidget {
           Column(
             children: [
               Icon(
-                textAreaController.icon,
+                observationsController.icon,
                 color: Colors.grey,
               ),
             ],
@@ -47,12 +47,12 @@ class TextAreaInput extends StatelessWidget {
             child: TextFormField(
               maxLines: 5,
               maxLength: 130,
-              onEditingComplete: textAreaController.onEditingComplete,
-              focusNode: textAreaController.focusNode,
-              controller: textAreaController.textArea,
+              onEditingComplete: observationsController.onEditingComplete,
+              focusNode: observationsController.focusNode,
+              controller: observationsController.observations,
               // autofocus: true,
               decoration: InputDecoration.collapsed(
-                hintText: textAreaController.hintText,
+                hintText: observationsController.hintText,
                 hintStyle: const TextStyle(
                   color: Colors.grey,
                   fontSize: 12

@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
+import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,11 @@ class CustomRouter {
             bedData: bedArgs,
           ),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
+        );
+      case RoutePaths.searchClient:
+        return MaterialPageRoute(
+          builder: (context) => const SearchClient(),
+          settings: const RouteSettings(name: RoutePaths.searchClient)
         );
       case RoutePaths.general:
         // Map<dynamic, dynamic>? bedArgs;

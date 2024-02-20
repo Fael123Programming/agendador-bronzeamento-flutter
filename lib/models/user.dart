@@ -9,7 +9,7 @@ class User {
   User({
     required this.name,
     required this.phoneNumber,
-    required this.observations,
+    this.observations,
     this.profileImage
   });
 
@@ -20,7 +20,7 @@ class User {
   String phoneNumber;
 
   @HiveField(2)
-  String observations;
+  String? observations;
 
   @HiveField(3)
   Uint8List? profileImage; 
@@ -68,7 +68,7 @@ class UserController extends GetxController {
     users = usersLocal.values.toList().obs;
   }
 
-  void addUser(User user) async {
+  Future<void> addUser(User user) async {
     final Box<User> users = await Hive.openBox<User>(usersBox);
     await users.add(user);
     await fetchUsers();
