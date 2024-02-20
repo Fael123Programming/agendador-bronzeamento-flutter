@@ -1,54 +1,48 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
+import 'dart:typed_data';
 
-class ImageInput extends StatefulWidget {
-  final double width, height;
-  final XFile? image;
-
-  const ImageInput(
-      {Key? key, required this.width, required this.height, this.image})
-      : super(key: key);
-
-  @override
-  State<ImageInput> createState() => _ImageInputState();
+class ImageInputController extends GetxController {
+  // Rx<XFile?> image = Rx<XFile?>(null);
+  Rx<Uint8List?> imageData = Rx<Uint8List?>(null);
+  
+  RxBool picked = false.obs;
 }
 
-class _ImageInputState extends State<ImageInput> {
-  XFile? image;
+class ImageInput extends StatelessWidget {
+  final double width, height;
 
-  @override
-  void initState() {
-    super.initState();
-    image = widget.image;
-  }
+  const ImageInput({super.key, required this.width, required this.height});
 
   @override
   Widget build(BuildContext context) {
+    final ImageInputController imageController = Get.find();
     return GestureDetector(
       child: Container(
         margin: const EdgeInsets.symmetric(
           vertical: 20,
         ),
-        width: widget.width,
-        height: widget.height,
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           color: Colors.grey[200],
           border: Border.all(width: 1, color: Colors.grey[400]!),
           shape: BoxShape.circle,
         ),
-        child: image == null
-            ? const Icon(
-                Icons.add_a_photo,
-                size: 40,
-              )
-            : ClipOval(
-                child: Image.file(
-                  File(
-                    image!.path,
-                  ),
-                ),
-              ),
+        child: Obx(() => imageController.picked.value
+          ? 
+          ClipOval(
+            child: Image.memory(
+                imageController.imageData.value!,
+            ),
+          )
+          :
+          const Icon(
+            Icons.add_a_photo,
+            size: 40,
+          )
+        )
       ),
       onTap: () {
         showModalBottomSheet(
@@ -74,7 +68,8 @@ class _ImageInputState extends State<ImageInput> {
                           if (pickedImage == null) {
                             return;
                           }
-                          setState(() => image = pickedImage);
+                          imageController.picked.value = true;
+                          imageController.imageData.value = await pickedImage.readAsBytes();
                           if (!context.mounted) {
                             return;
                           }
@@ -99,7 +94,8 @@ class _ImageInputState extends State<ImageInput> {
                           if (pickedImage == null) {
                             return;
                           }
-                          setState(() => image = pickedImage);
+                          imageController.picked.value = true;
+                          imageController.imageData.value = await pickedImage.readAsBytes();
                           if (!context.mounted) {
                             return;
                           }

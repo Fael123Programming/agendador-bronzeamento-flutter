@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agendador_bronzeamento/views/clients/widgets/image_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/name_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/observations_input.dart';
@@ -16,16 +18,35 @@ class ClientDetails extends StatelessWidget {
   @override
   Widget build(context) {
     final UserController userController = Get.find(); 
+    final ImageInputController imageController = Get.put(ImageInputController());
     final FormController formController = Get.put(FormController());
-    final ObservationsInputController observationsController = Get.put(ObservationsInputController(hintText: 'Observações', icon: Icons.edit_note));
-    final PhoneNumberInputController phoneNumberController = Get.put(PhoneNumberInputController(onEditingComplete: () => observationsController.focusNode.requestFocus()));
-    final NameInputController nameController = Get.put(NameInputController(onEditingComplete: () => phoneNumberController.focusNode.requestFocus()));
+    final ObservationsInputController observationsController = Get.put(
+      ObservationsInputController(
+        onEditingComplete: () => FocusManager.instance.primaryFocus!.unfocus(),
+        hintText: 'Observações', 
+        icon: Icons.edit_note
+      )
+    );
+    final PhoneNumberInputController phoneNumberController = Get.put(
+      PhoneNumberInputController(
+        onEditingComplete: () => observationsController.focusNode.requestFocus()
+      )
+    );
+    final NameInputController nameController = Get.put(
+      NameInputController(
+        onEditingComplete: () => phoneNumberController.focusNode.requestFocus()
+      )
+    );
     if (clientData == null) {
       nameController.focusNode.requestFocus();
     } else {
       nameController.name.text = clientData!.name;
       phoneNumberController.phoneNumber.text = clientData!.phoneNumber;
       observationsController.observations.text = clientData?.observations == null ? '' : clientData!.observations!;
+      if (clientData?.profileImage != null) {
+        imageController.imageData.value = clientData!.profileImage;
+        imageController.picked.value = true;
+      }
     }
     return PopScope(
       onPopInvoked: (didPop) {
@@ -36,9 +57,124 @@ class ClientDetails extends StatelessWidget {
         Get.delete<PhoneNumberInputController>();
         Get.delete<ObservationsInputController>();
         Get.delete<FormController>();
+        Get.delete<ImageInputController>();
       },
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+            clientData != null ? IconButton(
+              onPressed: () async {
+                Get.dialog(
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Material(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Remover Cliente',
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Text(
+                                    'Deseja remover ${clientData!.name.split(" ")[0]}?',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize: const Size(0, 45),
+                                            backgroundColor: const Color.fromARGB(255, 255, 17, 0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          onPressed: () => Get.back(),
+                                          child: const Text(
+                                            'Não',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            minimumSize: const Size(0, 45),
+                                            backgroundColor: const Color.fromARGB(255, 0, 255, 8),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            await userController.removeUser(
+                                              User(
+                                                name: clientData!.name,
+                                                phoneNumber: clientData!.phoneNumber,
+                                                observations: clientData?.observations
+                                              )
+                                            );
+                                            Get.back();
+                                            Get.showSnackbar(
+                                              GetSnackBar(
+                                                titleText: Center(
+                                                  child: Text(
+                                                    '${clientData!.name.split(" ")[0]} removido com sucesso!', 
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20
+                                                    ),
+                                                  ),
+                                                ),
+                                                messageText: const Text(''),
+                                                duration: const Duration(seconds: 1),
+                                                backgroundColor: const Color.fromARGB(255, 0, 255, 8),
+                                              )
+                                            );
+                                            await Future.delayed(const Duration(seconds: 1));
+                                            if (!context.mounted) {
+                                              return;
+                                            }
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text(
+                                            'Sim',
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }, 
+              icon: const Icon(Icons.delete, color: Color.fromARGB(255, 255, 17, 0))
+            ) : Container()
+          ],
+        ),
         body: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: SingleChildScrollView(
@@ -70,29 +206,68 @@ class ClientDetails extends StatelessWidget {
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) async {
                           if (formController.formKey.currentState!.validate()) {
-                            await userController.addUser(
-                              User(
-                                name: nameController.name.text,
-                                phoneNumber: phoneNumberController.phoneNumber.text,
-                                observations: observationsController.observations.text
-                              )
-                            );
-                            Get.showSnackbar(
-                              const GetSnackBar(
-                                titleText: Center(
-                                  child: Text(
-                                    'Cadastrado com sucesso!', 
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20
+                            if (clientData == null) {
+                              await userController.addUser(
+                                User(
+                                  name: nameController.name.text,
+                                  phoneNumber: phoneNumberController.phoneNumber.text,
+                                  observations: observationsController.observations.text,
+                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
+                                )
+                              );
+                              Get.showSnackbar(
+                                const GetSnackBar(
+                                  titleText: Center(
+                                    child: Text(
+                                      'Cadastrado com sucesso!', 
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20
+                                      ),
                                     ),
                                   ),
+                                  messageText: Text(''),
+                                  duration: Duration(seconds: 1),
+                                  backgroundColor: Color.fromARGB(255, 0, 255, 8),
+                                )
+                              );
+                            } else {
+                              await userController.updateUser(
+                                User(
+                                  name: clientData!.name,
+                                  phoneNumber: clientData!.phoneNumber,
+                                  observations: clientData?.observations,
+                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
                                 ),
-                                messageText: Text(''),
-                                duration: Duration(seconds: 1),
-                                backgroundColor: Color.fromARGB(255, 0, 255, 8),
-                              )
-                            );
+                                User(
+                                  name: nameController.name.text,
+                                  phoneNumber: phoneNumberController.phoneNumber.text,
+                                  observations: observationsController.observations.text,
+                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
+                                )
+                              );
+                              Get.showSnackbar(
+                                const GetSnackBar(
+                                  titleText: Center(
+                                    child: Text(
+                                      'Atualizado com sucesso!', 
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20
+                                      ),
+                                    ),
+                                  ),
+                                  messageText: Text(''),
+                                  duration: Duration(seconds: 1),
+                                  backgroundColor: Color.fromARGB(255, 0, 255, 8),
+                                )
+                              );
+                            }
+                            await Future.delayed(const Duration(seconds: 1));
+                            if (!context.mounted) {
+                              return;
+                            }
+                            Navigator.of(context).pop();
                           } else {
                             Get.showSnackbar(
                               const GetSnackBar(
@@ -110,7 +285,6 @@ class ClientDetails extends StatelessWidget {
                                 backgroundColor: Color.fromARGB(255, 255, 17, 0),
                               )
                             );
-                            // formKey.currentState!.reset();
                           }
                         },
                         child: Text(

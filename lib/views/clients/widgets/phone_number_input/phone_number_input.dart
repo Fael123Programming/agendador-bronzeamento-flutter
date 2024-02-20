@@ -16,8 +16,8 @@ class PhoneNumberInputController extends GetxController {
 class PhoneNumberInput extends StatelessWidget {
 
   const PhoneNumberInput({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,10 @@ class PhoneNumberInput extends StatelessWidget {
                         offset: phoneNumberController.phoneNumber.text.length,
                       ),
                     );
-                    formController.formKey.currentState?.reset();
+                    if (formController.error.value) {
+                      formController.formKey.currentState?.reset();
+                      formController.error = false.obs;
+                    }
                   },
                   validator: (value) => Validator.validatePhoneNumber(value),
                 ),

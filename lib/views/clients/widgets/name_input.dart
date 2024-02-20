@@ -43,7 +43,12 @@ class NameInput extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
-                  onTap: () => formController.formKey.currentState?.reset(),
+                  onTap: () {
+                    if (formController.error.value) {
+                      formController.formKey.currentState?.reset();
+                      formController.error = false.obs;
+                    }
+                  },
                   onEditingComplete: nameController.onEditingComplete,
                   focusNode: nameController.focusNode,
                   controller: nameController.name,

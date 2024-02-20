@@ -1,5 +1,5 @@
 name: agendador_bronzeamento
-description: "A new Flutter project."
+description: "Um agendador de bronzeamento natural e gerenciador de clientes simples e prático"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -47,6 +47,8 @@ dependencies:
   path:
 
 dev_dependencies:
+  flutter_launcher_icons:
+
   flutter_test:
     sdk: flutter
 
@@ -61,6 +63,11 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/launcher_img.png"
+
 flutter:
   assets:
     - assets/

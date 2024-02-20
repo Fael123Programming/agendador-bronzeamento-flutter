@@ -8,7 +8,7 @@ class ObservationsInputController extends GetxController {
   String? hintText;
   IconData? icon;
 
-  ObservationsInputController({this.hintText, this.icon});
+  ObservationsInputController({this.onEditingComplete, this.hintText, this.icon});
 }
 
 class ObservationsInput extends StatelessWidget {
@@ -45,6 +45,7 @@ class ObservationsInput extends StatelessWidget {
           ),
           Expanded(
             child: TextFormField(
+              keyboardType: TextInputType.text,
               maxLines: 5,
               maxLength: 130,
               onEditingComplete: observationsController.onEditingComplete,

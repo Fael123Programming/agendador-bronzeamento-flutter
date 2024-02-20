@@ -2,8 +2,19 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:get/get.dart';
+
+class ProfilePicClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, 200, 100);
+  }
+
+  @override
+  bool shouldReclip(oldClipper) {
+    return true;
+  }
+}
 
 class Clients extends StatelessWidget {
   const Clients({super.key});
@@ -16,25 +27,25 @@ class Clients extends StatelessWidget {
         onPopInvoked:(didPop) {
         },
         child: Obx(() =>
-      userController.loaded.value ? Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Clientes',
+        userController.loaded.value ? Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Clientes',
+            ),
+            actions: <Widget>[
+              IconButton(
+                onPressed: () => Navigator.pushNamed(context, RoutePaths.searchClient),
+                icon: const Icon(Icons.search),
+              )
+            ],
           ),
-          actions: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.pushNamed(context, RoutePaths.searchClient),
-              icon: const Icon(Icons.search),
-            )
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              Navigator.pushNamed(context, RoutePaths.clientDetails),
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.pink,
-          child: const Icon(Icons.add),
-        ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () =>
+                Navigator.pushNamed(context, RoutePaths.clientDetails),
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.pink,
+            child: const Icon(Icons.add),
+          ),
           body: Obx(() => userController.users!.toList().isEmpty ? 
             const Center(
               child: Column(
@@ -55,6 +66,7 @@ class Clients extends StatelessWidget {
                 ]
               )
             ) : ListView.builder(
+                itemCount: userController.users!.length,
                 itemBuilder: (context, index) => Container(
                 decoration: BoxDecoration(
                   color: Colors.pink[50],
@@ -71,17 +83,23 @@ class Clients extends StatelessWidget {
                   ),
                   title: Text(userController.users![index].name),
                   // leading: const Icon(Icons.person_2),
-                  leading: const CircleAvatar(
-                    backgroundImage: AssetImage("assets/girl.jpg"),
-                    // backgroundColor: Colors.pink[50],
+                  leading: userController.users![index].profileImage != null ? 
+                    FittedBox(
+                      fit: BoxFit.cover,
+                      child: CircleAvatar(
+                        backgroundImage: Image.memory(userController.users![index].profileImage!).image,
+                        radius: 20,
+                      ),
+                    ) 
+                    :
+                    const Icon(Icons.person_2)
                   ),
                 ),
               ),
             ),
-          ),
-        )
-    : const Loading(),
-    ),
+          )
+        : const Loading(),
+      ),
     );
   }
 }
