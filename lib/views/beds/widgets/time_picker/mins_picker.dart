@@ -4,21 +4,16 @@ import 'package:get/get.dart';
 
 class MinsPickerController extends GetxController {
   final TextEditingController mins = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
 }
 
 class MinsPicker extends StatelessWidget {
-  final Function()? onEditingComplete;
-  final FocusNode? focusNode;
-
-  const MinsPicker({
-    super.key,
-    this.focusNode,
-    this.onEditingComplete,
-  });
+  const MinsPicker({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MinsPickerController controller = Get.find();
+    final MinsPickerController minsController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
@@ -39,7 +34,7 @@ class MinsPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
-                  controller: controller.mins,
+                  controller: minsController.mins,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -47,10 +42,10 @@ class MinsPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.mins.text = valStr;
+                    minsController.mins.text = valStr;
                   },
-                  onEditingComplete: onEditingComplete,
-                  focusNode: focusNode,
+                  onEditingComplete: minsController.onEditingComplete,
+                  focusNode: minsController.focusNode,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration.collapsed(

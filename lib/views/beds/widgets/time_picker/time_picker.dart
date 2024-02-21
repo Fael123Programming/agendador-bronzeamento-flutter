@@ -3,18 +3,8 @@ import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_pick
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/secs_picker.dart';
 
-class TimePicker extends StatelessWidget {
-  final FocusNode hourFocusNode;
-  final FocusNode minsFocusNode = FocusNode();
-  final FocusNode secsFocusNode = FocusNode();
-  final Function() onEditingComplete;
-
-  TimePicker({
-    super.key,
-    required this.hourFocusNode,
-    required this.onEditingComplete,
-  });
-
+class TimePicker extends StatelessWidget {  
+  const TimePicker({super.key});
   
   final collonBox = const SizedBox(
     child: Text(
@@ -27,7 +17,7 @@ class TimePicker extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -36,20 +26,11 @@ class TimePicker extends StatelessWidget {
           color: Colors.pink,
           size: 25,
         ),
-        HoursPicker(
-          focusNode: hourFocusNode,
-          onEditingComplete: () => minsFocusNode.requestFocus(),
-        ),
+        const HoursPicker(),
         collonBox,
-        MinsPicker(
-          focusNode: minsFocusNode,
-          onEditingComplete: () => secsFocusNode.requestFocus(),
-        ),
+        const MinsPicker(),
         collonBox,
-        SecsPicker(
-          focusNode: secsFocusNode,
-          onEditingComplete: onEditingComplete,
-        ),
+        const SecsPicker(),
       ],
     );
   }

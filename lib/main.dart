@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:agendador_bronzeamento/models/config.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:get/get.dart';
+import 'package:agendador_bronzeamento/views/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,8 @@ void main() async {
 
   Hive.registerAdapter(ConfigAdapter());
   Hive.registerAdapter(UserAdapter());
+
+  Get.put(HomeController());
 
   final ConfigController configController = Get.put(ConfigController());
   await configController.fetchConfig();

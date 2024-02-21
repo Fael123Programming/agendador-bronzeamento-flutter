@@ -74,7 +74,7 @@ class PhoneNumberInput extends StatelessWidget {
                     );
                     if (formController.error.value) {
                       formController.formKey.currentState?.reset();
-                      formController.error = false.obs;
+                      formController.error.value = false;
                     }
                   },
                   validator: (value) => Validator.validatePhoneNumber(value),

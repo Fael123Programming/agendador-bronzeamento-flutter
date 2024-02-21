@@ -6,27 +6,24 @@ const suggestionCount = 1;
 
 class SearchClientInputController extends GetxController {
   final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
   RxList<User> usersToShow = <User>[].obs;
+  RxBool chosen = false.obs;
 }
 
 class SearchClientInput extends StatelessWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
 
-  const SearchClientInput({
-    Key? key,
-    this.focusNode,
-    this.onEditingComplete,
-  }) : super(key: key);
+  const SearchClientInput({super.key});
   
   @override
   Widget build(context) {
     final SearchClientInputController searchController = Get.find();
+    searchController.focusNode.requestFocus();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    focusNode?.requestFocus();
 
-    return Column(
+    return Obx(() => Column(
       children: [
         Center(
           child: Container(
@@ -53,16 +50,18 @@ class SearchClientInput extends StatelessWidget {
                   Expanded(
                     child: TextFormField(
                       onChanged: (value) {
+                        if (searchController.chosen.value) {
+                          searchController.chosen.value = false;
+                        }
                         if (value.isNotEmpty) {
-                          searchController.usersToShow = _fetchUsersThatMatch(value).obs;
+                          searchController.usersToShow.value = _fetchUsersThatMatch(value);
                         } else {
-                          searchController.usersToShow = <User>[].obs;
+                          searchController.usersToShow.clear();
                         }
                       },
-                      onEditingComplete: onEditingComplete,
-                      focusNode: focusNode,
+                      onEditingComplete: searchController.onEditingComplete,
+                      focusNode: searchController.focusNode,
                       controller: searchController.controller,
-                      // autofocus: true,
                       decoration: const InputDecoration.collapsed(
                         hintText: 'Cliente',
                         hintStyle: TextStyle(
@@ -76,16 +75,16 @@ class SearchClientInput extends StatelessWidget {
             ),
           ),
         ),
-        Obx(() => Column(
+        Column(
           children: _drawUsersCards(searchController.usersToShow.toList(), context),
-        ))
+        )
       ],
-    );
+    ));
   }
 
   List<User> _fetchUsersThatMatch(String name) {
     final UserController userController = Get.find();
-    List<User> userstoReturn = [];
+    List<User> userstoReturn = <User>[];
     userstoReturn.addAll(
       userController
           .users
@@ -110,16 +109,16 @@ class SearchClientInput extends StatelessWidget {
         (user) => GestureDetector(
           onTap: () {
             searchController.controller.text = user.name;
-            searchController.usersToShow = <User>[].obs;
-            FocusScope.of(context).unfocus();
-            onEditingComplete != null && onEditingComplete!();
+            searchController.usersToShow.clear();
+            searchController.focusNode.unfocus();
+            searchController.onEditingComplete != null && searchController.onEditingComplete!();
+            searchController.chosen.value = true;
           },
           child: Center(
             child: Container(
               width: width * 0.8,
               height: height * 0.07,
               padding: EdgeInsets.all(width * 0.03),
-              // margin: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 color: Colors.white,
@@ -130,10 +129,17 @@ class SearchClientInput extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
+                    user.profileImage == null ?
                     const Icon(
                       Icons.person_2,
                       color: Colors.grey,
-                    ),
+                    ) : FittedBox(
+                          fit: BoxFit.cover,
+                          child: CircleAvatar(
+                            backgroundImage: Image.memory(user.profileImage!).image,
+                            radius: 20,
+                          ),
+                        ),
                     SizedBox(
                       width: width * 0.04,
                     ),

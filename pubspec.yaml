@@ -45,6 +45,9 @@ dependencies:
   hive:
   path_provider:
   path:
+  google_fonts:
+  url_launcher:
+  font_awesome_flutter:
 
 dev_dependencies:
   flutter_launcher_icons:

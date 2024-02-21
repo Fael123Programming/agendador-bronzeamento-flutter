@@ -1,54 +1,81 @@
 import 'package:agendador_bronzeamento/navigator/bottom_nav_item.dart';
 import 'package:agendador_bronzeamento/navigator/tab_navigator.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class HomeController extends GetxController {
+  Rx<BottomNavItem> selectedItem = BottomNavItem.beds.obs;
 
-  @override
-  State<Home> createState() => _HomeState();
-}
+  void clean(BottomNavItem item) {
+    if (selectedItem.value == item) {
+      navigatorKeys[selectedItem.value]
+          ?.currentState
+          ?.popUntil((route) => route.isFirst);
+    }
+  }
 
-class _HomeState extends State<Home> {
-  BottomNavItem selectedItem = BottomNavItem.one;
+  void goToBeds() {
+    goTo(BottomNavItem.beds);
+  }
+
+  void goToClients() {
+    goTo(BottomNavItem.clients);
+  }
+
+  void goToConfig() {
+    goTo(BottomNavItem.config);
+  }
+
+  void goTo(BottomNavItem item) {
+    clean(item);
+    selectedItem.value = item;
+  }
 
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
-    BottomNavItem.one: GlobalKey<NavigatorState>(),
-    BottomNavItem.two: GlobalKey<NavigatorState>(),
-    BottomNavItem.three: GlobalKey<NavigatorState>(),
+    BottomNavItem.beds: GlobalKey<NavigatorState>(),
+    BottomNavItem.clients: GlobalKey<NavigatorState>(),
+    BottomNavItem.config: GlobalKey<NavigatorState>(),
   };
 
-  final Map<BottomNavItem, Map<String, dynamic>> items = const {
-    BottomNavItem.one: {
-      'icon': Icons.sunny,
+  final Map<BottomNavItem, Map<String, dynamic>> items = {
+    BottomNavItem.beds: {
+      'iconFocused': Icons.sunny,
+      'icon': Icons.wb_sunny_outlined,
       'bottomNavItemLabel': 'Macas',
     },
-    BottomNavItem.two: {
-      'icon': Icons.supervisor_account,
+    BottomNavItem.clients: {
+      'iconFocused': Icons.person_2,
+      'icon': Icons.person_2_outlined,
       'bottomNavItemLabel': 'Clientes'
     },
-    BottomNavItem.three: {
-      'icon': Icons.settings,
+    BottomNavItem.config: {
+      'iconFocused': Icons.settings,
+      'icon': Icons.settings_outlined,
       'bottomNavItemLabel': 'Configurações'
     },
   };
+}
+
+class Home extends StatelessWidget {
+  const Home({super.key});  
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final HomeController homeController = Get.find();
+    return Obx(() => Scaffold(
       body: PopScope(
         canPop: false,
         onPopInvoked: (pop) async {
-          navigatorKeys[selectedItem]
+          homeController.navigatorKeys[homeController.selectedItem.value]
               ?.currentState
               ?.popUntil((route) => route.isFirst);
         },
         child: Stack(
-          children: items
+          children: homeController.items
               .map(
                 (item, _) => MapEntry(
                   item,
-                  _buildOffstageNavigator(item, item == selectedItem),
+                  _buildOffstageNavigator(item, item == homeController.selectedItem.value),
                 ),
               )
               .values
@@ -59,30 +86,24 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         selectedItemColor: Colors.pink,
         unselectedItemColor: Colors.grey,
-        currentIndex: BottomNavItem.values.indexOf(selectedItem),
+        currentIndex: BottomNavItem.values.indexOf(homeController.selectedItem.value),
         showSelectedLabels: true,
         showUnselectedLabels: true,
         onTap: (index) {
           final currentSelectedItem = BottomNavItem.values[index];
-          if (selectedItem == currentSelectedItem) {
-            navigatorKeys[selectedItem]
-                ?.currentState
-                ?.popUntil((route) => route.isFirst);
-          }
-          setState(() {
-            selectedItem = currentSelectedItem;
-          });
+          homeController.clean(currentSelectedItem);
+          homeController.goTo(currentSelectedItem);
         },
-        items: items
+        items: homeController.items
             .map(
               (item, itemData) => MapEntry(
                 item.toString(),
                 BottomNavigationBarItem(
                   label: itemData['bottomNavItemLabel'],
                   icon: Icon(
-                    itemData['icon'],
-                    size: 30.0,
-                    color: item == selectedItem ? Colors.pink : Colors.grey,
+                    item == homeController.selectedItem.value ? itemData['iconFocused'] : itemData['icon'],
+                    size: item == homeController.selectedItem.value ? 35.0 : 30.0,
+                    color: item == homeController.selectedItem.value ? Colors.pink : Colors.grey,
                   ),
                 ),
               ),
@@ -90,14 +111,15 @@ class _HomeState extends State<Home> {
             .values
             .toList(),
       ),
-    );
+    ));
   }
 
   Widget _buildOffstageNavigator(BottomNavItem currentItem, bool isSelected) {
+    final HomeController homeController = Get.find();
     return Offstage(
       offstage: !isSelected,
       child: TabNavigator(
-        navigatorKey: navigatorKeys[currentItem]!,
+        navigatorKey: homeController.navigatorKeys[currentItem]!,
         item: currentItem,
       ),
     );

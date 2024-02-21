@@ -26,6 +26,11 @@ class User {
   Uint8List? profileImage; 
 
   @override
+  String toString() {
+    return '{"name" : "$name", "phoneNumber": "$phoneNumber"}';
+  }
+
+  @override
   bool operator ==(Object other) {
     return other is User && 
             name == other.name && 

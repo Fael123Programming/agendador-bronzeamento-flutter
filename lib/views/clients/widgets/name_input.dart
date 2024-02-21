@@ -11,7 +11,7 @@ class NameInputController extends GetxController {
 }
 
 class NameInput extends StatelessWidget {
-  const NameInput({Key? key}) : super(key: key);
+  const NameInput({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class NameInput extends StatelessWidget {
                   onTap: () {
                     if (formController.error.value) {
                       formController.formKey.currentState?.reset();
-                      formController.error = false.obs;
+                      formController.error.value = false;
                     }
                   },
                   onEditingComplete: nameController.onEditingComplete,

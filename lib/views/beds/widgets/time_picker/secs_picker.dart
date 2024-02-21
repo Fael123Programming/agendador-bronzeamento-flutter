@@ -4,21 +4,16 @@ import 'package:get/get.dart';
 
 class SecsPickerController extends GetxController {
   final TextEditingController secs = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
 }
 
 class SecsPicker extends StatelessWidget {
-  final Function()? onEditingComplete;
-  final FocusNode? focusNode;
-
-  const SecsPicker({
-    super.key,
-    this.focusNode,
-    this.onEditingComplete,
-  });
+  const SecsPicker({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final SecsPickerController controller = Get.find();
+    final SecsPickerController secsController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
@@ -39,7 +34,7 @@ class SecsPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
-                  controller: controller.secs,
+                  controller: secsController.secs,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -47,10 +42,10 @@ class SecsPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.secs.text = valStr;
+                    secsController.secs.text = valStr;
                   },
-                  onEditingComplete: onEditingComplete,
-                  focusNode: focusNode,
+                  onEditingComplete: secsController.onEditingComplete,
+                  focusNode: secsController.focusNode,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration.collapsed(

@@ -215,22 +215,22 @@ class ClientDetails extends StatelessWidget {
                                   profileImage: imageController.picked.value ? imageController.imageData.value : null
                                 )
                               );
-                              Get.showSnackbar(
-                                const GetSnackBar(
-                                  titleText: Center(
-                                    child: Text(
-                                      'Cadastrado com sucesso!', 
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20
-                                      ),
-                                    ),
-                                  ),
-                                  messageText: Text(''),
-                                  duration: Duration(seconds: 1),
-                                  backgroundColor: Color.fromARGB(255, 0, 255, 8),
-                                )
-                              );
+                              // Get.showSnackbar(
+                              //   const GetSnackBar(
+                              //     titleText: Center(
+                              //       child: Text(
+                              //         'Cadastrado com sucesso!', 
+                              //         style: TextStyle(
+                              //           color: Colors.white,
+                              //           fontSize: 20
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     messageText: Text(''),
+                              //     duration: Duration(seconds: 1),
+                              //     backgroundColor: Color.fromARGB(255, 0, 255, 8),
+                              //   )
+                              // );
                             } else {
                               await userController.updateUser(
                                 User(
@@ -246,22 +246,22 @@ class ClientDetails extends StatelessWidget {
                                   profileImage: imageController.picked.value ? imageController.imageData.value : null
                                 )
                               );
-                              Get.showSnackbar(
-                                const GetSnackBar(
-                                  titleText: Center(
-                                    child: Text(
-                                      'Atualizado com sucesso!', 
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20
-                                      ),
-                                    ),
-                                  ),
-                                  messageText: Text(''),
-                                  duration: Duration(seconds: 1),
-                                  backgroundColor: Color.fromARGB(255, 0, 255, 8),
-                                )
-                              );
+                              // Get.showSnackbar(
+                              //   const GetSnackBar(
+                              //     titleText: Center(
+                              //       child: Text(
+                              //         'Atualizado com sucesso!', 
+                              //         style: TextStyle(
+                              //           color: Colors.white,
+                              //           fontSize: 20
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     messageText: Text(''),
+                              //     duration: Duration(seconds: 1),
+                              //     backgroundColor: Color.fromARGB(255, 0, 255, 8),
+                              //   )
+                              // );
                             }
                             await Future.delayed(const Duration(seconds: 1));
                             if (!context.mounted) {
@@ -269,22 +269,23 @@ class ClientDetails extends StatelessWidget {
                             }
                             Navigator.of(context).pop();
                           } else {
-                            Get.showSnackbar(
-                              const GetSnackBar(
-                                titleText: Center(
-                                  child: Text(
-                                    'Preencha os campos corretamente', 
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20
-                                    ),
-                                  ),
-                                ),
-                                messageText: Text(''),
-                                duration: Duration(seconds: 1),
-                                backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                              )
-                            );
+                            formController.error.value = true;
+                            // Get.showSnackbar(
+                            //   const GetSnackBar(
+                            //     titleText: Center(
+                            //       child: Text(
+                            //         'Preencha os campos corretamente', 
+                            //         style: TextStyle(
+                            //           color: Colors.white,
+                            //           fontSize: 20
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     messageText: Text(''),
+                            //     duration: Duration(seconds: 1),
+                            //     backgroundColor: Color.fromARGB(255, 255, 17, 0),
+                            //   )
+                            // );
                           }
                         },
                         child: Text(

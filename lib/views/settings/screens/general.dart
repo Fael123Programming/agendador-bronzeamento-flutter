@@ -68,9 +68,7 @@ class _General extends State<General> {
                         ),
                       ),
                     ),
-                    TurnAroundInput(
-                      focusNode: turnAroundFocusNode,
-                    ),
+                    const TurnAroundInput(),
                   ],
                 ),
               ),
@@ -99,9 +97,7 @@ class _General extends State<General> {
                   ],
                 ),
               ),
-              TimePicker(
-                hourFocusNode: hourFocusNode,
-                onEditingComplete: () {},
+              const TimePicker(
               ),
             ],
           ),

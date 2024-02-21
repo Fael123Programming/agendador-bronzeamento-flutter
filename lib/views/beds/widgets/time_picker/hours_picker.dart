@@ -4,21 +4,16 @@ import 'package:get/get.dart';
 
 class HoursPickerController extends GetxController {
   final TextEditingController hours = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
 }
 
 class HoursPicker extends StatelessWidget {
-  final Function()? onEditingComplete;
-  final FocusNode? focusNode;
-
-  const HoursPicker({
-    super.key,
-    this.focusNode,
-    this.onEditingComplete,
-  });
+  const HoursPicker({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final HoursPickerController controller = Get.find();
+    final HoursPickerController hoursController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
@@ -39,7 +34,7 @@ class HoursPicker extends StatelessWidget {
             children: [
               Expanded(
                 child: TextFormField(
-                  controller: controller.hours,
+                  controller: hoursController.hours,
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
@@ -47,10 +42,10 @@ class HoursPicker extends StatelessWidget {
                     } else {
                       valStr = '0';
                     }
-                    controller.hours.text = valStr;
+                    hoursController.hours.text = valStr;
                   },
-                  onEditingComplete: onEditingComplete,
-                  focusNode: focusNode,
+                  onEditingComplete: hoursController.onEditingComplete,
+                  focusNode: hoursController.focusNode,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration.collapsed(

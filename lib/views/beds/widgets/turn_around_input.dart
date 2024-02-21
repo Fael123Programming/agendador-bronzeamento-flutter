@@ -4,13 +4,13 @@ import 'package:get/get.dart';
 
 class TurnAroundInputController extends GetxController {
   final TextEditingController turnAround = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  Function()? onEditingComplete;
 }
 
 class TurnAroundInput extends StatelessWidget {
-  final FocusNode? focusNode;
-  final Function()? onEditingComplete;
 
-  const TurnAroundInput({super.key, this.focusNode, this.onEditingComplete});
+  const TurnAroundInput({super.key});
 
   @override
   Widget build(context) {
@@ -65,8 +65,8 @@ class TurnAroundInput extends StatelessWidget {
                       }
                     }
                   },
-                  onEditingComplete: onEditingComplete,
-                  focusNode: focusNode,
+                  onEditingComplete: turnAroundController.onEditingComplete,
+                  focusNode: turnAroundController.focusNode,
                   keyboardType: TextInputType.number,
                   keyboardAppearance: Brightness.light,
                   decoration: const InputDecoration.collapsed(

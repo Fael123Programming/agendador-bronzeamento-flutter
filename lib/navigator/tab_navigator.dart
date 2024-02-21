@@ -11,8 +11,8 @@ class TabNavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   final BottomNavItem item;
 
-  const TabNavigator({Key? key, required this.navigatorKey, required this.item})
-      : super(key: key);
+  const TabNavigator({super.key, required this.navigatorKey, required this.item});
+  
   @override
   Widget build(BuildContext context) {
     final routeBuilders = _routeBuilder();
@@ -37,11 +37,11 @@ class TabNavigator extends StatelessWidget {
 
   _getScreen(BuildContext context, BottomNavItem item) {
     switch (item) {
-      case BottomNavItem.one:
+      case BottomNavItem.beds:
         return const Beds();
-      case BottomNavItem.two:
+      case BottomNavItem.clients:
         return const Clients();
-      case BottomNavItem.three:
+      case BottomNavItem.config:
         return const Settings();
       default:
         return const Scaffold();

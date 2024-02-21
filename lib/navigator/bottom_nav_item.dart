@@ -1,5 +1,5 @@
 enum BottomNavItem {
-  one,
-  two,
-  three,
+  beds,
+  clients,
+  config,
 }

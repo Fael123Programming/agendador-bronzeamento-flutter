@@ -18,29 +18,64 @@ class BedDetails extends StatelessWidget {
   @override
   Widget build(context) {
     final ConfigController configController = Get.find();
-    final SearchClientInputController searchController = Get.put(SearchClientInputController());
-    final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
-    final HoursPickerController hoursController = Get.put(HoursPickerController());
-    final MinsPickerController minsController = Get.put(MinsPickerController());
+    
     final SecsPickerController secsController = Get.put(SecsPickerController());
+    secsController.onEditingComplete = () {
+      secsController.focusNode.unfocus();
+    };
+    // secsController.onEditingComplete = () {
+    //   secsController.focusNode.unfocus();
+    //   Duration duration = Duration(
+    //     hours: int.parse(hoursController.hours.text),
+    //     minutes: int.parse(minsController.mins.text),
+    //     seconds: int.parse(secsController.secs.text),
+    //   );
+    //   if (duration.inSeconds == 0) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('Tempo não pode ser zero'),
+    //         duration: twoSeconds,
+    //       ),
+    //     );
+    //     hoursController.hours.text = configController.config!.value.defaultHours;
+    //     minsController.mins.text = configController.config!.value.defaultMins;
+    //     secsController.secs.text = configController.config!.value.defaultSecs;
+    //   }
+    // };
+
+    final MinsPickerController minsController = Get.put(MinsPickerController());
+    minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
+
+    final HoursPickerController hoursController = Get.put(HoursPickerController());
+    hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
+    
+    final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
+    turnController.onEditingComplete = () => hoursController.focusNode.requestFocus();
+    
+    final SearchClientInputController searchController = Get.put(SearchClientInputController());
+    searchController.onEditingComplete = () {
+      turnController.turnAround.text = configController.config!.value.turnArounds;
+      hoursController.hours.text = configController.config!.value.defaultHours;
+      minsController.mins.text = configController.config!.value.defaultMins;
+      secsController.secs.text = configController.config!.value.defaultSecs;
+    };
 
     final formKey = GlobalKey<FormState>();
-    final FocusNode searchClientInputFocusNode = FocusNode(),
-        turnAroundFocusNode = FocusNode(),
-        timePickerFocusNode = FocusNode();
 
     const twoSeconds = Duration(seconds: 2);
 
     return PopScope(
       onPopInvoked: (didPop) {
+        searchController.focusNode.dispose();
+        turnController.focusNode.dispose();
+        hoursController.focusNode.dispose();
+        minsController.focusNode.dispose();
+        secsController.focusNode.dispose();
         Get.delete<SearchClientInputController>();
         Get.delete<TurnAroundInputController>();
         Get.delete<HoursPickerController>();
         Get.delete<MinsPickerController>();
         Get.delete<SecsPickerController>();
-        searchClientInputFocusNode.dispose();
-        turnAroundFocusNode.dispose();
-        timePickerFocusNode.dispose();
       },
       child: Scaffold(
         appBar: AppBar(),
@@ -71,48 +106,15 @@ class BedDetails extends StatelessWidget {
                       key: formKey,
                       child: Column(
                         children: [
-                          SearchClientInput(
-                            focusNode: searchClientInputFocusNode,
-                            onEditingComplete: () {
-                              turnController.turnAround.text = configController.config!.value.turnArounds;
-                              hoursController.hours.text = configController.config!.value.defaultHours;
-                              minsController.mins.text = configController.config!.value.defaultMins;
-                              secsController.secs.text = configController.config!.value.defaultSecs;
-                            },
-                          ),
+                          const SearchClientInput(),
                           const SizedBox(
                             height: 50,
                           ),
-                          TurnAroundInput(
-                            focusNode: turnAroundFocusNode,
-                            onEditingComplete: () =>
-                                timePickerFocusNode.requestFocus(),
-                          ),
+                          const TurnAroundInput(),
                           const SizedBox(
                             height: 50,
                           ),
-                          TimePicker(
-                            hourFocusNode: timePickerFocusNode,
-                            onEditingComplete: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              Duration duration = Duration(
-                                hours: int.parse(hoursController.hours.text),
-                                minutes: int.parse(minsController.mins.text),
-                                seconds: int.parse(secsController.secs.text),
-                              );
-                              if (duration.inSeconds == 0) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Tempo não pode ser zero'),
-                                    duration: twoSeconds,
-                                  ),
-                                );
-                                hoursController.hours.text = configController.config!.value.defaultHours;
-                                minsController.mins.text = configController.config!.value.defaultMins;
-                                secsController.secs.text = configController.config!.value.defaultSecs;
-                              }
-                            },
-                          ),
+                          const TimePicker(),
                           const SizedBox(
                             height: 50,
                           ),
@@ -125,28 +127,26 @@ class BedDetails extends StatelessWidget {
                             gradientOrientation: GradientOrientation.Horizontal,
                             onTap: (finish) {
                               finish();
-                              print('${searchController.controller.text.isEmpty}');
-                              if (searchController.controller.text.isEmpty) {
+                              if (searchController.chosen.value) {
                                 Get.showSnackbar(
                                   const GetSnackBar(
-                                    title: 'Cliente não Preenchida',
-                                    message: 'Por favor, preencha o campo de cliente',
+                                    title: 'Maca adicionada com sucesso!',
+                                    messageText: Text(''),
+                                    duration: Duration(seconds: 1),
+                                    backgroundColor: Colors.pink,
+                                  )
+                                );
+                                Navigator.pop(context);
+                              } else {
+                                Get.showSnackbar(
+                                  const GetSnackBar(
+                                    title: 'Cliente não Selecionada',
+                                    message: 'Por favor, selecione uma cliente',
                                     duration: twoSeconds,
                                     // backgroundColor: Color.fromARGB(255, 255, 17, 0),
                                     backgroundColor: Color.fromARGB(255, 255, 17, 0),
                                   )
                                 );
-                              } else {
-                              Get.showSnackbar(
-                                const GetSnackBar(
-                                  title: 'Maca adicionada com sucesso!',
-                                  messageText: Text(''),
-                                  duration: Duration(seconds: 1),
-                                    backgroundColor: Colors.pink,
-                                )
-                              );
-                              // Get.back();
-                              Navigator.pop(context);
                               }
                             },
                             child: Text(
