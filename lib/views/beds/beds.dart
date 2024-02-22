@@ -1,11 +1,12 @@
+import 'package:agendador_bronzeamento/models/bed_card.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/bed_card_list_controller.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card_widget.dart';
 
 class Beds extends StatelessWidget {
   const Beds({super.key});
@@ -13,13 +14,13 @@ class Beds extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.find();
-    final BedCardListController bedCardListController = Get.put(BedCardListController());
+    final BedCardController bedController = Get.find();
     final UserController userController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
         title: const Text('Macas'),
       ),
-      body: bedCardListController.bedCards.isEmpty? 
+      body: bedController.bedCards.isEmpty ? 
           Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center, 
@@ -36,7 +37,7 @@ class Beds extends StatelessWidget {
                       color: Colors.pink
                     ),
                   ),
-                  userController.users!.isEmpty ? 
+                  userController.users.isEmpty ? 
                   Container(
                     margin: const EdgeInsets.only(top: 50),
                     child: TextButton(
@@ -58,8 +59,8 @@ class Beds extends StatelessWidget {
                 ]
               )
             )
-        : ListView(children: bedCardListController.bedCards),
-      floatingActionButton: userController.users!.isNotEmpty ? FloatingActionButton(
+        : ListView(children: bedController.bedCards.map((bedCard) => getWidgetFromModel(bedCard)).toList()),
+      floatingActionButton: userController.users.isNotEmpty ? FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),
         foregroundColor: Colors.white,
         backgroundColor: Colors.pink,

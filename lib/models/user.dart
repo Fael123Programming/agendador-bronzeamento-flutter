@@ -83,34 +83,58 @@ class UserAdapter extends TypeAdapter<User> {
 }
 
 class UserController extends GetxController {
-  RxList<User>? users;
+  RxList<User> users = <User>[].obs;
   RxBool loaded = false.obs;
 
   Future<void> clear() async {
     final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
     await usersBoxObj.clear();
-    users = <User>[].obs;
+    users.clear();
   }
 
   Future<void> fetchUsers() async {
     final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
-    loaded = true.obs;
-    users = usersBoxObj.values.toList().obs;
+    loaded.value = true;
+    users.value = usersBoxObj.values.toList();
     sort();
   }
 
   Future<void> addUser(User user) async {
-    final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
-    await usersBoxObj.put(user.name, user);
-    users?.add(user);
-    sort();
+    if (findUserByName(user.name) != null) {
+      final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
+      await usersBoxObj.put(user.name, user);
+      users.add(user);
+      sort();
+    } else {
+      throw 'User already exists';
+    }
   }
 
   Future<void> removeUser(User user) async {
     final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
     await usersBoxObj.delete(user.name);
-    users?.remove(user);
+    users.remove(user);
     sort();
+  }
+
+  User? findUserByName(String name) {
+    try {
+      return users.toList().where((user) => user.name == name).first;
+    } catch(err) {
+      return null;
+    }
+  }
+
+  String? getRealName(String name) {
+    Iterable<User> found = users.toList()
+      .where(
+        (user) => user.name.toLowerCase() ==
+              name.toLowerCase(),
+      );
+    if (found.isEmpty) {
+      return null;
+    }
+    return found.first.name;
   }
 
   Future<void> updateUser(User oldUser, User newUser) async {
@@ -120,6 +144,6 @@ class UserController extends GetxController {
   }
 
   void sort() {
-    users?.sort((user1, user2) => user1.name.compareTo(user2.name));
+    users.sort((user1, user2) => user1.name.compareTo(user2.name));
   }
 }

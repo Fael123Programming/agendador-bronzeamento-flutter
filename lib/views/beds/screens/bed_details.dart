@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/models/bed_card.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/search_client_input.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
@@ -10,6 +11,18 @@ import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/config.dart';
 import 'package:agendador_bronzeamento/utils/loading.dart';
 
+bool isValidDuration() {
+  final HoursPickerController hours = Get.find();
+  final MinsPickerController mins = Get.find();
+  final SecsPickerController secs = Get.find();
+
+  int hoursInt = int.parse(hours.hours.text);
+  int minsInt = int.parse(mins.mins.text);
+  int secsInt = int.parse(secs.secs.text);
+
+  return hoursInt + minsInt + secsInt > 0;
+}
+
 class BedDetails extends StatelessWidget {
   final Map<dynamic, dynamic>? bedData;
 
@@ -18,30 +31,12 @@ class BedDetails extends StatelessWidget {
   @override
   Widget build(context) {
     final ConfigController configController = Get.find();
-    
+    final BedCardController bedController = Get.find();
+
     final SecsPickerController secsController = Get.put(SecsPickerController());
     secsController.onEditingComplete = () {
       secsController.focusNode.unfocus();
     };
-    // secsController.onEditingComplete = () {
-    //   secsController.focusNode.unfocus();
-    //   Duration duration = Duration(
-    //     hours: int.parse(hoursController.hours.text),
-    //     minutes: int.parse(minsController.mins.text),
-    //     seconds: int.parse(secsController.secs.text),
-    //   );
-    //   if (duration.inSeconds == 0) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text('Tempo não pode ser zero'),
-    //         duration: twoSeconds,
-    //       ),
-    //     );
-    //     hoursController.hours.text = configController.config!.value.defaultHours;
-    //     minsController.mins.text = configController.config!.value.defaultMins;
-    //     secsController.secs.text = configController.config!.value.defaultSecs;
-    //   }
-    // };
 
     final MinsPickerController minsController = Get.put(MinsPickerController());
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
@@ -125,25 +120,40 @@ class BedDetails extends StatelessWidget {
                             stretch: false,
                             progress: false,
                             gradientOrientation: GradientOrientation.Horizontal,
-                            onTap: (finish) {
+                            onTap: (finish) async {
                               finish();
-                              if (searchController.chosen.value) {
-                                Get.showSnackbar(
-                                  const GetSnackBar(
-                                    title: 'Maca adicionada com sucesso!',
-                                    messageText: Text(''),
-                                    duration: Duration(seconds: 1),
-                                    backgroundColor: Colors.pink,
-                                  )
-                                );
-                                Navigator.pop(context);
+                              if (
+                                searchController.chosen.value &&
+                                turnController.isValid() &&
+                                isValidDuration()
+                              ) {
+                                await bedController.addBedCard(BedCard(
+                                  clientName: searchController.controller.text,
+                                  bedNumber: bedController.nextBedCard.value,
+                                  totalDuration: Duration(
+                                    hours: int.parse(hoursController.hours.text),
+                                    minutes: int.parse(minsController.mins.text),
+                                    seconds: int.parse(secsController.secs.text)
+                                  ),
+                                  remainingTime: Duration(
+                                    hours: int.parse(hoursController.hours.text),
+                                    minutes: int.parse(minsController.mins.text),
+                                    seconds: int.parse(secsController.secs.text)
+                                  ),
+                                  totalCircles: int.parse(turnController.turnAround.text),
+                                  paintedCircles: 0
+                                ));
+                                await Future.delayed(const Duration(seconds: 1));
+                                if (!context.mounted) {
+                                  return;
+                                }
+                                Navigator.of(context).pop();
                               } else {
                                 Get.showSnackbar(
                                   const GetSnackBar(
-                                    title: 'Cliente não Selecionada',
-                                    message: 'Por favor, selecione uma cliente',
+                                    title: 'Humm... Algum Dado está Incorreto',
+                                    message: 'Por favor, selecione uma cliente, defina quantas viradas e a duração',
                                     duration: twoSeconds,
-                                    // backgroundColor: Color.fromARGB(255, 255, 17, 0),
                                     backgroundColor: Color.fromARGB(255, 255, 17, 0),
                                   )
                                 );

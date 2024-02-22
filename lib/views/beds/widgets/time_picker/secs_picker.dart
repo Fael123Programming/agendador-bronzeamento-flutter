@@ -38,9 +38,9 @@ class SecsPicker extends StatelessWidget {
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
-                      valStr = value.toString();
+                      valStr = int.parse(value).toString();
                     } else {
-                      valStr = '0';
+                      valStr = '';
                     }
                     secsController.secs.text = valStr;
                   },

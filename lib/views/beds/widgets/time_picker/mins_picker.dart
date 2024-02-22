@@ -38,9 +38,9 @@ class MinsPicker extends StatelessWidget {
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value)) {
-                      valStr = value.toString();
+                      valStr = int.parse(value).toString();
                     } else {
-                      valStr = '0';
+                      valStr = '';
                     }
                     minsController.mins.text = valStr;
                   },

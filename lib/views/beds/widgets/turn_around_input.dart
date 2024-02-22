@@ -6,10 +6,14 @@ class TurnAroundInputController extends GetxController {
   final TextEditingController turnAround = TextEditingController();
   final FocusNode focusNode = FocusNode();
   Function()? onEditingComplete;
+
+  bool isValid() {
+    String turn = turnAround.text;
+    return turn.isNum && int.parse(turn) > 0;
+  }
 }
 
 class TurnAroundInput extends StatelessWidget {
-
   const TurnAroundInput({super.key});
 
   @override
@@ -45,23 +49,10 @@ class TurnAroundInput extends StatelessWidget {
                   textAlign: TextAlign.start,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
-                      bool invalidValue = false;
                       if (!Validator.isInteger(value)) {
                         turnAroundController.turnAround.text = '';
-                        invalidValue = true;
                       } else if (int.parse(value) < 1) {
                         turnAroundController.turnAround.text = '';
-                        invalidValue = true;
-                      }
-                      if (invalidValue) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Número de viradas inválido'),
-                            duration: Duration(
-                              seconds: 2,
-                            ),
-                          ),
-                        );
                       }
                     }
                   },

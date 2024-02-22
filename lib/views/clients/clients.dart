@@ -4,29 +4,7 @@ import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-Future<void> sendMessage(String clientName, String phoneNumber) async {
-  int hour = DateTime.now().hour;
-  String hourTxt;
-  if (hour < 12) {
-    hourTxt = 'Bom dia';
-  } else if (hour < 18) {
-    hourTxt = 'Boa tarde';
-  } else {
-    hourTxt = 'Boa noite';
-  }
-  const toReplace = '()+/';
-  String localPhone = phoneNumber;
-  for (final c in toReplace.characters) {
-    if (localPhone.contains(c)) {
-      localPhone = localPhone.replaceFirst(c, '');
-    }
-  }
-  final message = 'Olá, $clientName! $hourTxt!';
-  final url = 'https://wa.me/$localPhone/?text=${Uri.encodeFull(message)}';
-  await launchUrl(Uri.parse(url));
-}
+import 'package:agendador_bronzeamento/utils/wpp.dart';
 
 class Clients extends StatelessWidget {
   const Clients({super.key});
@@ -58,7 +36,7 @@ class Clients extends StatelessWidget {
                 backgroundColor: Colors.pink,
                 child: const Icon(Icons.add),
               ),
-              body: Obx(() => userController.users!.toList().isEmpty ? 
+              body: Obx(() => userController.users.toList().isEmpty ? 
                 const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center, 
@@ -78,7 +56,7 @@ class Clients extends StatelessWidget {
                     ]
                   )
                 ) : ListView.builder(
-                    itemCount: userController.users!.length,
+                    itemCount: userController.users.length,
                     itemBuilder: (context, index) => Container(
                     decoration: BoxDecoration(
                       color: Colors.pink[50],
@@ -91,22 +69,22 @@ class Clients extends StatelessWidget {
                       onTap: () => Navigator.pushNamed(
                         context,
                         RoutePaths.clientDetails,
-                        arguments: userController.users![index],
+                        arguments: userController.users[index],
                       ),
-                      title: Text(userController.users![index].name),
+                      title: Text(userController.users[index].name),
                       trailing: CircleAvatar(
                         backgroundColor: Colors.green,
                         child: IconButton(
                           alignment: Alignment.center,
                           icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white,),
-                          onPressed: () async => sendMessage(userController.users![index].name.split(' ')[0], userController.users![index].phoneNumber),
+                          onPressed: () async => sendMessage(userController.users[index].name.split(' ')[0], userController.users[index].phoneNumber),
                         ),
                       ),
-                      leading: userController.users![index].profileImage != null ? 
+                      leading: userController.users[index].profileImage != null ? 
                         FittedBox(
                           fit: BoxFit.cover,
                           child: CircleAvatar(
-                            backgroundImage: Image.memory(userController.users![index].profileImage!).image,
+                            backgroundImage: Image.memory(userController.users[index].profileImage!).image,
                             radius: 20,
                           ),
                         ) : const Icon(Icons.person_2)

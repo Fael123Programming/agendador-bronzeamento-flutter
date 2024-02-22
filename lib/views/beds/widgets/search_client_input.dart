@@ -13,11 +13,11 @@ class SearchClientInputController extends GetxController {
 }
 
 class SearchClientInput extends StatelessWidget {
-
   const SearchClientInput({super.key});
   
   @override
   Widget build(context) {
+    final UserController userController = Get.find();
     final SearchClientInputController searchController = Get.find();
     searchController.focusNode.requestFocus();
     double width = MediaQuery.of(context).size.width;
@@ -50,13 +50,19 @@ class SearchClientInput extends StatelessWidget {
                   Expanded(
                     child: TextFormField(
                       onChanged: (value) {
-                        if (searchController.chosen.value) {
-                          searchController.chosen.value = false;
-                        }
-                        if (value.isNotEmpty) {
+                        String? realName = userController.getRealName(value);
+
+                        if (realName != null) {
+                          searchController.controller.text = realName;
+                          searchController.usersToShow.clear();
+                          searchController.chosen.value = true;
+                          searchController.focusNode.unfocus();
+                        } else if (value.isNotEmpty) {
                           searchController.usersToShow.value = _fetchUsersThatMatch(value);
+                          searchController.chosen.value = false;
                         } else {
                           searchController.usersToShow.clear();
+                          searchController.chosen.value = false;
                         }
                       },
                       onEditingComplete: searchController.onEditingComplete,
@@ -88,7 +94,7 @@ class SearchClientInput extends StatelessWidget {
     userstoReturn.addAll(
       userController
           .users
-          !.toList()
+          .toList()
           .where(
             (user) => user.name.toLowerCase().contains(
                   name.toLowerCase(),
@@ -109,10 +115,10 @@ class SearchClientInput extends StatelessWidget {
         (user) => GestureDetector(
           onTap: () {
             searchController.controller.text = user.name;
+            searchController.chosen.value = true;
             searchController.usersToShow.clear();
             searchController.focusNode.unfocus();
             searchController.onEditingComplete != null && searchController.onEditingComplete!();
-            searchController.chosen.value = true;
           },
           child: Center(
             child: Container(

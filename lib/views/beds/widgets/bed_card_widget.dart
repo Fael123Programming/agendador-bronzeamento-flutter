@@ -1,20 +1,42 @@
 import 'dart:async';
+import 'package:agendador_bronzeamento/models/bed_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/bed_card_list_controller.dart';
 
-class BedCardController extends GetxController {
-  final int totalCircles = 2;
-  Duration totalDuration = const Duration(seconds: 5);
-  Rx<Duration> remainingTime = const Duration(seconds: 5).obs;
-  RxInt paintedCircles = 0.obs;
+BedCardWidget getWidgetFromModel(BedCard bedCard) {
+  BedCardWidget widget = BedCardWidget(
+    clientName: bedCard.clientName, 
+    bedNumber: bedCard.bedNumber,
+    totalDuration: bedCard.totalDuration,
+    remainingTime: bedCard.remainingTime,
+    totalCircles: bedCard.totalCircles,
+    paintedCircles: bedCard.paintedCircles,
+  );
+
+  return widget;
+}
+
+class TimeController extends GetxController {
+  TimeController({
+    required this.totalDuration,
+    required this.remainingTime,
+    required this.totalCircles,
+    required this.paintedCircles
+  });
+
+  int totalCircles;
+  Duration totalDuration;
+  Rx<Duration> remainingTime;
+  RxInt paintedCircles;
+
   Rx<Color> color = Colors.white.obs;
   Rx<Timer>? timer;
   RxBool stopped = false.obs;
   RxBool active = true.obs;
 
   void startTimer() {
+    // final BedCardController bedController = Get.find();
     color.value = Colors.white;
     stopped.value = false;
     remainingTime.value = Duration(seconds: totalDuration.inSeconds);
@@ -27,6 +49,7 @@ class BedCardController extends GetxController {
         color.value = Colors.pink;
         stopped.value = true;
       }
+      // bedController.updateBedCard(oldBedCard, newBedCard);
     }).obs;
   }
 
@@ -37,21 +60,34 @@ class BedCardController extends GetxController {
   }
 }
 
-class BedCard extends StatelessWidget {
+class BedCardWidget extends StatelessWidget {
   final String clientName;
   final int bedNumber;
-  
-  const BedCard({
+  final Duration totalDuration;
+  final Duration remainingTime;
+  final int totalCircles;
+  final int paintedCircles;
+
+  const BedCardWidget({
     super.key,
-    required this.clientName, 
+    required this.clientName,
     required this.bedNumber,
+    required this.totalDuration,
+    required this.remainingTime,
+    required this.totalCircles,
+    required this.paintedCircles
   });
 
   @override
   Widget build(context) {
-    final controller = BedCardController();
-    final BedCardListController listController = Get.find();
-    controller.startTimer();
+    final timeController = TimeController(
+      totalDuration: totalDuration,
+      remainingTime: remainingTime.obs,
+      totalCircles: totalCircles,
+      paintedCircles: paintedCircles.obs
+    );
+    final BedCardController bedController = Get.find();
+    timeController.startTimer();
     return Obx(() => Dismissible(
             background: Container(
               decoration: const BoxDecoration(
@@ -67,25 +103,25 @@ class BedCard extends StatelessWidget {
               ),
             ),
             onDismissed: (direction) {
-              controller.timer?.value.cancel();
-              listController.removeCardByClientName(clientName);
+              timeController.timer?.value.cancel();
+              bedController.removeCardByClientName(clientName);
             },
             key: ValueKey<String>(clientName),
             child: GestureDetector(
               onTap: () {
-                if (controller.stopped.value) {
-                  if (controller.paintedCircles.value < controller.totalCircles) {
-                    controller.startTimer();
+                if (timeController.stopped.value) {
+                  if (timeController.paintedCircles.value < timeController.totalCircles) {
+                    timeController.startTimer();
                   } else {
-                    controller.timer?.value.cancel();
-                    listController.removeCardByClientName(clientName);
+                    timeController.timer?.value.cancel();
+                    bedController.removeCardByClientName(clientName);
                   }
                 }
               },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.pink[50],
-                  border: Border.all(color: controller.color.value),
+                  border: Border.all(color: timeController.color.value),
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),
@@ -116,12 +152,19 @@ class BedCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Obx(() => TurnAroundBlocks(
-                          totalBlocks: controller.totalCircles,
-                          paintedBlocks: controller.paintedCircles.value,
+                          totalBlocks: timeController.totalCircles,
+                          paintedBlocks: timeController.paintedCircles.value,
                         )),
-                        Obx(() => controller.stopped.value ? 
-                          Icon(controller.paintedCircles.value == controller.totalCircles ? Icons.done_all : Icons.double_arrow, color: controller.paintedCircles.value == controller.totalCircles ? Colors.green : Colors.black,)
-                          : Text(controller.remainingTime.value.toString().split('.')[0])
+                        Obx(() => timeController.stopped.value ? 
+                          Icon(
+                            timeController.paintedCircles.value == timeController.totalCircles ? 
+                            Icons.done_all : 
+                            Icons.double_arrow, 
+                            color: timeController.paintedCircles.value == timeController.totalCircles ?
+                            Colors.green : 
+                            Colors.black
+                          )
+                          : Text(timeController.remainingTime.value.toString().split('.')[0])
                         )
                       ],
                     ),
@@ -129,6 +172,7 @@ class BedCard extends StatelessWidget {
                 ),
               ),
             ),
-        ));
+        ),
+      );
   }
 }

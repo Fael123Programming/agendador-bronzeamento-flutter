@@ -1,11 +1,17 @@
+import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/utils/wpp.dart';
 
 class SearchClient extends StatelessWidget {
   const SearchClient({super.key});
 
   @override
   Widget build(context) {
+    final UserController userController = Get.find();
+    RxList<User> filtered = <User>[].obs;
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -19,16 +25,16 @@ class SearchClient extends StatelessWidget {
           ),
           child: TextField(
             onChanged: (String s) {
-              // ClientsToShowController clientsController = Get.find();
-              // final UserController userController = Get.find();
-              //   clientsController.clients.clear();
-              //   clientsController.clients.addAll(
-              //     userController.users!.toList().where(
-              //       (user) => user.name.toString().toLowerCase().contains(
-              //             s.toLowerCase(),
-              //           ),
-              //     ),
-              //   );
+                filtered.clear();
+                if (s.isNotEmpty) {
+                  filtered.addAll(
+                    userController.users.toList().where(
+                      (user) => user.name.toString().toLowerCase().contains(
+                            s.toLowerCase(),
+                          ),
+                    ),
+                  );
+                }
             },
             autofocus: true,
             cursorColor: Colors.black,
@@ -51,9 +57,45 @@ class SearchClient extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-        child: Text('Search Client'),
-      ),
+      body: Obx(() =>
+        filtered.isEmpty ? Container() : 
+        ListView.builder(
+          itemCount: filtered.length,
+          itemBuilder: (context, index) => Container(
+          decoration: BoxDecoration(
+            color: Colors.pink[50],
+            borderRadius: const BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
+          margin: const EdgeInsets.all(10),
+          child: ListTile(
+            onTap: () => Navigator.pushNamed(
+              context,
+              RoutePaths.clientDetails,
+              arguments: filtered[index],
+            ),
+            title: Text(filtered[index].name),
+            trailing: CircleAvatar(
+              backgroundColor: Colors.green,
+              child: IconButton(
+                alignment: Alignment.center,
+                icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white,),
+                onPressed: () async => sendMessage(filtered[index].name.split(' ')[0], filtered[index].phoneNumber),
+              ),
+            ),
+            leading: filtered[index].profileImage != null ? 
+              FittedBox(
+                fit: BoxFit.cover,
+                child: CircleAvatar(
+                  backgroundImage: Image.memory(filtered[index].profileImage!).image,
+                  radius: 20,
+                ),
+              ) : const Icon(Icons.person_2)
+            ),
+          ),
+        )
+      )
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/models/bed_card.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/custom_router.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
@@ -16,6 +17,7 @@ void main() async {
 
   Hive.registerAdapter(ConfigAdapter());
   Hive.registerAdapter(UserAdapter());
+  Hive.registerAdapter(BedCardAdapter());
 
   Get.put(HomeController());
 
@@ -24,6 +26,9 @@ void main() async {
 
   final UserController userController = Get.put(UserController());
   await userController.fetchUsers();
+
+  final BedCardController bedCardController = Get.put(BedCardController());
+  await bedCardController.fetchBedCards();
 
   runApp(
     const GetMaterialApp(
