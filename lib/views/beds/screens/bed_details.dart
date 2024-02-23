@@ -1,4 +1,5 @@
-import 'package:agendador_bronzeamento/models/bed_card.dart';
+import 'package:agendador_bronzeamento/models/timing.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/search_client_input.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
@@ -31,7 +32,7 @@ class BedDetails extends StatelessWidget {
   @override
   Widget build(context) {
     final ConfigController configController = Get.find();
-    final BedCardController bedController = Get.find();
+    final BedCardController bedCardController = Get.find();
 
     final SecsPickerController secsController = Get.put(SecsPickerController());
     secsController.onEditingComplete = () {
@@ -127,21 +128,21 @@ class BedDetails extends StatelessWidget {
                                 turnController.isValid() &&
                                 isValidDuration()
                               ) {
-                                await bedController.addBedCard(BedCard(
+                                 bedCardController.addBedCard(BedCard(
                                   clientName: searchController.controller.text,
-                                  bedNumber: bedController.nextBedCard.value,
+                                  bedNumber: bedCardController.next.value,
                                   totalDuration: Duration(
                                     hours: int.parse(hoursController.hours.text),
                                     minutes: int.parse(minsController.mins.text),
                                     seconds: int.parse(secsController.secs.text)
                                   ),
-                                  remainingTime: Duration(
+                                  remainingDuration: Duration(
                                     hours: int.parse(hoursController.hours.text),
                                     minutes: int.parse(minsController.mins.text),
                                     seconds: int.parse(secsController.secs.text)
                                   ),
-                                  totalCircles: int.parse(turnController.turnAround.text),
-                                  paintedCircles: 0
+                                  totalTurns: int.parse(turnController.turnAround.text),
+                                  turnsDone: 0
                                 ));
                                 await Future.delayed(const Duration(seconds: 1));
                                 if (!context.mounted) {

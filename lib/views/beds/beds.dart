@@ -1,4 +1,3 @@
-import 'package:agendador_bronzeamento/models/bed_card.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:flutter/material.dart';
@@ -6,21 +5,21 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/bed_card_widget.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 
 class Beds extends StatelessWidget {
   const Beds({super.key});
   
   @override
   Widget build(BuildContext context) {
+    final BedCardController bedCardController = Get.find();
     final HomeController homeController = Get.find();
-    final BedCardController bedController = Get.find();
     final UserController userController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
         title: const Text('Macas'),
       ),
-      body: bedController.bedCards.isEmpty ? 
+      body: bedCardController.bedCards.isEmpty ? 
           Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center, 
@@ -59,7 +58,7 @@ class Beds extends StatelessWidget {
                 ]
               )
             )
-        : ListView(children: bedController.bedCards.map((bedCard) => getWidgetFromModel(bedCard)).toList()),
+        : ListView(children: bedCardController.bedCards.toList()),
       floatingActionButton: userController.users.isNotEmpty ? FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),
         foregroundColor: Colors.white,
