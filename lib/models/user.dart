@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:agendador_bronzeamento/models/config.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:hive/hive.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/utils/constants.dart';
@@ -9,6 +11,8 @@ class User {
   User({
     required this.name,
     required this.phoneNumber,
+    required this.bronzes,
+    required this.timestamp,
     this.observations,
     this.profileImage
   });
@@ -20,9 +24,15 @@ class User {
   String phoneNumber;
 
   @HiveField(2)
-  String? observations;
+  int bronzes;
 
   @HiveField(3)
+  DateTime timestamp;
+
+  @HiveField(4)
+  String? observations;
+
+  @HiveField(5)
   Uint8List? profileImage; 
 
   @override
@@ -50,6 +60,8 @@ class UserAdapter extends TypeAdapter<User> {
   User read(BinaryReader reader) {
     final name = reader.read();
     final phoneNumber = reader.read();
+    final bronzes = reader.read();
+    final timestamp = DateTime.parse(reader.read());
     final observations = reader.read();
     try {
       final profileImageLength = reader.readUint32();
@@ -57,6 +69,8 @@ class UserAdapter extends TypeAdapter<User> {
       return User(
         name: name,
         phoneNumber: phoneNumber,
+        bronzes: bronzes,
+        timestamp: timestamp,
         observations: observations,
         profileImage: Uint8List.fromList(profileImage.cast<int>())
       );
@@ -64,6 +78,8 @@ class UserAdapter extends TypeAdapter<User> {
       return User(
         name: name,
         phoneNumber: phoneNumber,
+        bronzes: bronzes,
+        timestamp: timestamp,
         observations: observations,
         profileImage: null
       );
@@ -74,7 +90,9 @@ class UserAdapter extends TypeAdapter<User> {
   void write(BinaryWriter writer, User obj) {
     writer.write(obj.name);
     writer.write(obj.phoneNumber);
+    writer.write(obj.bronzes);
     writer.write(obj.observations);
+    writer.write(obj.timestamp.toString());
     if (obj.profileImage != null) {
       writer.writeUint32(obj.profileImage!.lengthInBytes);
       writer.writeList(obj.profileImage!.toList());
@@ -85,6 +103,15 @@ class UserAdapter extends TypeAdapter<User> {
 class UserController extends GetxController {
   RxList<User> users = <User>[].obs;
   RxBool loaded = false.obs;
+  late Map<String, void Function(int)> sortingMethods;
+
+  UserController() {
+    sortingMethods = {
+      'name': (factor) => users.sort((user1, user2) => user1.name.compareTo(user2.name) * factor),
+      'timestamp': (factor) => users.sort((user1, user2) => user1.timestamp.compareTo(user2.timestamp) * factor),
+      'bronze': (factor) => users.sort((user1, user2) => user1.bronzes.compareTo(user2.bronzes) * factor),
+    };
+  }
 
   Future<void> clear() async {
     final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
@@ -100,7 +127,7 @@ class UserController extends GetxController {
   }
 
   Future<void> addUser(User user) async {
-    if (findUserByName(user.name) != null) {
+    if (findUserByName(user.name) == null) {
       final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
       await usersBoxObj.put(user.name, user);
       users.add(user);
@@ -119,13 +146,13 @@ class UserController extends GetxController {
 
   User? findUserByName(String name) {
     try {
-      return users.toList().where((user) => user.name == name).first;
+      return users.where((user) => user.name == name).first;
     } catch(err) {
       return null;
     }
   }
 
-  String? getRealName(String name) {
+  String? getRealName(List<User> users, String name) {
     Iterable<User> found = users.toList()
       .where(
         (user) => user.name.toLowerCase() ==
@@ -137,6 +164,13 @@ class UserController extends GetxController {
     return found.first.name;
   }
 
+  List<User> getIdleUsers() {
+    final BedCardListController bedCardListController = Get.find();
+    List<String> buzyClientsNames = bedCardListController.list.map((bedCard) => bedCard.bedCardController.clientName.toLowerCase()).toList();
+    List<User> resultList = users.where((user) => !buzyClientsNames.contains(user.name.toLowerCase())).toList();
+    return resultList;
+  }
+
   Future<void> updateUser(User oldUser, User newUser) async {
     await removeUser(oldUser);
     await addUser(newUser);
@@ -144,6 +178,9 @@ class UserController extends GetxController {
   }
 
   void sort() {
-    users.sort((user1, user2) => user1.name.compareTo(user2.name));
+    final ConfigController configController = Get.find();
+    int factor = configController.config.value.increasing ? 1 : -1;
+    String sortingMethod = configController.config.value.sortBy.toLowerCase();
+    sortingMethods[sortingMethod]!(factor);
   }
 }

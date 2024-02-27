@@ -1,54 +1,87 @@
+import 'dart:async';
+
+import 'package:agendador_bronzeamento/models/bronze.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks.dart';
-import 'package:agendador_bronzeamento/models/timing.dart';
 
-class BedCardController extends GetxController {
-  RxList<BedCard> bedCards = <BedCard>[].obs;
-  RxInt next = 1.obs;
-
-  void addBedCard(BedCard bedCard) {
-    bedCards.add(bedCard);
-    next.value++;
-  }
-
-  void removeBedCard(BedCard bedCard) {
-    bedCards.remove(bedCard);
-    if (bedCards.isEmpty) {
-      next.value = 1;
-    }
-  }
+class BedCardListController extends GetxController {
+  RxList<BedCard> list = <BedCard>[].obs;
 }
 
-class BedCard extends StatelessWidget {
-  final String clientName;
-  final int bedNumber;
-  final Duration totalDuration;
-  final Duration remainingDuration;
-  final int totalTurns;
-  final int turnsDone;
-
-  const BedCard({
-    super.key,
+class BedCardController extends GetxController {
+  BedCardController({
     required this.clientName,
-    required this.bedNumber,
-    required this.totalDuration,
-    required this.remainingDuration,
+    required this.price,
+    required this.totalSecs,
+    required this.remainingSecs,
     required this.totalTurns,
     required this.turnsDone
   });
 
+  final String clientName;
+  final String price;
+  final int totalTurns;
+  final RxInt turnsDone;
+  final int totalSecs;
+  final RxBool stopped = false.obs;
+  final RxBool active = true.obs;
+  final time = '00:00:00'.obs;
+  final Rx<Color> color = Colors.white.obs;
+  final DateTime timestamp = DateTime.now();
+
+  int remainingSecs;
+  Timer? _timer;
+
+  @override
+  void onClose() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    super.onClose();
+  }
+
+  void startTimer() {
+    const duration = Duration(seconds: 1);
+    color.value = Colors.white;
+    stopped.value = false;
+    remainingSecs = totalSecs;
+    _timer = Timer.periodic(duration, (t) async {
+      if (remainingSecs > 0) {
+        int hours = remainingSecs ~/ 3600;
+        int mins = remainingSecs % 3600 ~/ 60;
+        int secs = remainingSecs % 3600 % 60;
+        time.value = "${hours.toString().padLeft(2, "0")}:${mins.toString().padLeft(2, "0")}:${secs.toString().padLeft(2, "0")}";
+        remainingSecs--;
+      } else {
+        int hours = totalSecs ~/ 3600;
+        int mins = totalSecs % 3600 ~/ 60;
+        int secs = totalSecs % 3600 % 60;
+        time.value = "${hours.toString().padLeft(2, "0")}:${mins.toString().padLeft(2, "0")}:${secs.toString().padLeft(2, "0")}";
+        turnsDone.value++;
+        t.cancel();
+        color.value = Colors.pink;
+        stopped.value = true;
+      }
+    });
+  }
+}
+
+class BedCard extends StatelessWidget {
+  final BedCardController bedCardController;
+  final int bedNumber;
+
+  const BedCard({
+    super.key,
+    required this.bedCardController,
+    required this.bedNumber
+  });
+
   @override
   Widget build(context) {
-    final TimingsController timingsController = Get.find();
-    final timingController = TimingController(
-      clientName: clientName,
-      totalDuration: totalDuration,
-      remainingDuration: remainingDuration.obs,
-      totalTurns: totalTurns,
-      turnsDone: turnsDone.obs
-    );
-    timingController.startTimer();
+    final BedCardListController listController = Get.find();
+    final BronzeController bronzeController = Get.find();
     return Obx(() => Dismissible(
             background: Container(
               decoration: const BoxDecoration(
@@ -63,26 +96,35 @@ class BedCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            onDismissed: (direction) {
-              timingController.timer.value.cancel();
-              timingsController.deleteTiming(timingController.toTiming());
+            onDismissed: (direction) async {
+              final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.clientName == bedCardController.clientName).first;
+              listController.list.remove(thisBedCard);
             },
-            key: ValueKey<String>(clientName),
+            key: ValueKey<String>(bedCardController.clientName),
             child: GestureDetector(
-              onTap: () {
-                if (timingController.stopped.value) {
-                  if (timingController.turnsDone.value < timingController.totalTurns) {
-                    timingController.startTimer();
+              onTap: () async {
+                if (bedCardController.stopped.value) {
+                  if (bedCardController.turnsDone.value < bedCardController.totalTurns) {
+                    bedCardController.startTimer();
                   } else {
-                    timingController.timer.value.cancel();
-                    timingsController.deleteTiming(timingController.toTiming());
+                    final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.clientName == bedCardController.clientName).first;
+                    listController.list.remove(thisBedCard);
+                    await bronzeController.addBronze(
+                      Bronze(
+                        clientName: bedCardController.clientName, 
+                        totalSecs: bedCardController.totalSecs, 
+                        totalTurns: bedCardController.totalTurns, 
+                        price: Decimal.parse(bedCardController.price), 
+                        timestamp: bedCardController.timestamp
+                      )
+                    );
                   }
                 }
               },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.pink[50],
-                  border: Border.all(color: timingController.color.value),
+                  border: Border.all(color: bedCardController.color.value),
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),
@@ -96,7 +138,7 @@ class BedCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          clientName,
+                          bedCardController.clientName,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -113,19 +155,19 @@ class BedCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Obx(() => TurnAroundBlocks(
-                          totalBlocks: timingController.totalTurns,
-                          paintedBlocks: timingController.turnsDone.value,
+                          totalBlocks: bedCardController.totalTurns,
+                          paintedBlocks: bedCardController.turnsDone.value,
                         )),
-                        Obx(() => timingController.stopped.value ? 
+                        Obx(() => bedCardController.stopped.value ? 
                           Icon(
-                            timingController.turnsDone.value == timingController.totalTurns ? 
+                            bedCardController.turnsDone.value == bedCardController.totalTurns ? 
                             Icons.done_all : 
                             Icons.double_arrow, 
-                            color: timingController.turnsDone.value == timingController.totalTurns ?
+                            color: bedCardController.turnsDone.value == bedCardController.totalTurns ?
                             Colors.green : 
                             Colors.black
                           )
-                          : Text(timingController.remainingDuration.value.toString().split('.')[0])
+                          : Text(bedCardController.time.value)
                         )
                       ],
                     ),

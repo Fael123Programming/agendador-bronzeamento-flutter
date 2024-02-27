@@ -124,11 +124,7 @@ class ClientDetails extends StatelessWidget {
                                           ),
                                           onPressed: () async {
                                             await userController.removeUser(
-                                              User(
-                                                name: clientData!.name,
-                                                phoneNumber: clientData!.phoneNumber,
-                                                observations: clientData?.observations
-                                              )
+                                              userController.findUserByName(clientData!.name)!
                                             );
                                             Get.back();
                                             Get.showSnackbar(
@@ -211,57 +207,25 @@ class ClientDetails extends StatelessWidget {
                                 User(
                                   name: nameController.name.text,
                                   phoneNumber: phoneNumberController.phoneNumber.text,
+                                  bronzes: 0,
+                                  timestamp: DateTime.now(),
                                   observations: observationsController.observations.text,
                                   profileImage: imageController.picked.value ? imageController.imageData.value : null
                                 )
                               );
-                              // Get.showSnackbar(
-                              //   const GetSnackBar(
-                              //     titleText: Center(
-                              //       child: Text(
-                              //         'Cadastrado com sucesso!', 
-                              //         style: TextStyle(
-                              //           color: Colors.white,
-                              //           fontSize: 20
-                              //         ),
-                              //       ),
-                              //     ),
-                              //     messageText: Text(''),
-                              //     duration: Duration(seconds: 1),
-                              //     backgroundColor: Color.fromARGB(255, 0, 255, 8),
-                              //   )
-                              // );
                             } else {
+                              final oldUser = userController.findUserByName(nameController.name.text)!;
                               await userController.updateUser(
-                                User(
-                                  name: clientData!.name,
-                                  phoneNumber: clientData!.phoneNumber,
-                                  observations: clientData?.observations,
-                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
-                                ),
+                                oldUser,
                                 User(
                                   name: nameController.name.text,
                                   phoneNumber: phoneNumberController.phoneNumber.text,
+                                  bronzes: oldUser.bronzes,
+                                  timestamp: oldUser.timestamp,
                                   observations: observationsController.observations.text,
                                   profileImage: imageController.picked.value ? imageController.imageData.value : null
                                 )
                               );
-                              // Get.showSnackbar(
-                              //   const GetSnackBar(
-                              //     titleText: Center(
-                              //       child: Text(
-                              //         'Atualizado com sucesso!', 
-                              //         style: TextStyle(
-                              //           color: Colors.white,
-                              //           fontSize: 20
-                              //         ),
-                              //       ),
-                              //     ),
-                              //     messageText: Text(''),
-                              //     duration: Duration(seconds: 1),
-                              //     backgroundColor: Color.fromARGB(255, 0, 255, 8),
-                              //   )
-                              // );
                             }
                             await Future.delayed(const Duration(seconds: 1));
                             if (!context.mounted) {
@@ -270,22 +234,6 @@ class ClientDetails extends StatelessWidget {
                             Navigator.of(context).pop();
                           } else {
                             formController.error.value = true;
-                            // Get.showSnackbar(
-                            //   const GetSnackBar(
-                            //     titleText: Center(
-                            //       child: Text(
-                            //         'Preencha os campos corretamente', 
-                            //         style: TextStyle(
-                            //           color: Colors.white,
-                            //           fontSize: 20
-                            //         ),
-                            //       ),
-                            //     ),
-                            //     messageText: Text(''),
-                            //     duration: Duration(seconds: 1),
-                            //     backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                            //   )
-                            // );
                           }
                         },
                         child: Text(

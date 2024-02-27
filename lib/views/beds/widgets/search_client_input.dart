@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
@@ -22,7 +23,6 @@ class SearchClientInput extends StatelessWidget {
     searchController.focusNode.requestFocus();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-
     return Obx(() => Column(
       children: [
         Center(
@@ -50,13 +50,13 @@ class SearchClientInput extends StatelessWidget {
                   Expanded(
                     child: TextFormField(
                       onChanged: (value) {
-                        String? realName = userController.getRealName(value);
-
+                        String? realName = userController.getRealName(userController.getIdleUsers(), value);
                         if (realName != null) {
                           searchController.controller.text = realName;
                           searchController.usersToShow.clear();
                           searchController.chosen.value = true;
                           searchController.focusNode.unfocus();
+                          searchController.onEditingComplete != null && searchController.onEditingComplete!();
                         } else if (value.isNotEmpty) {
                           searchController.usersToShow.value = _fetchUsersThatMatch(value);
                           searchController.chosen.value = false;
@@ -65,7 +65,7 @@ class SearchClientInput extends StatelessWidget {
                           searchController.chosen.value = false;
                         }
                       },
-                      onEditingComplete: searchController.onEditingComplete,
+                      // onEditingComplete: searchController.onEditingComplete,
                       focusNode: searchController.focusNode,
                       controller: searchController.controller,
                       decoration: const InputDecoration.collapsed(
@@ -93,12 +93,11 @@ class SearchClientInput extends StatelessWidget {
     List<User> userstoReturn = <User>[];
     userstoReturn.addAll(
       userController
-          .users
-          .toList()
+          .getIdleUsers()
           .where(
             (user) => user.name.toLowerCase().contains(
-                  name.toLowerCase(),
-                ),
+                  name.toLowerCase()
+                )
           )
           .take(suggestionCount),
     );

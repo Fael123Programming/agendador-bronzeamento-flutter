@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class NameInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserController userController = Get.find();
     final FormController formController = Get.find();
     final NameInputController nameController = Get.find();
     double width = MediaQuery.of(context).size.width;
@@ -63,6 +65,9 @@ class NameInput extends StatelessWidget {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'O campo de nome deve ser preenchido';
+                    }
+                    if (userController.findUserByName(value) != null) {
+                      return 'Cliente com esse nome já cadastrado';
                     }
                     return null;
                   }

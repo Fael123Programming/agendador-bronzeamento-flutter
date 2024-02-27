@@ -1,5 +1,5 @@
-import 'package:agendador_bronzeamento/models/timing.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/search_client_input.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
@@ -29,15 +29,18 @@ class BedDetails extends StatelessWidget {
 
   const BedDetails({super.key, this.bedData});
 
+  final separator = const SizedBox(height: 50);
+
   @override
   Widget build(context) {
     final ConfigController configController = Get.find();
-    final BedCardController bedCardController = Get.find();
+    final BedCardListController bedCardListController = Get.find();
+
+    final PricePickerController priceController = Get.put(PricePickerController());
+    priceController.onEditingComplete = () => priceController.focusNode.unfocus();
 
     final SecsPickerController secsController = Get.put(SecsPickerController());
-    secsController.onEditingComplete = () {
-      secsController.focusNode.unfocus();
-    };
+    secsController.onEditingComplete = () => priceController.focusNode.requestFocus();
 
     final MinsPickerController minsController = Get.put(MinsPickerController());
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
@@ -50,10 +53,11 @@ class BedDetails extends StatelessWidget {
     
     final SearchClientInputController searchController = Get.put(SearchClientInputController());
     searchController.onEditingComplete = () {
-      turnController.turnAround.text = configController.config!.value.turnArounds;
-      hoursController.hours.text = configController.config!.value.defaultHours;
-      minsController.mins.text = configController.config!.value.defaultMins;
-      secsController.secs.text = configController.config!.value.defaultSecs;
+      turnController.turnAround.text = configController.config.value.turnArounds;
+      hoursController.hours.text = configController.config.value.defaultHours;
+      minsController.mins.text = configController.config.value.defaultMins;
+      secsController.secs.text = configController.config.value.defaultSecs;
+      priceController.price.text = configController.config.value.defaultPrice;
     };
 
     final formKey = GlobalKey<FormState>();
@@ -67,11 +71,13 @@ class BedDetails extends StatelessWidget {
         hoursController.focusNode.dispose();
         minsController.focusNode.dispose();
         secsController.focusNode.dispose();
+        priceController.focusNode.dispose();
         Get.delete<SearchClientInputController>();
         Get.delete<TurnAroundInputController>();
         Get.delete<HoursPickerController>();
         Get.delete<MinsPickerController>();
         Get.delete<SecsPickerController>();
+        Get.delete<PricePickerController>();
       },
       child: Scaffold(
         appBar: AppBar(),
@@ -103,17 +109,13 @@ class BedDetails extends StatelessWidget {
                       child: Column(
                         children: [
                           const SearchClientInput(),
-                          const SizedBox(
-                            height: 50,
-                          ),
+                          separator,
                           const TurnAroundInput(),
-                          const SizedBox(
-                            height: 50,
-                          ),
+                          separator,
                           const TimePicker(),
-                          const SizedBox(
-                            height: 50,
-                          ),
+                          separator,
+                          const PricePicker(),
+                          separator,
                           NiceButtons(
                             startColor: Colors.pink,
                             endColor: Colors.pink,
@@ -128,22 +130,21 @@ class BedDetails extends StatelessWidget {
                                 turnController.isValid() &&
                                 isValidDuration()
                               ) {
-                                 bedCardController.addBedCard(BedCard(
+                                int secs = int.parse(hoursController.hours.text) * 3600 + int.parse(minsController.mins.text) * 60 + int.parse(secsController.secs.text);
+                                BedCardController bedCardController = BedCardController(
                                   clientName: searchController.controller.text,
-                                  bedNumber: bedCardController.next.value,
-                                  totalDuration: Duration(
-                                    hours: int.parse(hoursController.hours.text),
-                                    minutes: int.parse(minsController.mins.text),
-                                    seconds: int.parse(secsController.secs.text)
-                                  ),
-                                  remainingDuration: Duration(
-                                    hours: int.parse(hoursController.hours.text),
-                                    minutes: int.parse(minsController.mins.text),
-                                    seconds: int.parse(secsController.secs.text)
-                                  ),
+                                  price: priceController.price.text,
+                                  totalSecs: secs,
+                                  remainingSecs: secs,
                                   totalTurns: int.parse(turnController.turnAround.text),
-                                  turnsDone: 0
-                                ));
+                                  turnsDone: 0.obs
+                                );
+                                BedCard bedCard = BedCard(
+                                  bedCardController: bedCardController,
+                                  bedNumber: bedCardListController.list.length + 1,
+                                );
+                                bedCardListController.list.add(bedCard);
+                                bedCardController.startTimer();
                                 await Future.delayed(const Duration(seconds: 1));
                                 if (!context.mounted) {
                                   return;
@@ -170,7 +171,8 @@ class BedDetails extends StatelessWidget {
                           )
                         ],
                       ),
-                    )
+                    ),
+                    separator
                   ],
                 ),
               ),

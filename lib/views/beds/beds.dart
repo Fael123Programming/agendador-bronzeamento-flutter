@@ -12,14 +12,14 @@ class Beds extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    final BedCardController bedCardController = Get.find();
+    final BedCardListController bedCardListController = Get.find();
     final HomeController homeController = Get.find();
     final UserController userController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
         title: const Text('Macas'),
       ),
-      body: bedCardController.bedCards.isEmpty ? 
+      body: bedCardListController.list.isEmpty ? 
           Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center, 
@@ -58,7 +58,10 @@ class Beds extends StatelessWidget {
                 ]
               )
             )
-        : ListView(children: bedCardController.bedCards.toList()),
+        : ListView(
+          padding: const EdgeInsets.only(bottom: 50),
+          children: bedCardListController.list.toList()
+        ),
       floatingActionButton: userController.users.isNotEmpty ? FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),
         foregroundColor: Colors.white,
