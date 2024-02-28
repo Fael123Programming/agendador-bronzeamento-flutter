@@ -10,6 +10,12 @@ import 'package:nice_buttons/nice_buttons.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 
+class UpdatingUserController extends GetxController {
+  final RxBool updating;
+
+  UpdatingUserController({required this.updating});
+}
+
 class ClientDetails extends StatelessWidget {
   const ClientDetails({super.key, this.clientData});
 
@@ -17,6 +23,7 @@ class ClientDetails extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final UpdatingUserController updatingController = Get.put(UpdatingUserController(updating: (clientData != null).obs));
     final UserController userController = Get.find(); 
     final ImageInputController imageController = Get.put(ImageInputController());
     final FormController formController = Get.put(FormController());
@@ -58,11 +65,12 @@ class ClientDetails extends StatelessWidget {
         Get.delete<ObservationsInputController>();
         Get.delete<FormController>();
         Get.delete<ImageInputController>();
+        Get.delete<UpdatingUserController>();
       },
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            clientData != null ? IconButton(
+            updatingController.updating.value ? IconButton(
               onPressed: () async {
                 Get.dialog(
                   Column(
@@ -127,22 +135,22 @@ class ClientDetails extends StatelessWidget {
                                               userController.findUserByName(clientData!.name)!
                                             );
                                             Get.back();
-                                            Get.showSnackbar(
-                                              GetSnackBar(
-                                                titleText: Center(
-                                                  child: Text(
-                                                    '${clientData!.name.split(" ")[0]} removido com sucesso!', 
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20
-                                                    ),
-                                                  ),
-                                                ),
-                                                messageText: const Text(''),
-                                                duration: const Duration(seconds: 1),
-                                                backgroundColor: const Color.fromARGB(255, 0, 255, 8),
-                                              )
-                                            );
+                                            // Get.showSnackbar(
+                                            //   GetSnackBar(
+                                            //     titleText: Center(
+                                            //       child: Text(
+                                            //         '${clientData!.name.split(" ")[0]} removido com sucesso!',
+                                            //         style: const TextStyle(
+                                            //           color: Colors.white,
+                                            //           fontSize: 20
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //     messageText: const Text(''),
+                                            //     duration: const Duration(seconds: 1),
+                                            //     backgroundColor: const Color.fromARGB(255, 0, 255, 8),
+                                            //   )
+                                            // );
                                             await Future.delayed(const Duration(seconds: 1));
                                             if (!context.mounted) {
                                               return;
@@ -237,7 +245,7 @@ class ClientDetails extends StatelessWidget {
                           }
                         },
                         child: Text(
-                          clientData == null ? 'Adicionar' : 'Salvar',
+                          updatingController.updating.value ? 'Salvar' : 'Adicionar',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,

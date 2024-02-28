@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
+import 'package:agendador_bronzeamento/views/beds/screens/search_bed.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
@@ -66,6 +67,11 @@ class CustomRouter {
         return MaterialPageRoute(
           builder: (context) => const SearchClient(),
           settings: const RouteSettings(name: RoutePaths.searchClient)
+        );
+      case RoutePaths.searchBed:
+        return MaterialPageRoute(
+          builder: (context) => const SearchBed(),
+          settings: const RouteSettings(name: RoutePaths.searchBed)
         );
       case RoutePaths.general:
         // Map<dynamic, dynamic>? bedArgs;

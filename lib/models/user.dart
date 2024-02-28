@@ -166,8 +166,8 @@ class UserController extends GetxController {
 
   List<User> getIdleUsers() {
     final BedCardListController bedCardListController = Get.find();
-    List<String> buzyClientsNames = bedCardListController.list.map((bedCard) => bedCard.bedCardController.clientName.toLowerCase()).toList();
-    List<User> resultList = users.where((user) => !buzyClientsNames.contains(user.name.toLowerCase())).toList();
+    List<String> busyClientsNames = bedCardListController.list.map((bedCard) => bedCard.bedCardController.clientName.toLowerCase()).toList();
+    List<User> resultList = users.where((user) => !busyClientsNames.contains(user.name.toLowerCase())).toList();
     return resultList;
   }
 

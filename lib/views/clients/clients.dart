@@ -23,13 +23,13 @@ class Clients extends StatelessWidget {
               title: const Text(
                 'Clientes',
               ),
-              actions: <Widget>[
+              actions: userController.users.isNotEmpty ? <Widget>[
                 IconButton(
                   onPressed: () =>
                       Navigator.pushNamed(context, RoutePaths.searchClient),
                   icon: const Icon(Icons.search),
                 )
-              ],
+              ] : null,
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () =>

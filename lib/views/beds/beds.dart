@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
+
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:get/get.dart';
+
 import 'package:agendador_bronzeamento/models/user.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
@@ -18,6 +21,13 @@ class Beds extends StatelessWidget {
     return Obx(() => Scaffold(
       appBar: AppBar(
         title: const Text('Macas'),
+        actions: bedCardListController.list.isNotEmpty ? <Widget>[
+          IconButton(
+            onPressed: () =>
+                Navigator.pushNamed(context, RoutePaths.searchBed),
+            icon: const Icon(Icons.search),
+          )
+        ] : null,
       ),
       body: bedCardListController.list.isEmpty ? 
           Center(
