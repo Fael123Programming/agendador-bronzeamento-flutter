@@ -1,6 +1,5 @@
 import 'package:agendador_bronzeamento/utils/sender.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:styled_text/styled_text.dart';
 
@@ -30,7 +29,7 @@ class About extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               child: const Text(
-                'v1.0.24',
+                'v1.0.26',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 10,
