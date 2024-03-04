@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 
 import 'package:get/get.dart';
 
@@ -20,7 +20,7 @@ class Beds extends StatelessWidget {
     final UserController userController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
-        title: const Text('Macas'),
+        title: const Text(''),
         actions: bedCardListController.list.isNotEmpty ? <Widget>[
           IconButton(
             onPressed: () =>
@@ -50,12 +50,14 @@ class Beds extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(top: 50),
                     child: TextButton(
-                      child: Text(
+                      child: const Text(
                         'Comece adicionando um novo cliente!',
-                        style: GoogleFonts.robotoMono(
+                        style: TextStyle(
                           fontSize: 30, 
                           color: Colors.black, 
-                          decoration: TextDecoration.underline
+                          decoration: TextDecoration.underline,
+                          fontFamily: 'DancingScript',
+                          fontWeight: FontWeight.bold
                         ),
                         textAlign: TextAlign.center,
                       ),

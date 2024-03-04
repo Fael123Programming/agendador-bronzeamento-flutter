@@ -1,4 +1,3 @@
-import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/user.dart';

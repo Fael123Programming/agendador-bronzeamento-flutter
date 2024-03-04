@@ -2,17 +2,12 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/settings/widgets/setting_item.dart';
 import 'package:flutter/material.dart';
 
-class Settings extends StatefulWidget {
+class Settings extends StatelessWidget {
   const Settings({super.key});
 
   @override
-  State<Settings> createState() => _SettingsState();
-}
-
-class _SettingsState extends State<Settings> {
-  @override
   Widget build(BuildContext context) {
-    final List<Widget> settingItems = [
+    final List<SettingItem> settingItems = <SettingItem>[
       SettingItem(
         title: 'Gerais',
         icon: Icons.settings,
@@ -21,12 +16,12 @@ class _SettingsState extends State<Settings> {
       SettingItem(
         title: 'Sobre',
         icon: Icons.info,
-        onTap: () {},
+        onTap: () => Navigator.pushNamed(context, RoutePaths.about),
       ),
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configurações'),
+        title: const Text(''),
       ),
       body: Center(
         child: SafeArea(

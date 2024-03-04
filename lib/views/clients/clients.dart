@@ -5,7 +5,7 @@ import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:agendador_bronzeamento/utils/wpp.dart';
+import 'package:agendador_bronzeamento/utils/sender.dart';
 
 class Clients extends StatelessWidget {
   const Clients({super.key});
@@ -20,9 +20,7 @@ class Clients extends StatelessWidget {
         if (userController.loaded.value) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text(
-                'Clientes',
-              ),
+              title: const Text(''),
               actions: userController.users.isNotEmpty ? <Widget>[
                 IconButton(
                   onPressed: () =>
@@ -137,7 +135,7 @@ class Clients extends StatelessWidget {
                                           FontAwesomeIcons.whatsapp,
                                           color: Colors.white,
                                         ),
-                                        onPressed: () async => sendMessage(
+                                        onPressed: () async => sendWppMessage(
                                             userController.users[index].name
                                                 .split(' ')[0],
                                             userController.users[index].phoneNumber),

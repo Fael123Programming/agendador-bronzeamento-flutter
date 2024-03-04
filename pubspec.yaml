@@ -49,6 +49,7 @@ dependencies:
   google_fonts:
   url_launcher:
   font_awesome_flutter:
+  styled_text: ^8.1.0
 
 dev_dependencies:
   flutter_launcher_icons:
@@ -79,7 +80,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  fonts:
+  - family: DancingScript
+    fonts:
+    - asset: assets/dancing_script.ttf
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

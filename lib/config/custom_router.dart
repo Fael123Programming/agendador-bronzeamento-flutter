@@ -3,6 +3,7 @@ import 'package:agendador_bronzeamento/views/beds/screens/search_bed.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/about.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
@@ -28,7 +29,7 @@ class CustomRouter {
         );
       case RoutePaths.splash:
         return MaterialPageRoute(
-          builder: (context) => const Splash(),
+          builder: (context) => Splash(),
           settings: RouteSettings(
             name: RoutePaths.splash,
             arguments: settings.arguments,
@@ -80,7 +81,12 @@ class CustomRouter {
         // }
         return MaterialPageRoute(
           builder: (context) => const General(),
-          settings: const RouteSettings(name: RoutePaths.clientDetails),
+          settings: const RouteSettings(name: RoutePaths.general),
+        );
+      case RoutePaths.about:
+        return MaterialPageRoute(
+          builder: (context) => const About(),
+          settings: const RouteSettings(name: RoutePaths.about),
         );
       default:
         return _errorRoute();

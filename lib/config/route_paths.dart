@@ -3,7 +3,8 @@ class RoutePaths {
   static const String home = '/home';
   static const String clientDetails = '/client_details';
   static const String bedDetails = '/bed_details';
-  static const String general = '/general';
   static const String searchClient = '/search_client';
   static const String searchBed = '/search_bed';
+  static const String general = '/general';
+  static const String about = '/about';
 }

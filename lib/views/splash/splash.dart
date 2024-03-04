@@ -1,29 +1,20 @@
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class Splash extends StatefulWidget {
-  const Splash({super.key});
-
-  @override
-  State<Splash> createState() => _SplashState();
-}
-
-class _SplashState extends State<Splash> {
-  bool showCircularProgressIndicator = false;
+class Splash extends StatelessWidget {
+  Splash({super.key});
+  
+  final RxBool showCircularProgressIndicator = false.obs;
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () {
-      setState(() => showCircularProgressIndicator = true);
+      showCircularProgressIndicator.value = true;
     });
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacementNamed(context, RoutePaths.home);
     });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.pink,
       body: Center(
@@ -49,7 +40,7 @@ class _SplashState extends State<Splash> {
             ),
             Container(
               margin: const EdgeInsets.only(top: 50),
-              child: const CircularProgressIndicator(),
+              child: Obx(() => showCircularProgressIndicator.value ? const CircularProgressIndicator() : Container()),
             ),
           ],
         ),

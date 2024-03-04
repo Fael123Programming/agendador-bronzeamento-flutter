@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/user.dart';
-import 'package:agendador_bronzeamento/utils/wpp.dart';
+import 'package:agendador_bronzeamento/utils/sender.dart';
 
 class SearchClient extends StatelessWidget {
   const SearchClient({super.key});
@@ -81,7 +81,7 @@ class SearchClient extends StatelessWidget {
               child: IconButton(
                 alignment: Alignment.center,
                 icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white,),
-                onPressed: () async => sendMessage(filtered[index].name.split(' ')[0], filtered[index].phoneNumber),
+                onPressed: () async => sendWppMessage(filtered[index].name.split(' ')[0], filtered[index].phoneNumber),
               ),
             ),
             leading: filtered[index].profileImage != null ? 

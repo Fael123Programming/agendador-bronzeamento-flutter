@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SettingItem extends StatefulWidget {
+class SettingItem extends StatelessWidget {
   final String title;
   final IconData icon;
   final void Function() onTap;
@@ -12,12 +12,7 @@ class SettingItem extends StatefulWidget {
     required this.onTap,
   });
 
-  @override
-  State<SettingItem> createState() => _SettingItemState();
-}
-
-class _SettingItemState extends State<SettingItem> {
-  Color? tileColor = Colors.pink;
+  final Color? tileColor = Colors.pink;
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +23,17 @@ class _SettingItemState extends State<SettingItem> {
           borderRadius: BorderRadius.all(Radius.circular(20)),
           side: BorderSide(color: Colors.white),
         ),
-        onTap: widget.onTap,
+        onTap: onTap,
         hoverColor: Colors.pink[100],
         tileColor: tileColor,
         title: Text(
-          widget.title,
+          title,
           style: const TextStyle(
             color: Colors.white,
           ),
         ),
         leading: Icon(
-          widget.icon,
+          icon,
           color: Colors.white,
         ),
         trailing: const Icon(
