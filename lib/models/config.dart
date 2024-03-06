@@ -83,8 +83,9 @@ class ConfigController extends GetxController {
       c = Config();
       await box.put(configObject, c);
     }
-    loaded = true.obs;
+    loaded.value = true;
     config.value = c;
+    await box.close();
   }
 
   Future<void> updateConfig({
@@ -120,6 +121,7 @@ class ConfigController extends GetxController {
       );
     }
     await box.put(configObject, c);
+    await box.close();
     config.value = c;
   }
 }

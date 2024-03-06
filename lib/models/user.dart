@@ -117,6 +117,7 @@ class UserController extends GetxController {
     final Box<User> usersBoxObj = await Hive.openBox<User>(usersBox);
     await usersBoxObj.clear();
     users.clear();
+    await usersBoxObj.close();
   }
 
   Future<void> fetchUsers() async {
@@ -124,6 +125,7 @@ class UserController extends GetxController {
     loaded.value = true;
     users.value = usersBoxObj.values.toList();
     sort();
+    await usersBoxObj.close();
   }
 
   Future<void> addUser(User user) async {
@@ -132,6 +134,7 @@ class UserController extends GetxController {
       await usersBoxObj.put(user.name, user);
       users.add(user);
       sort();
+      await usersBoxObj.close();
     } else {
       throw 'User already exists';
     }
@@ -142,6 +145,7 @@ class UserController extends GetxController {
     await usersBoxObj.delete(user.name);
     users.remove(user);
     sort();
+    await usersBoxObj.close();
   }
 
   User? findUserByName(String name) {

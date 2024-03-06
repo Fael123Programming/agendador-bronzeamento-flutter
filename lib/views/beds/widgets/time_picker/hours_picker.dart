@@ -37,8 +37,8 @@ class HoursPicker extends StatelessWidget {
                   controller: hoursController.hours,
                   onChanged: (value) {
                     String valStr;
-                    if (Validator.isInteger(value)) {
-                      valStr = int.parse(value).toString();
+                    if (Validator.isInteger(value) && int.parse(value) < 24) {
+                      valStr = value;
                     } else {
                       valStr = '';
                     }
@@ -49,7 +49,7 @@ class HoursPicker extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration.collapsed(
-                    hintText: 'hrs',
+                    hintText: 'Hrs',
                     hintStyle: TextStyle(
                       color: Colors.grey,
                     ),

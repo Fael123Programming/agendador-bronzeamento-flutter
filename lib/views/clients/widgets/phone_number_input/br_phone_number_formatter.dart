@@ -8,6 +8,9 @@ class BrPhoneNumberFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    if (newValue.text.length > 15) {
+      return oldValue;
+    }
     bool userIsInserting = oldValue.text.length < newValue.text.length;
     StringBuffer strBuffer = StringBuffer();
     String newValueStr = newValue.text;

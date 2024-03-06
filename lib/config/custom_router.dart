@@ -1,5 +1,6 @@
 import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
 import 'package:agendador_bronzeamento/views/beds/screens/search_bed.dart';
+import 'package:agendador_bronzeamento/views/clients/screens/client_history.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
@@ -52,6 +53,14 @@ class CustomRouter {
             clientData: clientData,
           ),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
+        );
+      case RoutePaths.clientHistory:
+        User clientData = settings.arguments as User;
+        return MaterialPageRoute(
+          builder: (context) => ClientHistory(
+            clientData: clientData,
+          ),
+          settings: const RouteSettings(name: RoutePaths.clientHistory),
         );
       case RoutePaths.bedDetails:
         Map<dynamic, dynamic>? bedArgs;

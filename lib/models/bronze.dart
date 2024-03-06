@@ -50,7 +50,7 @@ class Bronze {
 
 class BronzeAdapter extends TypeAdapter<Bronze> {
   @override
-  final int typeId = 5;
+  final int typeId = 3;
 
   @override
   Bronze read(BinaryReader reader) {
@@ -86,12 +86,14 @@ class BronzeController extends GetxController {
     final Box<Bronze> bronzeBoxObj = await Hive.openBox<Bronze>(bronzeBox);
     await bronzeBoxObj.clear();
     bronzes.clear();
+    await bronzeBoxObj.close();
   }
-  
+
   Future<void> fetchBronzes() async {
     final Box<Bronze> bronzeBoxObj = await Hive.openBox<Bronze>(bronzeBox);
     loaded.value = true;
     bronzes.value = bronzeBoxObj.values.toList();
+    await bronzeBoxObj.close();
   }
 
   Future<void> addBronze(Bronze bronze) async {
@@ -111,11 +113,12 @@ class BronzeController extends GetxController {
         profileImage: user.profileImage
       )
     );
+    await bronzesBoxObj.close();
   }
 
   List<Bronze>? findBronzesOfClientWithName(String clientName) {
     try {
-      return bronzes.where((bronze) => bronze.clientName == clientName).toList();
+      return bronzes.where((bronze) => bronze.clientName == clientName).toList().reversed.toList();
     } catch(err) {
       return null;
     }

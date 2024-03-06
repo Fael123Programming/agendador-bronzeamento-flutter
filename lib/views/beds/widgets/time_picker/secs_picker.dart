@@ -37,8 +37,8 @@ class SecsPicker extends StatelessWidget {
                   controller: secsController.secs,
                   onChanged: (value) {
                     String valStr;
-                    if (Validator.isInteger(value)) {
-                      valStr = int.parse(value).toString();
+                    if (Validator.isInteger(value) && int.parse(value) < 60) {
+                      valStr = value;
                     } else {
                       valStr = '';
                     }
@@ -49,7 +49,7 @@ class SecsPicker extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: const InputDecoration.collapsed(
-                    hintText: 'secs',
+                    hintText: 'Secs',
                     hintStyle: TextStyle(
                       color: Colors.grey,
                     ),

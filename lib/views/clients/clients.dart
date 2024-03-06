@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:agendador_bronzeamento/utils/sender.dart';
 
+import '../../utils/validator.dart';
+
 class Clients extends StatelessWidget {
   const Clients({super.key});
 
@@ -106,12 +108,15 @@ class Clients extends StatelessWidget {
                               if (configController.config.value.sortBy ==
                                   'timestamp') {
                                 DateTime timestamp = userController.users[index].timestamp;
-                                subtitle = Text('${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}', style: style);
+                                subtitle = Text(Validator.formatDatetime(timestamp));
+                                // subtitle = Text('${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}', style: style);
                               } else if (configController.config.value.sortBy ==
                                   'bronze') {
                                 subtitle = Text(userController.users[index].bronzes.toString(), style: style);
                               }
                               return Container(
+                                height: 80,
+                                alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   color: Colors.pink[50],
                                   borderRadius: const BorderRadius.all(
@@ -121,25 +126,46 @@ class Clients extends StatelessWidget {
                                 margin: const EdgeInsets.all(10),
                                 child: ListTile(
                                     onTap: () => Navigator.pushNamed(
-                                          context,
-                                          RoutePaths.clientDetails,
-                                          arguments: userController.users[index],
-                                        ),
+                                      context,
+                                      RoutePaths.clientDetails,
+                                      arguments: userController.users[index],
+                                    ),
                                     title: Text(userController.users[index].name),
                                     subtitle: subtitle,
-                                    trailing: CircleAvatar(
-                                      backgroundColor: Colors.green,
-                                      child: IconButton(
-                                        alignment: Alignment.center,
-                                        icon: const FaIcon(
-                                          FontAwesomeIcons.whatsapp,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () async => sendWppMessage(
-                                            userController.users[index].name
-                                                .split(' ')[0],
-                                            userController.users[index].phoneNumber),
-                                      ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        userController.users[index].bronzes > 0 ? CircleAvatar(
+                                          backgroundColor: Colors.grey,
+                                          child: IconButton(
+                                            alignment: Alignment.center,
+                                            icon: const FaIcon(
+                                              FontAwesomeIcons.clockRotateLeft,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () => Navigator.pushNamed(
+                                              context,
+                                              RoutePaths.clientHistory,
+                                              arguments: userController.users[index],
+                                            ),
+                                          ),
+                                        ) : Container(),
+                                        const SizedBox(width: 50),
+                                        CircleAvatar(
+                                          backgroundColor: Colors.green,
+                                          child: IconButton(
+                                            alignment: Alignment.center,
+                                            icon: const FaIcon(
+                                              FontAwesomeIcons.whatsapp,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () async => await sendWppMessage(
+                                                userController.users[index].name
+                                                    .split(' ')[0],
+                                                userController.users[index].phoneNumber),
+                                          ),
+                                        )
+                                      ],
                                     ),
                                     leading:
                                         userController.users[index].profileImage !=

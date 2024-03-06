@@ -12,18 +12,6 @@ import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/models/config.dart';
 import 'package:agendador_bronzeamento/utils/loading.dart';
 
-bool isValidDuration() {
-  final HoursPickerController hours = Get.find();
-  final MinsPickerController mins = Get.find();
-  final SecsPickerController secs = Get.find();
-
-  int hoursInt = int.parse(hours.hours.text);
-  int minsInt = int.parse(mins.mins.text);
-  int secsInt = int.parse(secs.secs.text);
-
-  return hoursInt + minsInt + secsInt > 0;
-}
-
 class BedDetails extends StatelessWidget {
   final Map<dynamic, dynamic>? bedData;
 
@@ -145,7 +133,7 @@ class BedDetails extends StatelessWidget {
                                 );
                                 bedCardListController.list.add(bedCard);
                                 bedCardController.startTimer();
-                                await Future.delayed(const Duration(seconds: 1));
+                                // await Future.delayed(const Duration(seconds: 1));
                                 if (!context.mounted) {
                                   return;
                                 }

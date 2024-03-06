@@ -28,7 +28,7 @@ class SearchClient extends StatelessWidget {
                 filtered.clear();
                 if (s.isNotEmpty) {
                   filtered.addAll(
-                    userController.users.toList().where(
+                    userController.users.where(
                       (user) => user.name.toString().toLowerCase().contains(
                             s.toLowerCase(),
                           ),
@@ -62,6 +62,8 @@ class SearchClient extends StatelessWidget {
         ListView.builder(
           itemCount: filtered.length,
           itemBuilder: (context, index) => Container(
+          height: 80,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.pink[50],
             borderRadius: const BorderRadius.all(
@@ -70,30 +72,62 @@ class SearchClient extends StatelessWidget {
           ),
           margin: const EdgeInsets.all(10),
           child: ListTile(
-            onTap: () => Navigator.pushNamed(
-              context,
-              RoutePaths.clientDetails,
-              arguments: filtered[index],
-            ),
-            title: Text(filtered[index].name),
-            trailing: CircleAvatar(
-              backgroundColor: Colors.green,
-              child: IconButton(
-                alignment: Alignment.center,
-                icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white,),
-                onPressed: () async => sendWppMessage(filtered[index].name.split(' ')[0], filtered[index].phoneNumber),
+              onTap: () => Navigator.pushNamed(
+                context,
+                RoutePaths.clientDetails,
+                arguments: filtered[index],
               ),
-            ),
-            leading: filtered[index].profileImage != null ? 
-              FittedBox(
+              title: Text(filtered[index].name),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  filtered[index].bronzes > 0 ? CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    child: IconButton(
+                      alignment: Alignment.center,
+                      icon: const FaIcon(
+                        FontAwesomeIcons.clockRotateLeft,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pushNamed(
+                        context,
+                        RoutePaths.clientHistory,
+                        arguments: userController.users[index],
+                      ),
+                    ),
+                  ) : Container(),
+                  const SizedBox(width: 50),
+                  CircleAvatar(
+                    backgroundColor: Colors.green,
+                    child: IconButton(
+                      alignment: Alignment.center,
+                      icon: const FaIcon(
+                        FontAwesomeIcons.whatsapp,
+                        color: Colors.white,
+                      ),
+                      onPressed: () async => await sendWppMessage(
+                          filtered[index].name
+                              .split(' ')[0],
+                          filtered[index].phoneNumber),
+                    ),
+                  )
+                ],
+              ),
+              leading:
+              filtered[index].profileImage !=
+                  null
+                  ? FittedBox(
                 fit: BoxFit.cover,
                 child: CircleAvatar(
-                  backgroundImage: Image.memory(filtered[index].profileImage!).image,
+                  backgroundImage: Image.memory(
+                      filtered[index]
+                          .profileImage!)
+                      .image,
                   radius: 20,
                 ),
-              ) : const Icon(Icons.person_2)
-            ),
-          ),
+              )
+                  : const Icon(Icons.person_2)),
+        )
         )
       )
     );

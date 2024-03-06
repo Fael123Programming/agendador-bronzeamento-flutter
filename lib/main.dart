@@ -10,15 +10,22 @@ import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 
+void registerAdapterIfNotRegistered<T>(TypeAdapter<T> adapter) {
+  if (Hive.isAdapterRegistered(adapter.typeId)) {
+    return;
+  }
+  Hive.registerAdapter(adapter);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
 
-  Hive.registerAdapter(ConfigAdapter());
-  Hive.registerAdapter(UserAdapter());
-  Hive.registerAdapter(BronzeAdapter());
+  Hive.registerAdapter<Config>(ConfigAdapter());
+  Hive.registerAdapter<User>(UserAdapter());
+  Hive.registerAdapter<Bronze>(BronzeAdapter());
 
   Get.put(HomeController());
 

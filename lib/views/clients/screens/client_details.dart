@@ -135,23 +135,7 @@ class ClientDetails extends StatelessWidget {
                                               userController.findUserByName(clientData!.name)!
                                             );
                                             Get.back();
-                                            // Get.showSnackbar(
-                                            //   GetSnackBar(
-                                            //     titleText: Center(
-                                            //       child: Text(
-                                            //         '${clientData!.name.split(" ")[0]} removido com sucesso!',
-                                            //         style: const TextStyle(
-                                            //           color: Colors.white,
-                                            //           fontSize: 20
-                                            //         ),
-                                            //       ),
-                                            //     ),
-                                            //     messageText: const Text(''),
-                                            //     duration: const Duration(seconds: 1),
-                                            //     backgroundColor: const Color.fromARGB(255, 0, 255, 8),
-                                            //   )
-                                            // );
-                                            await Future.delayed(const Duration(seconds: 1));
+                                            // await Future.delayed(const Duration(seconds: 1));
                                             if (!context.mounted) {
                                               return;
                                             }
