@@ -2,7 +2,7 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/utils/sender.dart';
 
 class SearchClient extends StatelessWidget {

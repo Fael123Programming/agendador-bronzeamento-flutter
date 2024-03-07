@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 import 'package:flutter/material.dart';

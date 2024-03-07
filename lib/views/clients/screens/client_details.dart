@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/phone_number_input.dart';
 import 'package:get/get.dart';
 import 'package:nice_buttons/nice_buttons.dart';
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 
 class UpdatingUserController extends GetxController {

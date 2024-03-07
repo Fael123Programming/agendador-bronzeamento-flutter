@@ -1,6 +1,6 @@
 import 'package:agendador_bronzeamento/config/route_paths.dart';
-import 'package:agendador_bronzeamento/models/config.dart';
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

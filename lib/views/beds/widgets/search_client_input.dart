@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 
 const suggestionCount = 1;
 
@@ -89,8 +89,8 @@ class SearchClientInput extends StatelessWidget {
 
   List<User> _fetchUsersThatMatch(String name) {
     final UserController userController = Get.find();
-    List<User> userstoReturn = <User>[];
-    userstoReturn.addAll(
+    List<User> usersToReturn = <User>[];
+    usersToReturn.addAll(
       userController
           .getIdleUsers()
           .where(
@@ -100,7 +100,7 @@ class SearchClientInput extends StatelessWidget {
           )
           .take(suggestionCount),
     );
-    return userstoReturn;
+    return usersToReturn;
   }
 
   List<Widget> _drawUsersCards(List<User> users, BuildContext context) {

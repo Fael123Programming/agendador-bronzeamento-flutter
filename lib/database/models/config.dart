@@ -2,13 +2,13 @@ import 'package:hive/hive.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/utils/constants.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 0)
 class Config {
   Config({
-    this.turnArounds = '4',
+    this.turnArounds = '1',
     this.defaultHours = '0',
-    this.defaultMins = '40',
-    this.defaultSecs = '0',
+    this.defaultMins = '0',
+    this.defaultSecs = '1',
     this.defaultPrice = '90.00',
     this.sortBy = 'name',
     this.increasing = true
@@ -38,8 +38,8 @@ class Config {
 
 class ConfigAdapter extends TypeAdapter<Config> {
   @override
-  final int typeId = 1;
-  
+  final int typeId = 0;
+
   @override
   Config read(BinaryReader reader) {
     final turnArounds = reader.read();

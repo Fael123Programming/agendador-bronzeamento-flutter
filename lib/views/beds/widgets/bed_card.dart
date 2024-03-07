@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:agendador_bronzeamento/models/bronze.dart';
+import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,7 +27,7 @@ class BedCardController extends GetxController {
   final int totalSecs;
   final RxBool stopped = false.obs;
   final RxBool active = true.obs;
-  final time = '00:00:00'.obs;
+  final time = ''.obs;
   final Rx<Color> color = Colors.white.obs;
   final DateTime timestamp = DateTime.now();
 

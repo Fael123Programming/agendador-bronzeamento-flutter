@@ -43,13 +43,14 @@ dependencies:
   grouped_list:
   image_picker:
   nice_buttons:
-  hive:
   path_provider:
-  path:
+  path: ^1.9.0
   google_fonts:
   url_launcher:
   font_awesome_flutter:
   styled_text: ^8.1.0
+  hive_flutter: ^1.1.0
+  sqflite: ^2.3.2
 
 dev_dependencies:
   flutter_launcher_icons:
@@ -63,6 +64,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/home.dart';

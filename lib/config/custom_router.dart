@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/general.dart';
-import 'package:agendador_bronzeamento/models/user.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 
 class CustomRouter {
   static Route onGenerateRoute(RouteSettings settings) {

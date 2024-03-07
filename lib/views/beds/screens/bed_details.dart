@@ -9,7 +9,7 @@ import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_input.dart
 import 'package:flutter/material.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:get/get.dart';
-import 'package:agendador_bronzeamento/models/config.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/utils/loading.dart';
 
 class BedDetails extends StatelessWidget {

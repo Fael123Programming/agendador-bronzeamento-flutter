@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/models/config.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
