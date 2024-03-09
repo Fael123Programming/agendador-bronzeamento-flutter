@@ -1,17 +1,17 @@
 import 'dart:typed_data';
 
+import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/database/database_helper.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
-import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:get/get.dart';
 
 class Client {
-  final int id;
+  late int id;
   final String name;
   final String phoneNumber;
-  final DateTime since;
-  int bronzes;
+  late DateTime since;
+  late int bronzes;
   String? observations;
   Uint8List? picture;
 
@@ -24,6 +24,17 @@ class Client {
     this.observations,
     this.picture
   });
+
+  Client.toSave({
+    required this.name,
+    required this.phoneNumber,
+    this.observations,
+    this.picture
+  }) {
+    id = -1;
+    since = DateTime.now();
+    bronzes = 0;
+  }
 
   static Client fromMap(Map<String, dynamic> map) {
     return Client(
@@ -39,7 +50,6 @@ class Client {
 
   Map<String, Object?> toMap() {
     return {
-      'id': id,
       'name': name,
       'phoneNumber': phoneNumber,
       'since': since.toString(),
@@ -65,7 +75,6 @@ class Client {
 
 class ClientController extends GetxController {
   RxList<Client> clients = <Client>[].obs;
-  RxBool loaded = false.obs;
   late Map<String, void Function(int)> sortingMethods;
 
   ClientController() {
@@ -96,7 +105,7 @@ class ClientController extends GetxController {
 
   Client? findUserByName(String name) {
     try {
-      return clients.where((client) => client.name == name).first;
+      return clients.where((client) => client.name.toLowerCase() == name.toLowerCase()).first;
     } catch(err) {
       return null;
     }
@@ -116,7 +125,7 @@ class ClientController extends GetxController {
 
   List<Client> getIdle() {
     final BedCardListController bedCardListController = Get.find();
-    List<String> busy = bedCardListController.list.map((bedCard) => bedCard.bedCardController.clientName.toLowerCase()).toList();
+    List<String> busy = bedCardListController.list.map((bedCard) => bedCard.bedCardController.client.name.toLowerCase()).toList();
     List<Client> resultList = clients.where((client) => !busy.contains(client.name.toLowerCase())).toList();
     return resultList;
   }
@@ -128,8 +137,8 @@ class ClientController extends GetxController {
 
   void sort() {
     final ConfigController configController = Get.find();
-    int factor = configController.config.value.increasing ? 1 : -1;
-    String sortingMethod = configController.config.value.sortBy.toLowerCase();
+    int factor = configController.getIncreasing() ? 1 : -1;
+    String sortingMethod = configController.getSortBy().toLowerCase();
     sortingMethods[sortingMethod]!(factor);
   }
 }

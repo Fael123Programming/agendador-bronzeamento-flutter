@@ -3,14 +3,14 @@ import 'package:decimal/decimal.dart';
 import 'package:get/get.dart';
 
 class Bronze {
-  final int id;
+  late int id;
   final int clientId;
   final int totalSecs;
   final int totalTurns;
   final Decimal price;
   final DateTime timestamp;
 
-  const Bronze({
+  Bronze({
     required this.id,
     required this.clientId,
     required this.totalSecs,
@@ -18,6 +18,16 @@ class Bronze {
     required this.price,
     required this.timestamp
   });
+
+  Bronze.toSave({
+    required this.clientId,
+    required this.totalSecs,
+    required this.totalTurns,
+    required this.price,
+    required this.timestamp
+  }) {
+    id = -1;
+  }
 
   static Bronze fromMap(Map<String, dynamic> map) {
     return Bronze(
@@ -32,7 +42,6 @@ class Bronze {
 
   Map<String, Object?> toMap() {
     return {
-      'id': id,
       'clientId': clientId,
       'totalSecs': totalSecs,
       'totalTurns': totalTurns,

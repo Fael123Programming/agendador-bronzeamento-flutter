@@ -10,8 +10,8 @@ class SearchClient extends StatelessWidget {
 
   @override
   Widget build(context) {
-    final UserController userController = Get.find();
-    RxList<User> filtered = <User>[].obs;
+    final ClientController clientController = Get.find();
+    RxList<Client> filtered = <Client>[].obs;
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -28,8 +28,8 @@ class SearchClient extends StatelessWidget {
                 filtered.clear();
                 if (s.isNotEmpty) {
                   filtered.addAll(
-                    userController.users.where(
-                      (user) => user.name.toString().toLowerCase().contains(
+                    clientController.clients.where(
+                      (client) => client.name.toString().toLowerCase().contains(
                             s.toLowerCase(),
                           ),
                     ),
@@ -92,7 +92,7 @@ class SearchClient extends StatelessWidget {
                       onPressed: () => Navigator.pushNamed(
                         context,
                         RoutePaths.clientHistory,
-                        arguments: userController.users[index],
+                        arguments: clientController.clients[index],
                       ),
                     ),
                   ) : Container(),
@@ -114,14 +114,14 @@ class SearchClient extends StatelessWidget {
                 ],
               ),
               leading:
-              filtered[index].profileImage !=
+              filtered[index].picture !=
                   null
                   ? FittedBox(
                 fit: BoxFit.cover,
                 child: CircleAvatar(
                   backgroundImage: Image.memory(
                       filtered[index]
-                          .profileImage!)
+                          .picture!)
                       .image,
                   radius: 20,
                 ),

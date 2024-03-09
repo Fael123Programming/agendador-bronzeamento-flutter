@@ -1,3 +1,5 @@
+import 'package:agendador_bronzeamento/config/config.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/search_client_input.dart';
@@ -9,13 +11,9 @@ import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_input.dart
 import 'package:flutter/material.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:get/get.dart';
-import 'package:agendador_bronzeamento/database/models/config.dart';
-import 'package:agendador_bronzeamento/utils/loading.dart';
 
 class BedDetails extends StatelessWidget {
-  final Map<dynamic, dynamic>? bedData;
-
-  const BedDetails({super.key, this.bedData});
+  const BedDetails({super.key});
 
   final separator = const SizedBox(height: 50);
 
@@ -23,6 +21,7 @@ class BedDetails extends StatelessWidget {
   Widget build(context) {
     final ConfigController configController = Get.find();
     final BedCardListController bedCardListController = Get.find();
+    final ClientController clientController = Get.find();
 
     final PricePickerController priceController = Get.put(PricePickerController());
     priceController.onEditingComplete = () => priceController.focusNode.unfocus();
@@ -41,11 +40,11 @@ class BedDetails extends StatelessWidget {
     
     final SearchClientInputController searchController = Get.put(SearchClientInputController());
     searchController.onEditingComplete = () {
-      turnController.turnAround.text = configController.config.value.turnArounds;
-      hoursController.hours.text = configController.config.value.defaultHours;
-      minsController.mins.text = configController.config.value.defaultMins;
-      secsController.secs.text = configController.config.value.defaultSecs;
-      priceController.price.text = configController.config.value.defaultPrice;
+      turnController.turnAround.text = configController.getTurnArounds();
+      hoursController.hours.text = configController.getDefaultHours();
+      minsController.mins.text = configController.getDefaultMins();
+      secsController.secs.text = configController.getDefaultSecs();
+      priceController.price.text = configController.getDefaultPrice();
     };
 
     final formKey = GlobalKey<FormState>();
@@ -69,9 +68,7 @@ class BedDetails extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(),
-        body: Obx(() {
-          if (configController.loaded.value) {
-            return GestureDetector(
+        body: Obx(() => GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
               child: SingleChildScrollView(
                 child: Column(
@@ -120,7 +117,7 @@ class BedDetails extends StatelessWidget {
                               ) {
                                 int secs = int.parse(hoursController.hours.text) * 3600 + int.parse(minsController.mins.text) * 60 + int.parse(secsController.secs.text);
                                 BedCardController bedCardController = BedCardController(
-                                  clientName: searchController.controller.text,
+                                  client: clientController.findUserByName(searchController.controller.text)!,
                                   price: priceController.price.text,
                                   totalSecs: secs,
                                   remainingSecs: secs,
@@ -149,9 +146,9 @@ class BedDetails extends StatelessWidget {
                                 );
                               }
                             },
-                            child: Text(
-                              bedData == null ? 'Adicionar' : 'Salvar',
-                              style: const TextStyle(
+                            child: const Text(
+                              'Adicionar',
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                               ),
@@ -164,11 +161,8 @@ class BedDetails extends StatelessWidget {
                   ],
                 ),
               ),
-            );
-          } else {
-            return const Loading();
-          }
-        }),
+            )
+        ),
       ),
     );
   }

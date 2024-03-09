@@ -1,7 +1,6 @@
+import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
-import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
-import 'package:agendador_bronzeamento/utils/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,21 +8,21 @@ import 'package:agendador_bronzeamento/utils/sender.dart';
 
 import '../../utils/validator.dart';
 
+
+
 class Clients extends StatelessWidget {
   const Clients({super.key});
 
   @override
   Widget build(context) {
     final ConfigController configController = Get.find();
-    final UserController userController = Get.find();
+    final ClientController clientController = Get.find();
     return PopScope(
       onPopInvoked: (didPop) {},
-      child: Obx(() {
-        if (userController.loaded.value) {
-          return Scaffold(
+      child: Obx(() => Scaffold(
             appBar: AppBar(
               title: const Text(''),
-              actions: userController.users.isNotEmpty ? <Widget>[
+              actions: clientController.clients.isNotEmpty ? <Widget>[
                 IconButton(
                   onPressed: () =>
                       Navigator.pushNamed(context, RoutePaths.searchClient),
@@ -39,7 +38,7 @@ class Clients extends StatelessWidget {
               child: const Icon(Icons.add),
             ),
             body: Obx(
-              () => userController.users.isEmpty
+              () => clientController.clients.isEmpty
                   ? const Center(
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -62,13 +61,13 @@ class Clients extends StatelessWidget {
                             child: IconButton(
                               color: Colors.pink,
                               icon: Icon(
-                                configController.config.value.increasing ?
+                                configController.getIncreasing() ?
                                   Icons.arrow_upward :
                                   Icons.arrow_downward
                                 ),
                               onPressed: () async {
-                                await configController.updateConfig(increasing: !configController.config.value.increasing);
-                                await userController.fetchUsers();
+                                await configController.setIncreasing(!configController.getIncreasing());
+                                await clientController.fetch();
                               }, 
                             ),
                           ),
@@ -77,23 +76,23 @@ class Clients extends StatelessWidget {
                             child: IconButton(
                               color: Colors.pink,
                               icon: Icon(
-                                configController.config.value.sortBy == 'name' ?
+                                configController.getSortBy() == ConfigController.name ?
                                   Icons.abc : 
-                                  configController.config.value.sortBy == 'timestamp' ? 
+                                  configController.getSortBy() == ConfigController.timestamp ? 
                                   Icons.date_range :
                                   Icons.sunny
                                 ),
                               onPressed: () async {
                                 String newSortingMethod = '';
-                                if (configController.config.value.sortBy == 'name') {
-                                  newSortingMethod = 'timestamp';
-                                } else if (configController.config.value.sortBy == 'timestamp') {
-                                  newSortingMethod = 'bronze';
+                                if (configController.getSortBy() == ConfigController.name) {
+                                  newSortingMethod = ConfigController.timestamp;
+                                } else if (configController.getSortBy() == ConfigController.timestamp) {
+                                  newSortingMethod = ConfigController.bronze;
                                 } else {
                                   newSortingMethod = 'name';
                                 }
-                                await configController.updateConfig(sortBy: newSortingMethod);
-                                await userController.fetchUsers();
+                                await configController.setSortBy(newSortingMethod);
+                                await clientController.fetch();
                               }, 
                             ),
                           ),
@@ -101,18 +100,18 @@ class Clients extends StatelessWidget {
                       ),
                       Expanded(
                         child: ListView.builder(
-                            itemCount: userController.users.length,
+                            itemCount: clientController.clients.length,
                             itemBuilder: (context, index) {
                               Text? subtitle;
                               const style = TextStyle(fontWeight: FontWeight.bold);
-                              if (configController.config.value.sortBy ==
-                                  'timestamp') {
-                                DateTime timestamp = userController.users[index].timestamp;
+                              if (configController.getSortBy() ==
+                                  ConfigController.timestamp) {
+                                DateTime timestamp = clientController.clients[index].since;
                                 subtitle = Text(Validator.formatDatetime(timestamp));
                                 // subtitle = Text('${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}', style: style);
-                              } else if (configController.config.value.sortBy ==
-                                  'bronze') {
-                                subtitle = Text(userController.users[index].bronzes.toString(), style: style);
+                              } else if (configController.getSortBy() ==
+                                  ConfigController.bronze) {
+                                subtitle = Text(clientController.clients[index].bronzes.toString(), style: style);
                               }
                               return Container(
                                 height: 80,
@@ -128,14 +127,14 @@ class Clients extends StatelessWidget {
                                     onTap: () => Navigator.pushNamed(
                                       context,
                                       RoutePaths.clientDetails,
-                                      arguments: userController.users[index],
+                                      arguments: clientController.clients[index],
                                     ),
-                                    title: Text(userController.users[index].name),
+                                    title: Text(clientController.clients[index].name),
                                     subtitle: subtitle,
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        userController.users[index].bronzes > 0 ? CircleAvatar(
+                                        clientController.clients[index].bronzes > 0 ? CircleAvatar(
                                           backgroundColor: Colors.grey,
                                           child: IconButton(
                                             alignment: Alignment.center,
@@ -146,7 +145,7 @@ class Clients extends StatelessWidget {
                                             onPressed: () => Navigator.pushNamed(
                                               context,
                                               RoutePaths.clientHistory,
-                                              arguments: userController.users[index],
+                                              arguments: clientController.clients[index],
                                             ),
                                           ),
                                         ) : Container(),
@@ -160,22 +159,22 @@ class Clients extends StatelessWidget {
                                               color: Colors.white,
                                             ),
                                             onPressed: () async => await sendWppMessage(
-                                                userController.users[index].name
+                                                clientController.clients[index].name
                                                     .split(' ')[0],
-                                                userController.users[index].phoneNumber),
+                                                clientController.clients[index].phoneNumber),
                                           ),
                                         )
                                       ],
                                     ),
                                     leading:
-                                        userController.users[index].profileImage !=
+                                        clientController.clients[index].picture !=
                                                 null
                                             ? FittedBox(
                                                 fit: BoxFit.cover,
                                                 child: CircleAvatar(
                                                   backgroundImage: Image.memory(
-                                                          userController.users[index]
-                                                              .profileImage!)
+                                                          clientController.clients[index]
+                                                              .picture!)
                                                       .image,
                                                   radius: 20,
                                                 ),
@@ -187,11 +186,8 @@ class Clients extends StatelessWidget {
                     ],
                   ),
             ),
-          );
-        } else {
-          return const Loading();
-        }
-      }),
+          )
+      ),
     );
   }
 }

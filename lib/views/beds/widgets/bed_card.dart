@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,7 @@ class BedCardListController extends GetxController {
 
 class BedCardController extends GetxController {
   BedCardController({
-    required this.clientName,
+    required this.client,
     required this.price,
     required this.totalSecs,
     required this.remainingSecs,
@@ -20,7 +21,7 @@ class BedCardController extends GetxController {
     required this.turnsDone
   });
 
-  final String clientName;
+  final Client client;
   final String price;
   final int totalTurns;
   final RxInt turnsDone;
@@ -97,21 +98,21 @@ class BedCard extends StatelessWidget {
               ),
             ),
             onDismissed: (direction) async {
-              final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.clientName == bedCardController.clientName).first;
+              final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.client.name == bedCardController.client.name).first;
               listController.list.remove(thisBedCard);
             },
-            key: ValueKey<String>(bedCardController.clientName),
+            key: ValueKey<String>(bedCardController.client.name),
             child: GestureDetector(
               onTap: () async {
                 if (bedCardController.stopped.value) {
                   if (bedCardController.turnsDone.value < bedCardController.totalTurns) {
                     bedCardController.startTimer();
                   } else {
-                    final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.clientName == bedCardController.clientName).first;
+                    final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.client.name == bedCardController.client.name).first;
                     listController.list.remove(thisBedCard);
-                    await bronzeController.addBronze(
-                      Bronze(
-                        clientName: bedCardController.clientName, 
+                    await bronzeController.insert(
+                      Bronze.toSave(
+                        clientId: bedCardController.client.id, 
                         totalSecs: bedCardController.totalSecs, 
                         totalTurns: bedCardController.totalTurns, 
                         price: Decimal.parse(bedCardController.price), 
@@ -138,7 +139,7 @@ class BedCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          bedCardController.clientName,
+                          bedCardController.client.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

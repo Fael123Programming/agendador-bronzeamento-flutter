@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-// import 'package:google_fonts/google_fonts.dart';
-
 import 'package:get/get.dart';
-
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
@@ -17,7 +13,7 @@ class Beds extends StatelessWidget {
   Widget build(BuildContext context) {
     final BedCardListController bedCardListController = Get.find();
     final HomeController homeController = Get.find();
-    final UserController userController = Get.find();
+    final ClientController clientController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
         title: const Text(''),
@@ -46,7 +42,7 @@ class Beds extends StatelessWidget {
                       color: Colors.pink
                     ),
                   ),
-                  userController.users.isEmpty ? 
+                  clientController.clients.isEmpty ? 
                   Container(
                     margin: const EdgeInsets.only(top: 50),
                     child: TextButton(
@@ -74,7 +70,7 @@ class Beds extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 50),
           children: bedCardListController.list.toList()
         ),
-      floatingActionButton: userController.users.isNotEmpty ? FloatingActionButton(
+      floatingActionButton: clientController.clients.isNotEmpty ? FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),
         foregroundColor: Colors.white,
         backgroundColor: Colors.pink,

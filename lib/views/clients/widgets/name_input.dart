@@ -17,8 +17,8 @@ class NameInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final UpdatingUserController updatingController = Get.find();
-    final UserController userController = Get.find();
+    final UpdatingClientController updatingController = Get.find();
+    final ClientController clientController = Get.find();
     final FormController formController = Get.find();
     final NameInputController nameController = Get.find();
     double width = MediaQuery.of(context).size.width;
@@ -68,7 +68,7 @@ class NameInput extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'O campo de nome deve ser preenchido';
                     }
-                    if (!updatingController.updating.value && userController.findUserByName(value) != null) {
+                    if (!updatingController.updating.value && clientController.findUserByName(value) != null) {
                       return 'Cliente com esse nome já cadastrado';
                     }
                     return null;

@@ -44,33 +44,27 @@ class CustomRouter {
   static Route onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutePaths.clientDetails:
-        User? clientData;
+        Client? client;
         if (settings.arguments != null) {
-          clientData = settings.arguments as User;
+          client = settings.arguments as Client;
         }
         return MaterialPageRoute(
           builder: (context) => ClientDetails(
-            clientData: clientData,
+            client: client,
           ),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
         );
       case RoutePaths.clientHistory:
-        User clientData = settings.arguments as User;
+        Client client = settings.arguments as Client;
         return MaterialPageRoute(
           builder: (context) => ClientHistory(
-            clientData: clientData,
+            client: client,
           ),
           settings: const RouteSettings(name: RoutePaths.clientHistory),
         );
       case RoutePaths.bedDetails:
-        Map<dynamic, dynamic>? bedArgs;
-        if (settings.arguments != null) {
-          bedArgs = settings.arguments as Map<dynamic, dynamic>;
-        }
         return MaterialPageRoute(
-          builder: (context) => BedDetails(
-            bedData: bedArgs,
-          ),
+          builder: (context) => const BedDetails(),
           settings: const RouteSettings(name: RoutePaths.clientDetails),
         );
       case RoutePaths.searchClient:

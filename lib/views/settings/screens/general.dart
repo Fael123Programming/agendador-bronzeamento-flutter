@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/database/models/config.dart';
+import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
@@ -23,17 +23,17 @@ class General extends StatelessWidget {
     );
     final ConfigController configController = Get.find();
     final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
-    turnController.turnAround.text = configController.config.value.turnArounds;
+    turnController.turnAround.text = configController.getTurnArounds();
     final SecsPickerController secsController = Get.put(SecsPickerController());
-    secsController.secs.text = configController.config.value.defaultSecs;
+    secsController.secs.text = configController.getDefaultSecs();
     final MinsPickerController minsController = Get.put(MinsPickerController());
-    minsController.mins.text = configController.config.value.defaultMins;
+    minsController.mins.text = configController.getDefaultMins();
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
     final HoursPickerController hoursController = Get.put(HoursPickerController());
-    hoursController.hours.text = configController.config.value.defaultHours;
+    hoursController.hours.text = configController.getDefaultHours();
     hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
     final priceController = Get.put(PricePickerController());
-    priceController.price.text = configController.config.value.defaultPrice;
+    priceController.price.text = configController.getDefaultPrice();
     return PopScope(
         onPopInvoked: (didPop) {
           secsController.focusNode.dispose();
@@ -107,14 +107,11 @@ class General extends StatelessWidget {
                           priceController.isValid()
                       ) {
                         // await Future.delayed(const Duration(seconds: 1));
-                        await configController.updateConfig(
-                          turnArounds: turnController.turnAround.text,
-                          hours: hoursController.hours.text,
-                          mins: minsController.mins.text,
-                          secs: secsController.secs.text,
-                          price: priceController.price.text
-                        );
-                        await configController.fetchConfig();
+                        await configController.setTurnArounds(turnController.turnAround.text);
+                        await configController.setDefaultHours(hoursController.hours.text);
+                        await configController.setDefaultMins(minsController.mins.text);
+                        await configController.setDefaultSecs(secsController.secs.text);
+                        await configController.setDefaultPrice(priceController.price.text);
                         if (!context.mounted) {
                           return;
                         }

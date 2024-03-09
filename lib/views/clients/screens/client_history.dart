@@ -13,14 +13,14 @@ Widget showDependent(Widget widget, RxBool logic) {
 }
 
 class ClientHistory extends StatelessWidget {
-  const ClientHistory({super.key, required this.clientData});
+  final Client client;
 
-  final User clientData;
+  const ClientHistory({super.key, required this.client});
 
   @override
   Widget build(context) {
     final BronzeController bronzeController = Get.find();
-    List<Bronze> bronzes = bronzeController.findBronzesOfClientWithName(clientData.name);
+    List<Bronze> bronzes = bronzeController.findBronzesOfClient(client.id);
     RxBool reportShow = false.obs;
     int sumSecs = bronzes.fold(0, (previousValue, bronze) => previousValue + bronze.totalSecs);
     int totHours = sumSecs ~/ 3600;
@@ -37,7 +37,7 @@ class ClientHistory extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Bronzes de ${clientData.name.split(" ")[0]}',
+          'Bronzes de ${client.name.split(" ")[0]}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

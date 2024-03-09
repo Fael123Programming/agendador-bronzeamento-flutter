@@ -8,7 +8,7 @@ class SearchClientInputController extends GetxController {
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   Function()? onEditingComplete;
-  RxList<User> usersToShow = <User>[].obs;
+  RxList<Client> clientsToShow = <Client>[].obs;
   RxBool chosen = false.obs;
 }
 
@@ -17,7 +17,7 @@ class SearchClientInput extends StatelessWidget {
   
   @override
   Widget build(context) {
-    final UserController userController = Get.find();
+    final ClientController clientController = Get.find();
     final SearchClientInputController searchController = Get.find();
     searchController.focusNode.requestFocus();
     double width = MediaQuery.of(context).size.width;
@@ -49,18 +49,18 @@ class SearchClientInput extends StatelessWidget {
                   Expanded(
                     child: TextFormField(
                       onChanged: (value) {
-                        String? realName = userController.getRealName(userController.getIdleUsers(), value);
+                        String? realName = clientController.getRealName(clientController.getIdle(), value);
                         if (realName != null) {
                           searchController.controller.text = realName;
-                          searchController.usersToShow.clear();
+                          searchController.clientsToShow.clear();
                           searchController.chosen.value = true;
                           searchController.focusNode.unfocus();
                           searchController.onEditingComplete != null && searchController.onEditingComplete!();
                         } else if (value.isNotEmpty) {
-                          searchController.usersToShow.value = _fetchUsersThatMatch(value);
+                          searchController.clientsToShow.value = _fetchClientsThatMatch(value);
                           searchController.chosen.value = false;
                         } else {
-                          searchController.usersToShow.clear();
+                          searchController.clientsToShow.clear();
                           searchController.chosen.value = false;
                         }
                       },
@@ -81,40 +81,34 @@ class SearchClientInput extends StatelessWidget {
           ),
         ),
         Column(
-          children: _drawUsersCards(searchController.usersToShow.toList(), context),
+          children: _drawClientCards(searchController.clientsToShow.toList(), context),
         )
       ],
     ));
   }
 
-  List<User> _fetchUsersThatMatch(String name) {
-    final UserController userController = Get.find();
-    List<User> usersToReturn = <User>[];
-    usersToReturn.addAll(
-      userController
-          .getIdleUsers()
-          .where(
-            (user) => user.name.toLowerCase().contains(
-                  name.toLowerCase()
-                )
-          )
-          .take(suggestionCount),
-    );
-    return usersToReturn;
+  List<Client> _fetchClientsThatMatch(String name) {
+    final ClientController clientController = Get.find();
+    List<Client> fetchedClients = clientController
+      .getIdle()
+      .where(
+        (client) => client.name.toLowerCase().contains(
+          name.toLowerCase()
+        )
+      ).take(suggestionCount).toList();
+    return fetchedClients;
   }
 
-  List<Widget> _drawUsersCards(List<User> users, BuildContext context) {
+  List<Widget> _drawClientCards(List<Client> clients, BuildContext context) {
     final SearchClientInputController searchController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    List<Widget> userCards = [];
-    userCards.addAll(
-      users.map(
-        (user) => GestureDetector(
+    List<Widget> clientCards = clients.map(
+        (client) => GestureDetector(
           onTap: () {
-            searchController.controller.text = user.name;
+            searchController.controller.text = client.name;
             searchController.chosen.value = true;
-            searchController.usersToShow.clear();
+            searchController.clientsToShow.clear();
             searchController.focusNode.unfocus();
             searchController.onEditingComplete != null && searchController.onEditingComplete!();
           },
@@ -133,14 +127,14 @@ class SearchClientInput extends StatelessWidget {
               child: Center(
                 child: Row(
                   children: [
-                    user.profileImage == null ?
+                    client.picture == null ?
                     const Icon(
                       Icons.person_2,
                       color: Colors.grey,
                     ) : FittedBox(
                           fit: BoxFit.cover,
                           child: CircleAvatar(
-                            backgroundImage: Image.memory(user.profileImage!).image,
+                            backgroundImage: Image.memory(client.picture!).image,
                             radius: 20,
                           ),
                         ),
@@ -149,7 +143,7 @@ class SearchClientInput extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        user.name,
+                        client.name,
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -159,8 +153,7 @@ class SearchClientInput extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-    return userCards;
+      ).toList();
+    return clientCards;
   }
 }

@@ -10,21 +10,25 @@ import 'package:nice_buttons/nice_buttons.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 
-class UpdatingUserController extends GetxController {
+class UpdatingClientController extends GetxController {
   final RxBool updating;
 
-  UpdatingUserController({required this.updating});
+  UpdatingClientController({required this.updating});
 }
 
 class ClientDetails extends StatelessWidget {
-  const ClientDetails({super.key, this.clientData});
+  final Client? client;
 
-  final User? clientData;
+  const ClientDetails({super.key, this.client});
 
   @override
   Widget build(context) {
-    final UpdatingUserController updatingController = Get.put(UpdatingUserController(updating: (clientData != null).obs));
-    final UserController userController = Get.find(); 
+    final UpdatingClientController updatingController = Get.put(
+      UpdatingClientController(
+        updating: (client != null).obs
+      )
+    );
+    final ClientController clientController = Get.find(); 
     final ImageInputController imageController = Get.put(ImageInputController());
     final FormController formController = Get.put(FormController());
     final ObservationsInputController observationsController = Get.put(
@@ -44,14 +48,14 @@ class ClientDetails extends StatelessWidget {
         onEditingComplete: () => phoneNumberController.focusNode.requestFocus()
       )
     );
-    if (clientData == null) {
+    if (client == null) {
       nameController.focusNode.requestFocus();
     } else {
-      nameController.name.text = clientData!.name;
-      phoneNumberController.phoneNumber.text = clientData!.phoneNumber;
-      observationsController.observations.text = clientData?.observations == null ? '' : clientData!.observations!;
-      if (clientData?.profileImage != null) {
-        imageController.imageData.value = clientData!.profileImage;
+      nameController.name.text = client!.name;
+      phoneNumberController.phoneNumber.text = client!.phoneNumber;
+      observationsController.observations.text = client?.observations == null ? '' : client!.observations!;
+      if (client?.picture != null) {
+        imageController.imageData.value = client!.picture;
         imageController.picked.value = true;
       }
     }
@@ -65,7 +69,7 @@ class ClientDetails extends StatelessWidget {
         Get.delete<ObservationsInputController>();
         Get.delete<FormController>();
         Get.delete<ImageInputController>();
-        Get.delete<UpdatingUserController>();
+        Get.delete<UpdatingClientController>();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -98,7 +102,7 @@ class ClientDetails extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 15),
                                   Text(
-                                    'Deseja remover ${clientData!.name.split(" ")[0]}?',
+                                    'Deseja remover ${client!.name.split(" ")[0]}?',
                                     textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(height: 20),
@@ -131,9 +135,7 @@ class ClientDetails extends StatelessWidget {
                                             ),
                                           ),
                                           onPressed: () async {
-                                            await userController.removeUser(
-                                              userController.findUserByName(clientData!.name)!
-                                            );
+                                            await clientController.delete(client!);
                                             Get.back();
                                             // await Future.delayed(const Duration(seconds: 1));
                                             if (!context.mounted) {
@@ -194,28 +196,25 @@ class ClientDetails extends StatelessWidget {
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) async {
                           if (formController.formKey.currentState!.validate()) {
-                            if (clientData == null) {
-                              await userController.addUser(
-                                User(
+                            if (client == null) {
+                              await clientController.insert(
+                                Client.toSave(
                                   name: nameController.name.text,
                                   phoneNumber: phoneNumberController.phoneNumber.text,
-                                  bronzes: 0,
-                                  timestamp: DateTime.now(),
                                   observations: observationsController.observations.text,
-                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
+                                  picture: imageController.imageData.value
                                 )
                               );
                             } else {
-                              final oldUser = userController.findUserByName(nameController.name.text)!;
-                              await userController.updateUser(
-                                oldUser,
-                                User(
+                              clientController.doUpdate(
+                                Client(
+                                  id: client!.id,
                                   name: nameController.name.text,
                                   phoneNumber: phoneNumberController.phoneNumber.text,
-                                  bronzes: oldUser.bronzes,
-                                  timestamp: oldUser.timestamp,
+                                  since: client!.since,
+                                  bronzes: client!.bronzes,
                                   observations: observationsController.observations.text,
-                                  profileImage: imageController.picked.value ? imageController.imageData.value : null
+                                  picture: imageController.imageData.value
                                 )
                               );
                             }
