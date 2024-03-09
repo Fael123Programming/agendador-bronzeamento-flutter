@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
+import 'package:agendador_bronzeamento/views/clients/widgets/name_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/br_phone_number_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,11 +74,26 @@ class PhoneNumberInput extends StatelessWidget {
                       ),
                     );
                     if (formController.error.value) {
+                      final NameInputController nameController = Get.find();
+                      String name = nameController.name.text;
+                      String phone = phoneNumberController.phoneNumber.text;
                       formController.formKey.currentState?.reset();
                       formController.error.value = false;
+                      if (formController.component.value != 'phone_number_input') {
+                        phoneNumberController.phoneNumber.text = phone;
+                      } else {
+                        nameController.name.text = name;
+                      }
+                      formController.component.value = '';
                     }
                   },
-                  validator: (value) => Validator.validatePhoneNumber(value),
+                  validator: (value) {
+                    String ? result = Validator.validatePhoneNumber(value);
+                    if (result != null) {
+                      formController.component.value = 'phone_number_input';
+                    }
+                    return result;
+                  },
                 ),
               ),
             ],

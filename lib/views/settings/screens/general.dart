@@ -1,146 +1,45 @@
-import 'package:agendador_bronzeamento/config/config.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/secs_picker.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/time_picker.dart';
-import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_input.dart';
+import 'package:agendador_bronzeamento/config/route_paths.dart';
+import 'package:agendador_bronzeamento/views/settings/widgets/setting_item.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:nice_buttons/nice_buttons.dart';
 
 class General extends StatelessWidget {
   const General({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const divider = Divider(
-      height: 80,
-      indent: 100,
-      endIndent: 100,
-      color: Colors.pink,
-      thickness: 2,
-    );
-    final ConfigController configController = Get.find();
-    final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
-    turnController.turnAround.text = configController.getTurnArounds();
-    final SecsPickerController secsController = Get.put(SecsPickerController());
-    secsController.secs.text = configController.getDefaultSecs();
-    final MinsPickerController minsController = Get.put(MinsPickerController());
-    minsController.mins.text = configController.getDefaultMins();
-    minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
-    final HoursPickerController hoursController = Get.put(HoursPickerController());
-    hoursController.hours.text = configController.getDefaultHours();
-    hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
-    final priceController = Get.put(PricePickerController());
-    priceController.price.text = configController.getDefaultPrice();
-    return PopScope(
-        onPopInvoked: (didPop) {
-          secsController.focusNode.dispose();
-          minsController.focusNode.dispose();
-          hoursController.focusNode.dispose();
-          Get.delete<PricePickerController>();
-          Get.delete<HoursPickerController>();
-          Get.delete<MinsPickerController>();
-          Get.delete<SecsPickerController>();
-          Get.delete<TurnAroundInputController>();
-        },
-        child: Scaffold(
-        appBar: AppBar(
-          title: const Text(''),
+    final List<SettingItem> settingItems = <SettingItem>[
+      SettingItem(
+        title: 'Viradas Padrão',
+        icon: Icons.u_turn_left,
+        onTap: () => Navigator.pushNamed(context, RoutePaths.changeTurnArounds),
+      ),
+      SettingItem(
+        title: 'Duração Padrão',
+        icon: Icons.timer,
+        onTap: () => Navigator.pushNamed(context, RoutePaths.changeDuration),
+      ),
+      SettingItem(
+        title: 'Preço Padrão',
+        icon: Icons.monetization_on,
+        onTap: () => Navigator.pushNamed(context, RoutePaths.changePrice),
+      ),
+    ];
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(''),
+      ),
+      body: Center(
+        child: SafeArea(
+          child: ListView.separated(
+            itemCount: settingItems.length,
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(),
+            itemBuilder: (BuildContext context, int index) {
+              return settingItems[index];
+            },
+          ),
         ),
-        body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                divider,
-                Container(
-                  margin: const EdgeInsets.only(left: 20, bottom: 20),
-                  child: const Text(
-                      'Viradas Padrão:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18
-                    ),
-                  ),
-                ),
-                const TurnAroundInput(),
-                divider,
-                Container(
-                  margin: const EdgeInsets.only(left: 20, bottom: 20),
-                  child: const Text(
-                      'Duração Padrão:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18
-                    ),
-                  ),
-                ),
-                const TimePicker(),
-                divider,
-                Container(
-                  margin: const EdgeInsets.only(left: 20, bottom: 20),
-                  child: const Text(
-                    'Preço Padrão:',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18
-                    ),
-                  ),
-                ),
-                const PricePicker(),
-                divider,
-                Center(
-                  child: NiceButtons(
-                    startColor: Colors.pink,
-                    endColor: Colors.pink,
-                    borderColor: Colors.pink,
-                    stretch: false,
-                    progress: false,
-                    gradientOrientation: GradientOrientation.Horizontal,
-                    onTap: (finish) async {
-                      finish();
-                      if (
-                          turnController.isValid() &&
-                          isValidDuration() &&
-                          priceController.isValid()
-                      ) {
-                        // await Future.delayed(const Duration(seconds: 1));
-                        await configController.setTurnArounds(turnController.turnAround.text);
-                        await configController.setDefaultHours(hoursController.hours.text);
-                        await configController.setDefaultMins(minsController.mins.text);
-                        await configController.setDefaultSecs(secsController.secs.text);
-                        await configController.setDefaultPrice(priceController.price.text);
-                        if (!context.mounted) {
-                          return;
-                        }
-                        Navigator.of(context).pop();
-                      } else {
-                        Get.showSnackbar(
-                          const GetSnackBar(
-                            title: 'Humm... Algum Dado está Incorreto',
-                            message: 'Por favor, verifique os valores padrão e tente novamente!',
-                            duration: Duration(seconds: 2),
-                            backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                          )
-                        );
-                      }
-                    },
-                    child: const Text(
-                      'Atualizar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 50)
-              ],
-            ),
-        ),
-      )
+      ),
     );
   }
 }

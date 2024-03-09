@@ -91,7 +91,7 @@ class ClientHistory extends StatelessWidget {
                                             Icons.u_turn_left,
                                             color: Colors.grey,
                                           ),
-                                          Text(bronze.totalTurns.toString())
+                                          Text(bronze.turnArounds.toString())
                                         ],
                                       ),
                                     ),
@@ -194,7 +194,7 @@ class ClientHistory extends StatelessWidget {
                             Icons.u_turn_left,
                             color: Colors.grey,
                           ),
-                          Text(bronzes.fold(0, (previousValue, bronze) => previousValue + bronze.totalTurns).toString())
+                          Text(bronzes.fold(0, (previousValue, bronze) => previousValue + bronze.turnArounds).toString())
                         ],
                       ), shows[1]),
                       showDependent(box5, shows[2]),

@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/database/database_helper.dart';
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:decimal/decimal.dart';
 import 'package:get/get.dart';
 
@@ -6,7 +7,7 @@ class Bronze {
   late int id;
   final int clientId;
   final int totalSecs;
-  final int totalTurns;
+  final int turnArounds;
   final Decimal price;
   final DateTime timestamp;
 
@@ -14,7 +15,7 @@ class Bronze {
     required this.id,
     required this.clientId,
     required this.totalSecs,
-    required this.totalTurns,
+    required this.turnArounds,
     required this.price,
     required this.timestamp
   });
@@ -22,7 +23,7 @@ class Bronze {
   Bronze.toSave({
     required this.clientId,
     required this.totalSecs,
-    required this.totalTurns,
+    required this.turnArounds,
     required this.price,
     required this.timestamp
   }) {
@@ -34,7 +35,7 @@ class Bronze {
       id: map['id'],
       clientId: map['clientId'],
       totalSecs: map['totalSecs'],
-      totalTurns: map['totalTurns'],
+      turnArounds: map['turnArounds'],
       price: Decimal.parse(map['price']),
       timestamp: DateTime.parse(map['timestamp'])
     );
@@ -44,7 +45,7 @@ class Bronze {
     return {
       'clientId': clientId,
       'totalSecs': totalSecs,
-      'totalTurns': totalTurns,
+      'turnArounds': turnArounds,
       'price': price.toString(),
       'timestamp': timestamp.toString()
     };
@@ -74,8 +75,12 @@ class BronzeController extends GetxController {
   }
 
   Future<void> insert(Bronze bronze) async {
-    await DatabaseHelper().insertBronze(bronze);
+    int id = await DatabaseHelper().insertBronze(bronze);
+    bronze.id = id;
     bronzes.add(bronze);
+    final ClientController clientController = Get.find();
+    Client client = clientController.clients.where((client) => client.id == bronze.clientId).first;
+    client.bronzes++;
   }
 
   List<Bronze> findBronzesOfClient(int clientId) {

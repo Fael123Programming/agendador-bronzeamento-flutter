@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:agendador_bronzeamento/utils/sender.dart';
-
-import '../../utils/validator.dart';
-
-
+import 'package:agendador_bronzeamento/utils/validator.dart';
 
 class Clients extends StatelessWidget {
   const Clients({super.key});
@@ -21,6 +18,7 @@ class Clients extends StatelessWidget {
       onPopInvoked: (didPop) {},
       child: Obx(() => Scaffold(
             appBar: AppBar(
+              backgroundColor: Colors.white,
               title: const Text(''),
               actions: clientController.clients.isNotEmpty ? <Widget>[
                 IconButton(
@@ -67,7 +65,8 @@ class Clients extends StatelessWidget {
                                 ),
                               onPressed: () async {
                                 await configController.setIncreasing(!configController.getIncreasing());
-                                await clientController.fetch();
+                                clientController.sort();
+                                // await clientController.fetch();
                               }, 
                             ),
                           ),
@@ -78,21 +77,22 @@ class Clients extends StatelessWidget {
                               icon: Icon(
                                 configController.getSortBy() == ConfigController.name ?
                                   Icons.abc : 
-                                  configController.getSortBy() == ConfigController.timestamp ? 
+                                  configController.getSortBy() == ConfigController.since ? 
                                   Icons.date_range :
                                   Icons.sunny
                                 ),
                               onPressed: () async {
                                 String newSortingMethod = '';
                                 if (configController.getSortBy() == ConfigController.name) {
-                                  newSortingMethod = ConfigController.timestamp;
-                                } else if (configController.getSortBy() == ConfigController.timestamp) {
-                                  newSortingMethod = ConfigController.bronze;
+                                  newSortingMethod = ConfigController.since;
+                                } else if (configController.getSortBy() == ConfigController.since) {
+                                  newSortingMethod = ConfigController.bronzes;
                                 } else {
-                                  newSortingMethod = 'name';
+                                  newSortingMethod = ConfigController.name;
                                 }
                                 await configController.setSortBy(newSortingMethod);
-                                await clientController.fetch();
+                                clientController.sort();
+                                // await clientController.fetch();
                               }, 
                             ),
                           ),
@@ -100,88 +100,88 @@ class Clients extends StatelessWidget {
                       ),
                       Expanded(
                         child: ListView.builder(
-                            itemCount: clientController.clients.length,
-                            itemBuilder: (context, index) {
-                              Text? subtitle;
-                              const style = TextStyle(fontWeight: FontWeight.bold);
-                              if (configController.getSortBy() ==
-                                  ConfigController.timestamp) {
-                                DateTime timestamp = clientController.clients[index].since;
-                                subtitle = Text(Validator.formatDatetime(timestamp));
-                                // subtitle = Text('${timestamp.day.toString().padLeft(2, '0')}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.year}', style: style);
-                              } else if (configController.getSortBy() ==
-                                  ConfigController.bronze) {
-                                subtitle = Text(clientController.clients[index].bronzes.toString(), style: style);
-                              }
-                              return Container(
-                                height: 80,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.pink[50],
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(30),
+                            padding: const EdgeInsets.only(bottom: 60),
+                              itemCount: clientController.clients.length,
+                              itemBuilder: (context, index) {
+                                Widget? subtitle;
+                                const style = TextStyle(fontWeight: FontWeight.bold);
+                                if (configController.getSortBy() ==
+                                    ConfigController.since) {
+                                  subtitle = Obx(() => Text(Validator.formatDatetime(clientController.clients[index].since)));
+                                } else if (configController.getSortBy() ==
+                                    ConfigController.bronzes) {
+                                  subtitle = Obx(() => Text(clientController.clients[index].bronzes.value.toString(), style: style));
+                                }
+                                return Container(
+                                  height: 80,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.pink[50],
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(30),
+                                    ),
                                   ),
-                                ),
-                                margin: const EdgeInsets.all(10),
-                                child: ListTile(
-                                    onTap: () => Navigator.pushNamed(
-                                      context,
-                                      RoutePaths.clientDetails,
-                                      arguments: clientController.clients[index],
-                                    ),
-                                    title: Text(clientController.clients[index].name),
-                                    subtitle: subtitle,
-                                    trailing: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        clientController.clients[index].bronzes > 0 ? CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          child: IconButton(
-                                            alignment: Alignment.center,
-                                            icon: const FaIcon(
-                                              FontAwesomeIcons.clockRotateLeft,
-                                              color: Colors.white,
+                                  margin: const EdgeInsets.all(10),
+                                  child: ListTile(
+                                      onTap: () => Navigator.pushNamed(
+                                        context,
+                                        RoutePaths.clientDetails,
+                                        arguments: clientController.clients[index],
+                                      ),
+                                      title: Text(clientController.clients[index].name),
+                                      subtitle: subtitle,
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Obx(() => clientController.clients[index].bronzes.value > 0 ? CircleAvatar(
+                                            backgroundColor: Colors.grey,
+                                            child: IconButton(
+                                              alignment: Alignment.center,
+                                              icon: const FaIcon(
+                                                FontAwesomeIcons.clockRotateLeft,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () => Navigator.pushNamed(
+                                                context,
+                                                RoutePaths.clientHistory,
+                                                arguments: clientController.clients[index],
+                                              ),
                                             ),
-                                            onPressed: () => Navigator.pushNamed(
-                                              context,
-                                              RoutePaths.clientHistory,
-                                              arguments: clientController.clients[index],
+                                          ) : Container()),
+                                          const SizedBox(width: 50),
+                                          CircleAvatar(
+                                            backgroundColor: Colors.green,
+                                            child: IconButton(
+                                              alignment: Alignment.center,
+                                              icon: const FaIcon(
+                                                FontAwesomeIcons.whatsapp,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () async => await sendWppMessage(
+                                                  clientController.clients[index].name
+                                                      .split(' ')[0],
+                                                  clientController.clients[index].phoneNumber),
                                             ),
-                                          ),
-                                        ) : Container(),
-                                        const SizedBox(width: 50),
-                                        CircleAvatar(
-                                          backgroundColor: Colors.green,
-                                          child: IconButton(
-                                            alignment: Alignment.center,
-                                            icon: const FaIcon(
-                                              FontAwesomeIcons.whatsapp,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: () async => await sendWppMessage(
-                                                clientController.clients[index].name
-                                                    .split(' ')[0],
-                                                clientController.clients[index].phoneNumber),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    leading:
-                                        clientController.clients[index].picture !=
-                                                null
-                                            ? FittedBox(
-                                                fit: BoxFit.cover,
-                                                child: CircleAvatar(
-                                                  backgroundImage: Image.memory(
-                                                          clientController.clients[index]
-                                                              .picture!)
-                                                      .image,
-                                                  radius: 20,
-                                                ),
-                                              )
-                                            : const Icon(Icons.person_2)),
-                              );
-                            }),
+                                          )
+                                        ],
+                                      ),
+                                      leading:
+                                          clientController.clients[index].picture !=
+                                                  null
+                                              ? FittedBox(
+                                                  fit: BoxFit.cover,
+                                                  child: CircleAvatar(
+                                                    backgroundImage: Image.memory(
+                                                            clientController.clients[index]
+                                                                .picture!)
+                                                        .image,
+                                                    radius: 20,
+                                                  ),
+                                                )
+                                              : const Icon(Icons.person_2)),
+                                );
+                              }
+                        ),
                       ),
                     ],
                   ),

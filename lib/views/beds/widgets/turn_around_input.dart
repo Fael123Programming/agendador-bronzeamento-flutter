@@ -23,7 +23,7 @@ class TurnAroundInput extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
-        width: width * 0.4,
+        width: width * 0.8,
         height: height * 0.07,
         padding: EdgeInsets.all(width * 0.03),
         decoration: BoxDecoration(
@@ -51,7 +51,7 @@ class TurnAroundInput extends StatelessWidget {
                     if (value.isNotEmpty) {
                       if (!Validator.isInteger(value)) {
                         turnAroundController.turnAround.text = '';
-                      } else if (int.parse(value) < 1) {
+                      } else if (int.parse(value) < 1 || int.parse(value) > 4) {
                         turnAroundController.turnAround.text = '';
                       }
                     }

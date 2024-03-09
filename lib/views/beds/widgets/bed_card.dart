@@ -17,13 +17,13 @@ class BedCardController extends GetxController {
     required this.price,
     required this.totalSecs,
     required this.remainingSecs,
-    required this.totalTurns,
+    required this.turnArounds,
     required this.turnsDone
   });
 
   final Client client;
   final String price;
-  final int totalTurns;
+  final int turnArounds;
   final RxInt turnsDone;
   final int totalSecs;
   final RxBool stopped = false.obs;
@@ -105,7 +105,7 @@ class BedCard extends StatelessWidget {
             child: GestureDetector(
               onTap: () async {
                 if (bedCardController.stopped.value) {
-                  if (bedCardController.turnsDone.value < bedCardController.totalTurns) {
+                  if (bedCardController.turnsDone.value < bedCardController.turnArounds) {
                     bedCardController.startTimer();
                   } else {
                     final thisBedCard = listController.list.where((bedCard) => bedCard.bedCardController.client.name == bedCardController.client.name).first;
@@ -114,7 +114,7 @@ class BedCard extends StatelessWidget {
                       Bronze.toSave(
                         clientId: bedCardController.client.id, 
                         totalSecs: bedCardController.totalSecs, 
-                        totalTurns: bedCardController.totalTurns, 
+                        turnArounds: bedCardController.turnArounds, 
                         price: Decimal.parse(bedCardController.price), 
                         timestamp: bedCardController.timestamp
                       )
@@ -156,15 +156,15 @@ class BedCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Obx(() => TurnAroundBlocks(
-                          totalBlocks: bedCardController.totalTurns,
+                          totalBlocks: bedCardController.turnArounds,
                           paintedBlocks: bedCardController.turnsDone.value,
                         )),
                         Obx(() => bedCardController.stopped.value ? 
                           Icon(
-                            bedCardController.turnsDone.value == bedCardController.totalTurns ? 
+                            bedCardController.turnsDone.value == bedCardController.turnArounds ? 
                             Icons.done_all : 
                             Icons.double_arrow, 
-                            color: bedCardController.turnsDone.value == bedCardController.totalTurns ?
+                            color: bedCardController.turnsDone.value == bedCardController.turnArounds ?
                             Colors.green : 
                             Colors.black
                           )

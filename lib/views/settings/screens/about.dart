@@ -29,7 +29,7 @@ class About extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               child: const Text(
-                'v1.0.26',
+                'v1.0.30',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 10,

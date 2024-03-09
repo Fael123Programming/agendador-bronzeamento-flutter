@@ -11,7 +11,7 @@ class Client {
   final String name;
   final String phoneNumber;
   late DateTime since;
-  late int bronzes;
+  late RxInt bronzes;
   String? observations;
   Uint8List? picture;
 
@@ -33,7 +33,7 @@ class Client {
   }) {
     id = -1;
     since = DateTime.now();
-    bronzes = 0;
+    bronzes = 0.obs;
   }
 
   static Client fromMap(Map<String, dynamic> map) {
@@ -42,7 +42,7 @@ class Client {
       name: map['name'],
       phoneNumber: map['phoneNumber'],
       since: DateTime.parse(map['since']),
-      bronzes: map['bronzes'],
+      bronzes: int.parse(map['bronzes'].toString()).obs,
       observations: map['observations'],
       picture: map['picture']
     );
@@ -53,7 +53,7 @@ class Client {
       'name': name,
       'phoneNumber': phoneNumber,
       'since': since.toString(),
-      'bronzes': bronzes,
+      'bronzes': bronzes.value,
       'observations': observations,
       'picture': picture
     };
@@ -81,7 +81,7 @@ class ClientController extends GetxController {
     sortingMethods = {
       'name': (factor) => clients.sort((client1, client2) => client1.name.compareTo(client2.name) * factor),
       'since': (factor) => clients.sort((client1, client2) => client1.since.compareTo(client2.since) * factor),
-      'bronzes': (factor) => clients.sort((client1, client2) => client1.bronzes.compareTo(client2.bronzes) * factor),
+      'bronzes': (factor) => clients.sort((client1, client2) => client1.bronzes.value.compareTo(client2.bronzes.value) * factor),
     };
   }
 
@@ -91,7 +91,8 @@ class ClientController extends GetxController {
   }
 
   Future<void> insert(Client client) async {
-    await DatabaseHelper().insertClient(client);
+    int id = await DatabaseHelper().insertClient(client);
+    client.id = id;
     clients.add(client);
     sort();
   }
@@ -103,7 +104,15 @@ class ClientController extends GetxController {
     await bronzeController.fetch();
   }
 
-  Client? findUserByName(String name) {
+  Client? findById(int id) {
+    try {
+      return clients.where((client) => client.id == id).first;
+    } catch(err) {
+      return null;
+    }
+  }
+
+  Client? findByName(String name) {
     try {
       return clients.where((client) => client.name.toLowerCase() == name.toLowerCase()).first;
     } catch(err) {
@@ -132,6 +141,9 @@ class ClientController extends GetxController {
 
   Future<void> doUpdate(Client client) async {
     await DatabaseHelper().updateClient(client);
+    Client? foundClient = findById(client.id);
+    clients.remove(foundClient);
+    clients.add(client);
     sort();
   }
 

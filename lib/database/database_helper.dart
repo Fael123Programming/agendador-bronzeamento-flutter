@@ -4,7 +4,6 @@ import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._();
@@ -23,38 +22,42 @@ class DatabaseHelper {
   }
 
   Future<Database> initDatabase() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = join(directory.path, 'database.db');
+    final path = join(await getDatabasesPath(), 'dados.db');
     return await openDatabase(
       path,
-      version: 1,
-      onCreate: _createDb,
+      version: 3,
+      onCreate: (db, version) async {
+        await db.execute(enableForeignKeys);
+        await db.execute(clientTable);
+        await db.execute(bronzeTable);
+      },
     );
   }
 
-  void _createDb(Database db, int newVersion) async {
-    await db.execute('''
-      PRAGMA foreign_keys = ON;
-      CREATE TABLE Client (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE,
-        phoneNumber TEXT,
-        since TIMESTAMP,
-        bronzes INTEGER,
-        observations TEXT NULL,
-        picture BLOB NULL
-      );
-      CREATE TABLE Bronze (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        clientId INTEGER,
-        turnArounds INTEGER,
-        totalSecs INTEGER,
-        price TEXT,
-        timestamp TIMESTAMP, 
-        FOREIGN KEY (clientId) REFERENCES Client(id) ON DELETE CASCADE
-      );
-    ''');
-  }
+  static const clientTable = '''
+    CREATE TABLE IF NOT EXISTS Client (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE,
+      phoneNumber TEXT,
+      since TIMESTAMP,
+      bronzes INTEGER,
+      observations TEXT NULL,
+      picture BLOB NULL
+    );''';
+
+  static const enableForeignKeys = 'PRAGMA foreign_keys = ON;';
+  
+  static const bronzeTable = '''
+    CREATE TABLE IF NOT EXISTS Bronze (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      clientId INTEGER,
+      turnArounds INTEGER,
+      totalSecs INTEGER,
+      price TEXT,
+      timestamp TIMESTAMP, 
+      FOREIGN KEY (clientId) REFERENCES Client(id) ON DELETE CASCADE
+    );
+  ''';
 
   Future<int> _insert(String table, Map<String ,dynamic> row) async {
     final db = await database;

@@ -80,10 +80,16 @@ class SearchClientInput extends StatelessWidget {
             ),
           ),
         ),
-        Column(
-          children: _drawClientCards(searchController.clientsToShow.toList(), context),
+        searchController.clientsToShow.isEmpty 
+        ? SizedBox(height: height * 0.08) 
+        : Container(
+          margin: EdgeInsets.only(bottom: height * 0.01),
+          child: Column(
+            children: _drawClientCards(searchController.clientsToShow, context),
+          ),
         )
-      ],
+        ,
+    ],
     ));
   }
 
@@ -110,7 +116,9 @@ class SearchClientInput extends StatelessWidget {
             searchController.chosen.value = true;
             searchController.clientsToShow.clear();
             searchController.focusNode.unfocus();
-            searchController.onEditingComplete != null && searchController.onEditingComplete!();
+            if (searchController.onEditingComplete != null) {
+              searchController.onEditingComplete!();
+            }
           },
           child: Center(
             child: Container(

@@ -11,9 +11,10 @@ import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 
 class UpdatingClientController extends GetxController {
-  final RxBool updating;
+  final bool isUpdating;
+  final int clientId;
 
-  UpdatingClientController({required this.updating});
+  UpdatingClientController({required this.isUpdating, required this.clientId});
 }
 
 class ClientDetails extends StatelessWidget {
@@ -25,7 +26,8 @@ class ClientDetails extends StatelessWidget {
   Widget build(context) {
     final UpdatingClientController updatingController = Get.put(
       UpdatingClientController(
-        updating: (client != null).obs
+        isUpdating: client != null,
+        clientId: client == null ? -1 : client!.id
       )
     );
     final ClientController clientController = Get.find(); 
@@ -74,7 +76,7 @@ class ClientDetails extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            updatingController.updating.value ? IconButton(
+            updatingController.isUpdating ? IconButton(
               onPressed: () async {
                 Get.dialog(
                   Column(
@@ -228,7 +230,7 @@ class ClientDetails extends StatelessWidget {
                           }
                         },
                         child: Text(
-                          updatingController.updating.value ? 'Salvar' : 'Adicionar',
+                          updatingController.isUpdating ? 'Salvar' : 'Adicionar',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,

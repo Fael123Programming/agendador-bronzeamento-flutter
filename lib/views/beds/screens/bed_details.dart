@@ -50,7 +50,8 @@ class BedDetails extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     const twoSeconds = Duration(seconds: 2);
-
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return PopScope(
       onPopInvoked: (didPop) {
         searchController.focusNode.dispose();
@@ -67,41 +68,41 @@ class BedDetails extends StatelessWidget {
         Get.delete<PricePickerController>();
       },
       child: Scaffold(
-        appBar: AppBar(),
-        body: Obx(() => GestureDetector(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Adicionar Nova Maca', 
+            style: TextStyle(
+              fontSize: 18, 
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+        body: GestureDetector(
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.pink[50],
-                        borderRadius: const BorderRadius.all(Radius.circular(30)),
-                      ),
-                      padding: const EdgeInsets.all(15),
-                      margin: const EdgeInsets.only(
-                        bottom: 50,
-                      ),
-                      child: Image.asset(
-                        'assets/beach-chair.png',
-                        width: 150,
-                        height: 150,
-                        color: Colors.pink,
-                      ),
-                    ),
                     Form(
                       key: formKey,
                       child: Column(
                         children: [
-                          const SearchClientInput(),
-                          separator,
+                          Container(
+                            margin: const EdgeInsets.only(top: 40),
+                            child: const SearchClientInput()
+                          ),
                           const TurnAroundInput(),
-                          separator,
-                          const TimePicker(),
-                          separator,
-                          const PricePicker(),
-                          separator,
-                          NiceButtons(
+                          Container(
+                            margin: EdgeInsets.only(top: height * 0.08),
+                            child: const TimePicker()
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: height * 0.08),
+                            child: const PricePicker()
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: height * 0.08),
+                            child: NiceButtons(
                             startColor: Colors.pink,
                             endColor: Colors.pink,
                             borderColor: Colors.pink,
@@ -117,11 +118,11 @@ class BedDetails extends StatelessWidget {
                               ) {
                                 int secs = int.parse(hoursController.hours.text) * 3600 + int.parse(minsController.mins.text) * 60 + int.parse(secsController.secs.text);
                                 BedCardController bedCardController = BedCardController(
-                                  client: clientController.findUserByName(searchController.controller.text)!,
+                                  client: clientController.findByName(searchController.controller.text)!,
                                   price: priceController.price.text,
                                   totalSecs: secs,
                                   remainingSecs: secs,
-                                  totalTurns: int.parse(turnController.turnAround.text),
+                                  turnArounds: int.parse(turnController.turnAround.text),
                                   turnsDone: 0.obs
                                 );
                                 BedCard bedCard = BedCard(
@@ -154,6 +155,7 @@ class BedDetails extends StatelessWidget {
                               ),
                             ),
                           )
+                          ),
                         ],
                       ),
                     ),
@@ -163,7 +165,6 @@ class BedDetails extends StatelessWidget {
               ),
             )
         ),
-      ),
     );
   }
 }

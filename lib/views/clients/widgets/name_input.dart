@@ -1,6 +1,7 @@
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
+import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/phone_number_input.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -49,8 +50,17 @@ class NameInput extends StatelessWidget {
                 child: TextFormField(
                   onTap: () {
                     if (formController.error.value) {
+                      final PhoneNumberInputController phoneController = Get.find();
+                      String phoneNumber = phoneController.phoneNumber.text;
+                      String name = nameController.name.text;
                       formController.formKey.currentState?.reset();
                       formController.error.value = false;
+                      if (formController.component.value != 'name_input') {
+                        nameController.name.text = name;
+                      } else {
+                        phoneController.phoneNumber.text = phoneNumber;
+                      }
+                      formController.component.value = '';
                     }
                   },
                   onEditingComplete: nameController.onEditingComplete,
@@ -66,12 +76,18 @@ class NameInput extends StatelessWidget {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
+                      formController.component.value = 'name_input';
                       return 'O campo de nome deve ser preenchido';
                     }
-                    if (!updatingController.updating.value && clientController.findUserByName(value) != null) {
-                      return 'Cliente com esse nome já cadastrado';
+                    Client? client = clientController.findByName(value);
+                    if (client == null) {
+                      return null;
                     }
-                    return null;
+                    if (updatingController.isUpdating && client.id == updatingController.clientId) {
+                      return null;
+                    }
+                    formController.component.value = 'name_input';
+                    return 'Cliente com esse nome já cadastrado';
                   }
                 ),
               ),

@@ -8,4 +8,7 @@ class RoutePaths {
   static const String searchBed = '/search_bed';
   static const String general = '/general';
   static const String about = '/about';
+  static const String changeTurnArounds = '/change_turn_arounds';
+  static const String changeDuration = '/change_duration';
+  static const String changePrice = '/change_price';
 }

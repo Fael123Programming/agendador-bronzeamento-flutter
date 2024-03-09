@@ -27,7 +27,7 @@ class PricePicker extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
-        width: width * 0.4,
+        width: width * 0.8,
         height: height * 0.07,
         padding: EdgeInsets.all(width * 0.03),
         decoration: BoxDecoration(
@@ -49,30 +49,30 @@ class PricePicker extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
-                  controller: priceController.price,
-                  textAlign: TextAlign.start,
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      value = value.replaceAll(RegExp(r'[^\d\.,]'), '');
-                      try {
-                        Decimal.parse(value);
-                        priceController.price.text = value;
-                      } on FormatException {
-                        priceController.price.text = '';
+                    controller: priceController.price,
+                    textAlign: TextAlign.start,
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        value = value.replaceAll(RegExp(r'[^\d\.,]'), '');
+                        try {
+                          Decimal dec = Decimal.parse(value);
+                          priceController.price.text = dec.toString();
+                        } on FormatException {
+                          priceController.price.text = '';
+                        }
                       }
-                    }
-                  },
-                  onEditingComplete: priceController.onEditingComplete,
-                  focusNode: priceController.focusNode,
-                  keyboardType: TextInputType.number,
-                  keyboardAppearance: Brightness.light,
-                  decoration: const InputDecoration.collapsed(
-                    hintText: 'Preço',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
+                    },
+                    onEditingComplete: priceController.onEditingComplete,
+                    focusNode: priceController.focusNode,
+                    keyboardType: TextInputType.number,
+                    keyboardAppearance: Brightness.light,
+                    decoration: const InputDecoration.collapsed(
+                      hintText: 'Preço',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
-                ),
               ),
             ],
           ),

@@ -5,6 +5,9 @@ import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart'
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/about.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/change_duration.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/change_price.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/change_turn_arounds.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
@@ -90,6 +93,21 @@ class CustomRouter {
         return MaterialPageRoute(
           builder: (context) => const About(),
           settings: const RouteSettings(name: RoutePaths.about),
+        );
+      case RoutePaths.changeTurnArounds:
+        return MaterialPageRoute(
+          builder: (context) => const ChangeTurnArounds(),
+          settings: const RouteSettings(name: RoutePaths.changeTurnArounds),
+        );
+      case RoutePaths.changeDuration:
+        return MaterialPageRoute(
+          builder: (context) => const ChangeDuration(),
+          settings: const RouteSettings(name: RoutePaths.changeDuration),
+        );
+      case RoutePaths.changePrice:
+        return MaterialPageRoute(
+          builder: (context) => const ChangePrice(),
+          settings: const RouteSettings(name: RoutePaths.changePrice),
         );
       default:
         return _errorRoute();

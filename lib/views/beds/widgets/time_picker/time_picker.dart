@@ -25,7 +25,7 @@ class TimePicker extends StatelessWidget {
     child: Text(
       ':',
       style: TextStyle(
-        fontSize: 22,
+        fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
     ),
@@ -33,20 +33,36 @@ class TimePicker extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.timer,
-          color: Colors.pink,
-          size: 25,
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Center(
+      child: Container(
+        width: width * 0.8,
+        height: height * 0.07,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey,
+          ),
         ),
-        const HoursPicker(),
-        colonBox,
-        const MinsPicker(),
-        colonBox,
-        const SecsPicker(),
-      ],
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.timer,
+                color: Colors.pink,
+              ),
+              const HoursPicker(),
+              colonBox,
+              const MinsPicker(),
+              colonBox,
+              const SecsPicker(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

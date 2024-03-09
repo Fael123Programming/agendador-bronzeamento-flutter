@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ConfigController extends GetxController {
-  static const timestamp = 'timestamp';
+  static const since = 'since';
   static const name = 'name';
-  static const bronze = 'bronze';
+  static const bronzes = 'bronzes';
 
   late GetStorage config;
 

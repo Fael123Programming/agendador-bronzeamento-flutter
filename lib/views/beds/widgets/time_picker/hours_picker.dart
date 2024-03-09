@@ -17,18 +17,9 @@ class HoursPicker extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Center(
-      child: Container(
-        margin: const EdgeInsets.all(15),
-        width: width * 0.2,
+      child: SizedBox(
+        width: width * .2,
         height: height * 0.07,
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.grey,
-          ),
-        ),
         child: Center(
           child: Row(
             children: [
@@ -38,7 +29,7 @@ class HoursPicker extends StatelessWidget {
                   onChanged: (value) {
                     String valStr;
                     if (Validator.isInteger(value) && int.parse(value) < 24) {
-                      valStr = value;
+                      valStr = int.parse(value).toString();
                     } else {
                       valStr = '';
                     }
