@@ -126,7 +126,15 @@ class SearchClient extends StatelessWidget {
                   radius: 20,
                 ),
               )
-                  : const Icon(Icons.person_2)),
+              : const FittedBox(
+                  fit: BoxFit.cover,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 20,
+                    child: Icon(Icons.person_2),
+                  ),
+                ),
+              )
         )
         )
       )

@@ -31,4 +31,9 @@ class Validator {
   static String formatDatetime(DateTime dateTime) {
       return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year} às ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
+
+  static String getMonthAbbr(int monthNumber) {
+    List<String> monthStrs = <String>['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    return monthStrs[monthNumber - 1];
+  }
 }

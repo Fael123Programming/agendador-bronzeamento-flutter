@@ -14,6 +14,8 @@ class Clients extends StatelessWidget {
   Widget build(context) {
     final ConfigController configController = Get.find();
     final ClientController clientController = Get.find();
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return PopScope(
       onPopInvoked: (didPop) {},
       child: Obx(() => Scaffold(
@@ -51,49 +53,75 @@ class Clients extends StatelessWidget {
                   : Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            alignment: Alignment.center,
-                            child: IconButton(
-                              color: Colors.pink,
-                              icon: Icon(
-                                configController.getIncreasing() ?
-                                  Icons.arrow_upward :
-                                  Icons.arrow_downward
-                                ),
-                              onPressed: () async {
-                                await configController.setIncreasing(!configController.getIncreasing());
-                                clientController.sort();
-                                // await clientController.fetch();
-                              }, 
+                            margin: EdgeInsets.only(left: width * .05),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.supervised_user_circle_outlined),
+                                Obx(() => Container(
+                                  margin: EdgeInsets.only(left: width * .02),
+                                  child: Text(
+                                      clientController.clients.length.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                )
+                                )
+                              ],
                             ),
                           ),
                           Container(
-                            alignment: Alignment.center,
-                            child: IconButton(
-                              color: Colors.pink,
-                              icon: Icon(
-                                configController.getSortBy() == ConfigController.name ?
-                                  Icons.abc : 
-                                  configController.getSortBy() == ConfigController.since ? 
-                                  Icons.date_range :
-                                  Icons.sunny
+                            margin: EdgeInsets.only(right: width * .02),
+                            child: Row(
+                              children: [
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: IconButton(
+                                    color: Colors.pink,
+                                    icon: Icon(
+                                      configController.getIncreasing() ?
+                                        Icons.arrow_upward :
+                                        Icons.arrow_downward
+                                      ),
+                                    onPressed: () async {
+                                      await configController.setIncreasing(!configController.getIncreasing());
+                                      clientController.sort();
+                                      // await clientController.fetch();
+                                    }, 
+                                  ),
                                 ),
-                              onPressed: () async {
-                                String newSortingMethod = '';
-                                if (configController.getSortBy() == ConfigController.name) {
-                                  newSortingMethod = ConfigController.since;
-                                } else if (configController.getSortBy() == ConfigController.since) {
-                                  newSortingMethod = ConfigController.bronzes;
-                                } else {
-                                  newSortingMethod = ConfigController.name;
-                                }
-                                await configController.setSortBy(newSortingMethod);
-                                clientController.sort();
-                                // await clientController.fetch();
-                              }, 
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: IconButton(
+                                    color: Colors.pink,
+                                    icon: Icon(
+                                      configController.getSortBy() == ConfigController.name ?
+                                        Icons.abc : 
+                                        configController.getSortBy() == ConfigController.since ? 
+                                        Icons.date_range :
+                                        Icons.sunny
+                                      ),
+                                    onPressed: () async {
+                                      String newSortingMethod = '';
+                                      if (configController.getSortBy() == ConfigController.name) {
+                                        newSortingMethod = ConfigController.since;
+                                      } else if (configController.getSortBy() == ConfigController.since) {
+                                        newSortingMethod = ConfigController.bronzes;
+                                      } else {
+                                        newSortingMethod = ConfigController.name;
+                                      }
+                                      await configController.setSortBy(newSortingMethod);
+                                      clientController.sort();
+                                      // await clientController.fetch();
+                                    }, 
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -178,7 +206,15 @@ class Clients extends StatelessWidget {
                                                     radius: 20,
                                                   ),
                                                 )
-                                              : const Icon(Icons.person_2)),
+                                              : const FittedBox(
+                                                  fit: BoxFit.cover,
+                                                  child: CircleAvatar(
+                                                    backgroundColor: Colors.white,
+                                                    radius: 20,
+                                                    child: Icon(Icons.person_2),
+                                                  ),
+                                                ) 
+                                               ),
                                 );
                               }
                         ),

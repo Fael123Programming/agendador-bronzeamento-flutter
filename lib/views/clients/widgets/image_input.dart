@@ -32,9 +32,13 @@ class ImageInput extends StatelessWidget {
         ),
         child: Obx(() => imageController.picked.value
           ? 
-          ClipOval(
-            child: Image.memory(
-                imageController.imageData.value!,
+          FittedBox(
+            fit: BoxFit.cover,
+            child: CircleAvatar(
+              backgroundImage: Image.memory(
+                      imageController.imageData.value!)
+                  .image,
+              radius: 20,
             ),
           )
           :
@@ -102,7 +106,21 @@ class ImageInput extends StatelessWidget {
                           Navigator.pop(context);
                         },
                       ),
-                    )
+                    ),
+                    imageController.picked.value ?
+                      Material(
+                        child: ListTile(
+                          title: const Text(
+                            'Limpar',
+                          ),
+                          trailing: const Icon(Icons.delete, color: Colors.red,),
+                          onTap: () {
+                            imageController.picked.value = false;
+                            imageController.imageData.value = null;
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ) : Container()
                   ],
                 ),
               ),

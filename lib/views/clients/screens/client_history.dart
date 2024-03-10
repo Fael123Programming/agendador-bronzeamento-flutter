@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
@@ -17,10 +18,29 @@ class ClientHistory extends StatelessWidget {
 
   const ClientHistory({super.key, required this.client});
 
+  List<Widget> getModalOptions(List<Bronze> bronzes, String optionChosen) {
+    List<Widget> options = <Widget>[];
+    options.add(
+      Material(
+        child: ListTile(
+          title: const Text(
+            'Tudo',
+          ),
+          trailing: const Icon(Icons.image),
+          onTap: () {
+          },
+        ),
+      ),
+    );
+
+    return options;
+  }
+
   @override
   Widget build(context) {
     final BronzeController bronzeController = Get.find();
     List<Bronze> bronzes = bronzeController.findBronzesOfClient(client.id);
+    RxList<Bronze> filtered = bronzes.obs;
     RxBool reportShow = false.obs;
     int sumSecs = bronzes.fold(0, (previousValue, bronze) => previousValue + bronze.totalSecs);
     int totHours = sumSecs ~/ 3600;
@@ -34,6 +54,9 @@ class ClientHistory extends StatelessWidget {
     ];
     const box10 = SizedBox(height: 20);
     const box5 = SizedBox(height: 10);
+    RxBool modalShown = false.obs;
+    RxString selected = 'Tudo'.obs;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -46,20 +69,82 @@ class ClientHistory extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: GestureDetector(
+      body: Obx(() => GestureDetector(
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: Column(
               children: [
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SingleChildScrollView(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                
+                                const SizedBox(
+                                  height: 1,
+                                ),
+                                Material(
+                                  child: ListTile(
+                                    title: const Text(
+                                      'Opt 2',
+                                    ),
+                                    trailing: const Icon(Icons.camera_alt),
+                                    onTap: () {
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      backgroundColor: Colors.white,
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        alignment: Alignment.center,
+                        width: width * .5,
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: const BorderRadius.all(Radius.circular(20))
+                        ),
+                        margin: EdgeInsets.only(left: width * .05, top: 5, bottom: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: width * .1),
+                              child: Obx(() => Text(selected.value)),
+                            ),
+                            const Icon(
+                              Icons.calendar_month, 
+                              size: 20, 
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Expanded(
                     child: ListView.builder(
-                        itemCount: bronzes.length,
+                        itemCount: filtered.length,
                         itemBuilder: (context, index) {
-                          Bronze bronze = bronzes[index];
+                          Bronze bronze = filtered[index];
                           int hours = bronze.totalSecs ~/ 3600;
                           int mins = bronze.totalSecs % 3600 ~/ 60;
                           int secs = bronze.totalSecs % 3600 % 60;
                           return Container(
-                              height: 80,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: Colors.grey[100],
@@ -69,32 +154,75 @@ class ClientHistory extends StatelessWidget {
                               ),
                               margin: const EdgeInsets.all(10),
                               child: ListTile(
-                                title: Text(
-                                  Validator.formatDatetime(bronze.timestamp),
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(right: 5),
-                                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(30),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.u_turn_left,
-                                            color: Colors.grey,
+                                    Column(
+                                      children: [
+                                        Text(
+                                          bronze.timestamp.day.toString().padLeft(2, '0'),
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
                                           ),
-                                          Text(bronze.turnArounds.toString())
-                                        ],
-                                      ),
+                                        ),
+                                        Text(
+                                          Validator.getMonthAbbr(bronze.timestamp.month),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        ),
+                                        Text(
+                                          bronze.timestamp.year.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        )
+                                      ],
                                     ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          FontAwesomeIcons.clock, 
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          '${bronze.timestamp.hour.toString().padLeft(2, "0")}:${bronze.timestamp.minute.toString().padLeft(2, "0")}',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.only(right: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(30),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.u_turn_left,
+                                                color: Colors.grey,
+                                              ),
+                                              Text(bronze.turnArounds.toString())
+                                            ],
+                                          ),
+                                        ),
                                     Container(
                                       margin: const EdgeInsets.only(right: 5),
                                       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -108,7 +236,7 @@ class ClientHistory extends StatelessWidget {
                                         children: [
                                           const Icon(
                                             Icons.timer,
-                                            color: Colors.grey,
+                                            color: Colors.pink,
                                           ),
                                           Text("${hours.toString().padLeft(2, "0")}:${mins.toString().padLeft(2, "0")}:${secs.toString().padLeft(2, "0")}")
                                         ],
@@ -126,12 +254,14 @@ class ClientHistory extends StatelessWidget {
                                         children: [
                                           const Icon(
                                             Icons.monetization_on,
-                                            color: Colors.grey,
+                                            color: Colors.green,
                                           ),
                                           Text(bronze.price.toStringAsFixed(2))
                                         ],
                                       ),
                                     ),
+                                      ],
+                                    )
                                   ],
                                 ),
                               )
@@ -181,9 +311,9 @@ class ClientHistory extends StatelessWidget {
                             children: [
                               const Icon(
                                 Icons.sunny,
-                                color: Colors.grey,
+                                color: Colors.pink,
                               ),
-                              Text(bronzes.length.toString())
+                              Text(filtered.length.toString())
                             ],
                           ), shows[0]
                       ),
@@ -194,7 +324,7 @@ class ClientHistory extends StatelessWidget {
                             Icons.u_turn_left,
                             color: Colors.grey,
                           ),
-                          Text(bronzes.fold(0, (previousValue, bronze) => previousValue + bronze.turnArounds).toString())
+                          Text(filtered.fold(0, (previousValue, bronze) => previousValue + bronze.turnArounds).toString())
                         ],
                       ), shows[1]),
                       showDependent(box5, shows[2]),
@@ -202,7 +332,7 @@ class ClientHistory extends StatelessWidget {
                         children: [
                           const Icon(
                             Icons.timer,
-                            color: Colors.grey,
+                            color: Colors.pink,
                           ),
                           Text("${totHours.toString().padLeft(2, "0")}:${totMins.toString().padLeft(2, "0")}:${totSecs.toString().padLeft(2, "0")}")
                         ],
@@ -212,9 +342,9 @@ class ClientHistory extends StatelessWidget {
                         children: [
                           const Icon(
                             Icons.monetization_on,
-                            color: Colors.grey,
+                            color: Colors.green,
                           ),
-                          Text(bronzes.fold(Decimal.zero, (previousValue, bronze) => previousValue + bronze.price).toStringAsFixed(2))
+                          Text(filtered.fold(Decimal.zero, (previousValue, bronze) => previousValue + bronze.price).toStringAsFixed(2))
                         ],
                       ), shows[3])
                     ],
@@ -222,6 +352,6 @@ class ClientHistory extends StatelessWidget {
                 ))
               ],
             )
-    ));
+    )));
   }
 }
