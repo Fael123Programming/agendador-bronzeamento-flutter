@@ -1,18 +1,16 @@
+import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/controllers/filtered_bronzes_controller.dart';
-import 'package:agendador_bronzeamento/views/clients/utils/functions.dart';
-import 'package:agendador_bronzeamento/views/clients/utils/month_year_pair.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/utils/validator.dart';
+import 'package:agendador_bronzeamento/views/clients/utils/month_year_pair.dart';
+import 'package:agendador_bronzeamento/views/clients/utils/functions.dart';
 
-class ClientHistory extends StatelessWidget {
-  final Client client;
-
-  const ClientHistory({super.key, required this.client});
+class Bronzes extends StatelessWidget {
+  const Bronzes({super.key});
 
   List<Widget> getModalOptions(BuildContext context) {
     final FilteredBronzesController filteredController = Get.find();
@@ -70,8 +68,9 @@ class ClientHistory extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final ClientController clientController = Get.find();
     final BronzeController bronzeController = Get.find();
-    final FilteredBronzesController filteredController = Get.put(FilteredBronzesController(bronzeController.findBronzesOfClient(client.id)));
+    final FilteredBronzesController filteredController = Get.put(FilteredBronzesController(bronzeController.bronzes));
     RxBool reportShown = false.obs;
     
     List<RxBool> shows = [
@@ -89,9 +88,9 @@ class ClientHistory extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Bronzes de ${client.name.split(" ")[0]}',
-            style: const TextStyle(
+          title: const Text(
+            'Bronzes Geral',
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               // fontFamily: 'DancingScript'
@@ -167,6 +166,8 @@ class ClientHistory extends StatelessWidget {
                           itemCount: filteredController.filtered.length,
                           itemBuilder: (context, index) {
                             Bronze bronze = filteredController.filtered[index];
+                            Client client = clientController.findById(bronze.clientId)!;
+                            
                             int hours = bronze.totalSecs ~/ 3600;
                             int mins = bronze.totalSecs % 3600 ~/ 60;
                             int secs = bronze.totalSecs % 3600 % 60;
@@ -184,6 +185,36 @@ class ClientHistory extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            client.name,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold
+                                            ),
+                                          ),
+                                          client.picture !=
+                                                  null
+                                              ? FittedBox(
+                                                  fit: BoxFit.cover,
+                                                  child: CircleAvatar(
+                                                    backgroundImage: Image.memory(
+                                                            client.picture!)
+                                                        .image,
+                                                    radius: 20,
+                                                  ),
+                                                )
+                                              : const FittedBox(
+                                                  fit: BoxFit.cover,
+                                                  child: CircleAvatar(
+                                                    backgroundColor: Colors.white,
+                                                    radius: 20,
+                                                    child: Icon(Icons.person_2),
+                                                  ),
+                                                )
+                                        ],
+                                      ),
                                       Column(
                                         children: [
                                           Text(

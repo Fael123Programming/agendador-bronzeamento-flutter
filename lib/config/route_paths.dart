@@ -11,4 +11,7 @@ class RoutePaths {
   static const String changeTurnArounds = '/change_turn_arounds';
   static const String changeDuration = '/change_duration';
   static const String changePrice = '/change_price';
+  static const String dashboard = '/dashboard';
+  static const String bronzes = '/bronzes';
+  static const String inferences = '/inferences';
 }

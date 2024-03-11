@@ -15,13 +15,29 @@ class Clients extends StatelessWidget {
     final ConfigController configController = Get.find();
     final ClientController clientController = Get.find();
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return PopScope(
       onPopInvoked: (didPop) {},
       child: Obx(() => Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
-              title: const Text(''),
+              title: IconButton(
+                icon: const Column(
+                  children: [
+                    Icon(
+                      Icons.bar_chart,
+                      color: Color.fromARGB(255, 24, 111, 183),
+                    ),
+                    Text(
+                      'Dashboard',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () => Navigator.pushNamed(context, RoutePaths.dashboard),
+              ),
               actions: clientController.clients.isNotEmpty ? <Widget>[
                 IconButton(
                   onPressed: () =>

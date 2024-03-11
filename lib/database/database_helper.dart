@@ -22,9 +22,10 @@ class DatabaseHelper {
   }
 
   Future<Database> initDatabase() async {
-    final path = join(await getDatabasesPath(), 'dados.db');
+    final path = await getDatabasesPath();
+    final finalPath = join(path, 'dados.db');
     return await openDatabase(
-      path,
+      finalPath,
       version: 3,
       onCreate: (db, version) async {
         await db.execute(enableForeignKeys);
