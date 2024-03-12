@@ -17,7 +17,6 @@ class ClientHistory extends StatelessWidget {
   Widget build(context) {
     final BronzeController bronzeController = Get.find();
     RxList<Bronze> filteredBronzes = <Bronze>[].obs;
-    filteredBronzes.addAll(bronzeController.findBronzesOfClient(client.id));
     RxString filteredType = 'Tudo'.obs;
     RxBool reportShown = false.obs;
     List<RxBool> shows = [
@@ -45,7 +44,17 @@ class ClientHistory extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: Obx(() { 
+        body: Obx(() {
+          if (filteredType.value == 'Tudo') {
+            filteredBronzes.clear();
+            filteredBronzes.addAll(bronzeController.findBronzesOfClient(client.id));
+            filteredBronzes.sort((b1, b2) => b2.timestamp.compareTo(b1.timestamp));
+          } else {
+            MonthYearPair pair = MonthYearPair.fromString(filteredType.value);
+            filteredBronzes.clear();
+            filteredBronzes.addAll(bronzeController.findBronzesOfClient(client.id).where((bronze) => bronze.timestamp.month == pair.month && bronze.timestamp.year == pair.year));
+            filteredBronzes.sort((b1, b2) => b2.timestamp.compareTo(b1.timestamp));
+          }
           int sumSecs = filteredBronzes.fold(0, (previousValue, bronze) => previousValue + bronze.totalSecs);
           int totHours = sumSecs ~/ 3600;
           int totMins = sumSecs % 3600 ~/ 60;
@@ -355,6 +364,7 @@ class ClientHistory extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             if ('Tudo' != filteredType.value) {
+              filteredType.value = 'Tudo';
               filteredBronzes.clear();
               filteredBronzes.addAll(allBronzes);
             }

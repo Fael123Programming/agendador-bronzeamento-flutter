@@ -1,4 +1,6 @@
 import 'package:agendador_bronzeamento/database/models/client.dart';
+import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
+import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +17,7 @@ class Bronzes extends StatelessWidget {
   Widget build(context) {
     final ClientController clientController = Get.find();
     final BronzeController bronzeController = Get.find();
+    final HomeController homeController = Get.find();
     RxList<Bronze> filteredBronzes = <Bronze>[].obs;
     RxString filteredType = 'Tudo'.obs;
     RxBool reportShown = false.obs;
@@ -165,35 +168,43 @@ class Bronzes extends StatelessWidget {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              client.name,
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold
+                                        GestureDetector(
+                                          onTap: () {
+                                            homeController.goToClients();
+                                            Get.to(ClientDetails(
+                                              client: client,
+                                            ));
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                client.name,
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold
+                                                ),
                                               ),
-                                            ),
-                                            client.picture !=
-                                                    null
-                                                ? FittedBox(
-                                                    fit: BoxFit.cover,
-                                                    child: CircleAvatar(
-                                                      backgroundImage: Image.memory(
-                                                              client.picture!)
-                                                          .image,
-                                                      radius: 20,
-                                                    ),
-                                                  )
-                                                : const FittedBox(
-                                                    fit: BoxFit.cover,
-                                                    child: CircleAvatar(
-                                                      backgroundColor: Colors.white,
-                                                      radius: 20,
-                                                      child: Icon(Icons.person_2),
-                                                    ),
-                                                  )
-                                          ],
+                                              client.picture !=
+                                                      null
+                                                  ? FittedBox(
+                                                      fit: BoxFit.cover,
+                                                      child: CircleAvatar(
+                                                        backgroundImage: Image.memory(
+                                                                client.picture!)
+                                                            .image,
+                                                        radius: 20,
+                                                      ),
+                                                    )
+                                                  : const FittedBox(
+                                                      fit: BoxFit.cover,
+                                                      child: CircleAvatar(
+                                                        backgroundColor: Colors.white,
+                                                        radius: 20,
+                                                        child: Icon(Icons.person_2),
+                                                      ),
+                                                    )
+                                            ],
+                                          ),
                                         ),
                                         Column(
                                           children: [

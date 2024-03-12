@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  Rx<BottomNavItem> selectedItem = BottomNavItem.beds.obs;
+  final pageViewController = PageController();
+  final Rx<BottomNavItem> selectedItem = BottomNavItem.beds.obs;
 
   void clean(BottomNavItem item) {
     if (selectedItem.value == item) {
@@ -77,12 +78,15 @@ class HomeController extends GetxController {
 }
 
 class Home extends StatelessWidget {
-  const Home({super.key});  
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.find();
     return Obx(() => Scaffold(
+      // appBar: AppBar(
+      //   title: const Text(''),
+      // ),
       body: PopScope(
         canPop: false,
         onPopInvoked: (pop) async {
@@ -90,7 +94,20 @@ class Home extends StatelessWidget {
               ?.currentState
               ?.popUntil((route) => route.isFirst);
         },
-        child: Stack(
+      //   child: Stack(
+          // children: homeController.items
+          //     .map(
+          //       (item, _) => MapEntry(
+          //         item,
+          //         _buildOffstageNavigator(item, item == homeController.selectedItem.value),
+          //       ),
+          //     )
+          //     .values
+          //     .toList(),
+      //   ),
+      // ),
+        child: PageView(
+          controller: homeController.pageViewController,
           children: homeController.items
               .map(
                 (item, _) => MapEntry(
@@ -100,6 +117,11 @@ class Home extends StatelessWidget {
               )
               .values
               .toList(),
+          onPageChanged: (index) {
+            final currentSelectedItem = BottomNavItem.values[index];
+            homeController.clean(currentSelectedItem);
+            homeController.goTo(currentSelectedItem);
+          },
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -110,9 +132,10 @@ class Home extends StatelessWidget {
         showSelectedLabels: true,
         showUnselectedLabels: true,
         onTap: (index) {
-          final currentSelectedItem = BottomNavItem.values[index];
-          homeController.clean(currentSelectedItem);
-          homeController.goTo(currentSelectedItem);
+          homeController.pageViewController.jumpToPage(index);
+          // final currentSelectedItem = BottomNavItem.values[index];
+          // homeController.clean(currentSelectedItem);
+          // homeController.goTo(currentSelectedItem);
         },
         items: homeController.items
             .map(

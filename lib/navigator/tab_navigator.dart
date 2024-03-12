@@ -40,9 +40,9 @@ class TabNavigator extends StatelessWidget {
   _getScreen(BuildContext context, BottomNavItem item) {
     switch (item) {
       case BottomNavItem.beds:
-        return const Beds();
+          return const Beds();
       case BottomNavItem.bronzes:
-        return const Bronzes();
+          return const Bronzes();
       case BottomNavItem.dashboard:
         return const Dashboard(); 
       case BottomNavItem.clients:
