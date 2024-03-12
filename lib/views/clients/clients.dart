@@ -20,23 +20,14 @@ class Clients extends StatelessWidget {
       child: Obx(() => Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
-              title: IconButton(
-                icon: const Column(
-                  children: [
-                    Icon(
-                      Icons.bar_chart,
-                      color: Color.fromARGB(255, 24, 111, 183),
-                    ),
-                    Text(
-                      'Dashboard',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ],
+              centerTitle: true,
+              title: const Text(
+                'Clientes',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'DancingScript'
                 ),
-                onPressed: () => Navigator.pushNamed(context, RoutePaths.dashboard),
               ),
               actions: clientController.clients.isNotEmpty ? <Widget>[
                 IconButton(

@@ -1,9 +1,15 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
 
 class MonthYearPair implements Comparable<MonthYearPair> {
-  int month, year;
+  late int month, year;
 
   MonthYearPair({required this.month, required this.year});
+
+  MonthYearPair.fromString(String toParse) {
+    List<String> toParseSplit = toParse.split(' ');
+    month = Validator.getMonthNumber(toParseSplit[0]);
+    year = int.parse(toParseSplit[2]);
+  }
 
   @override
   String toString() {

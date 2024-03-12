@@ -1,6 +1,5 @@
-import 'package:agendador_bronzeamento/views/clients/controllers/filtered_bronzes_controller.dart';
-import 'package:agendador_bronzeamento/views/clients/utils/functions.dart';
-import 'package:agendador_bronzeamento/views/clients/utils/month_year_pair.dart';
+import 'package:agendador_bronzeamento/utils/functions.dart';
+import 'package:agendador_bronzeamento/utils/month_year_pair.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -14,66 +13,13 @@ class ClientHistory extends StatelessWidget {
 
   const ClientHistory({super.key, required this.client});
 
-  List<Widget> getModalOptions(BuildContext context) {
-    final FilteredBronzesController filteredController = Get.find();
-    List<Widget> options = <Widget>[];
-    options.add(
-      Material(
-        child: ListTile(
-          tileColor: 'Tudo' == filteredController.type.value ? const Color.fromARGB(255, 235, 235, 235) : Colors.white,
-          title: Text(
-            'Tudo',
-            style: TextStyle(
-              fontWeight: 'Tudo' == filteredController.type.value ? FontWeight.bold : FontWeight.normal,
-              fontSize: 18
-            ),
-          ),
-          trailing: const Icon(Icons.done_all_sharp),
-          onTap: () {
-            Navigator.pop(context);
-            if ('Tudo' != filteredController.type.value) {
-              filteredController.filterAll();
-            }
-          },
-        ),
-      ),
-    );
-    List<MonthYearPair> pairs = <MonthYearPair>[];
-    pairs.addAll(filteredController.all.map((e) => MonthYearPair(month: e.timestamp.month, year: e.timestamp.year)));
-    pairs = pairs.toSet().toList();
-    pairs.sort((p1, p2) => p2.compareTo(p1));
-    for (MonthYearPair pair in pairs) {
-      options.add(
-        Material(
-          child: ListTile(
-            tileColor: pair.toString() == filteredController.type.value ? const Color.fromARGB(255, 235, 235, 235) : Colors.white,
-            title: Text(
-              pair.toString(),
-              style: TextStyle(
-                fontWeight: pair.toString() == filteredController.type.value ? FontWeight.bold : FontWeight.normal,
-                fontSize: 18
-              ),
-            ),
-            trailing: const Icon(Icons.calendar_month),
-            onTap: () {
-              Navigator.pop(context);
-              if (pair.toString() != filteredController.type.value) {
-                filteredController.filterMonthYearPair(pair);
-              }
-            },
-          ),
-        ),
-      );
-    }
-    return options;
-  }
-
   @override
   Widget build(context) {
     final BronzeController bronzeController = Get.find();
-    final FilteredBronzesController filteredController = Get.put(FilteredBronzesController(bronzeController.findBronzesOfClient(client.id)));
+    RxList<Bronze> filteredBronzes = <Bronze>[].obs;
+    filteredBronzes.addAll(bronzeController.findBronzesOfClient(client.id));
+    RxString filteredType = 'Tudo'.obs;
     RxBool reportShown = false.obs;
-    
     List<RxBool> shows = [
       false.obs,
       false.obs,
@@ -85,7 +31,7 @@ class ClientHistory extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     return PopScope(
       onPopInvoked: (didPop) {
-        Get.delete<FilteredBronzesController>();
+        // Get.delete<FilteredBronzesController>();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -100,7 +46,7 @@ class ClientHistory extends StatelessWidget {
           centerTitle: true,
         ),
         body: Obx(() { 
-          int sumSecs = filteredController.filtered.fold(0, (previousValue, bronze) => previousValue + bronze.totalSecs);
+          int sumSecs = filteredBronzes.fold(0, (previousValue, bronze) => previousValue + bronze.totalSecs);
           int totHours = sumSecs ~/ 3600;
           int totMins = sumSecs % 3600 ~/ 60;
           int totSecs = sumSecs % 3600 % 60;
@@ -118,7 +64,12 @@ class ClientHistory extends StatelessWidget {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
-                                children: getModalOptions(context),
+                                children: getModalOptions(
+                                  filteredBronzes,
+                                  bronzeController.findBronzesOfClient(client.id).obs,
+                                  filteredType,
+                                  context
+                                ),
                               ),
                             ),
                           );
@@ -143,11 +94,10 @@ class ClientHistory extends StatelessWidget {
                             children: [
                               Container(
                                 margin: EdgeInsets.only(right: width * .1),
-                                child: Obx(() => Text(
-                                    filteredController.type.value,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold
-                                    ),
+                                child: Text(
+                                  filteredType.value,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   )
                                 ),
                               ),
@@ -163,92 +113,73 @@ class ClientHistory extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                      child: ListView.builder(
-                          itemCount: filteredController.filtered.length,
-                          itemBuilder: (context, index) {
-                            Bronze bronze = filteredController.filtered[index];
-                            int hours = bronze.totalSecs ~/ 3600;
-                            int mins = bronze.totalSecs % 3600 ~/ 60;
-                            int secs = bronze.totalSecs % 3600 % 60;
-                            return Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(30),
+                    child: ListView.builder(
+                      itemCount: filteredBronzes.length,
+                      itemBuilder: (context, index) {
+                        Bronze bronze = filteredBronzes[index];
+                        int hours = bronze.totalSecs ~/ 3600;
+                        int mins = bronze.totalSecs % 3600 ~/ 60;
+                        int secs = bronze.totalSecs % 3600 % 60;
+                        return Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(30),
+                              ),
+                            ),
+                            margin: const EdgeInsets.all(10),
+                            child: ListTile(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        bronze.timestamp.day.toString().padLeft(2, '0'),
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        Validator.getMonthAbbr(bronze.timestamp.month),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        bronze.timestamp.year.toString(),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                ),
-                                margin: const EdgeInsets.all(10),
-                                child: ListTile(
-                                  title: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            bronze.timestamp.day.toString().padLeft(2, '0'),
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          ),
-                                          Text(
-                                            Validator.getMonthAbbr(bronze.timestamp.month),
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          ),
-                                          Text(
-                                            bronze.timestamp.year.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          )
-                                        ],
+                                      const Icon(
+                                        FontAwesomeIcons.clock, 
+                                        color: Colors.black,
                                       ),
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            FontAwesomeIcons.clock, 
-                                            color: Colors.black,
-                                          ),
-                                          Text(
-                                            '${bronze.timestamp.hour.toString().padLeft(2, "0")}:${bronze.timestamp.minute.toString().padLeft(2, "0")}',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            margin: const EdgeInsets.only(right: 5),
-                                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(30),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.u_turn_left,
-                                                  color: Colors.grey,
-                                                ),
-                                                Text(bronze.turnArounds.toString())
-                                              ],
-                                            ),
-                                          ),
+                                      Text(
+                                        '${bronze.timestamp.hour.toString().padLeft(2, "0")}:${bronze.timestamp.minute.toString().padLeft(2, "0")}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
                                       Container(
                                         margin: const EdgeInsets.only(right: 5),
                                         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -261,38 +192,57 @@ class ClientHistory extends StatelessWidget {
                                         child: Row(
                                           children: [
                                             const Icon(
-                                              Icons.timer,
-                                              color: Colors.pink,
+                                              Icons.u_turn_left,
+                                              color: Colors.grey,
                                             ),
-                                            Text("${hours.toString().padLeft(2, "0")}:${mins.toString().padLeft(2, "0")}:${secs.toString().padLeft(2, "0")}")
+                                            Text(bronze.turnArounds.toString())
                                           ],
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(30),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.monetization_on,
-                                              color: Colors.green,
-                                            ),
-                                            Text(bronze.price.toStringAsFixed(2))
-                                          ],
-                                        ),
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 5),
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
                                       ),
-                                        ],
-                                      )
-                                    ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.timer,
+                                          color: Colors.pink,
+                                        ),
+                                        Text("${hours.toString().padLeft(2, "0")}:${mins.toString().padLeft(2, "0")}:${secs.toString().padLeft(2, "0")}")
+                                      ],
+                                    ),
                                   ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(30),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.monetization_on,
+                                          color: Colors.green,
+                                        ),
+                                        Text(bronze.price.toStringAsFixed(2))
+                                      ],
+                                    ),
+                                  ),
+                                  ],
                                 )
-                            );
-                          })
+                              ],
+                            ),
+                          )
+                        );
+                      })
                   ),
                   Obx(() => Container(
                     padding: const EdgeInsets.all(20),
@@ -339,7 +289,7 @@ class ClientHistory extends StatelessWidget {
                                   Icons.sunny,
                                   color: Colors.pink,
                                 ),
-                                Text(filteredController.filtered.length.toString())
+                                Text(filteredBronzes.length.toString())
                               ],
                             ), shows[0]
                         ),
@@ -350,7 +300,7 @@ class ClientHistory extends StatelessWidget {
                               Icons.u_turn_left,
                               color: Colors.grey,
                             ),
-                            Text(filteredController.filtered.fold(0, (previousValue, bronze) => previousValue + bronze.turnArounds).toString())
+                            Text(filteredBronzes.fold(0, (previousValue, bronze) => previousValue + bronze.turnArounds).toString())
                           ],
                         ), shows[1]),
                         showDependent(box5, shows[2]),
@@ -370,7 +320,7 @@ class ClientHistory extends StatelessWidget {
                               Icons.monetization_on,
                               color: Colors.green,
                             ),
-                            Text(filteredController.filtered.fold(Decimal.zero, (previousValue, bronze) => previousValue + bronze.price).toStringAsFixed(2))
+                            Text(filteredBronzes.fold(Decimal.zero, (previousValue, bronze) => previousValue + bronze.price).toStringAsFixed(2))
                           ],
                         ), shows[3])
                       ],
@@ -381,5 +331,66 @@ class ClientHistory extends StatelessWidget {
       );
     })),
     );
+  }
+
+   List<Widget> getModalOptions(
+    RxList<Bronze> filteredBronzes, 
+    RxList<Bronze> allBronzes, 
+    RxString filteredType, 
+    BuildContext context
+  ) {
+    List<Widget> options = <Widget>[];
+    options.add(
+      Material(
+        child: ListTile(
+          tileColor: 'Tudo' == filteredType.value ? const Color.fromARGB(255, 235, 235, 235) : Colors.white,
+          title: Text(
+            'Tudo',
+            style: TextStyle(
+              fontWeight: 'Tudo' == filteredType.value ? FontWeight.bold : FontWeight.normal,
+              fontSize: 18
+            ),
+          ),
+          trailing: const Icon(Icons.done_all_sharp),
+          onTap: () {
+            Navigator.pop(context);
+            if ('Tudo' != filteredType.value) {
+              filteredBronzes.clear();
+              filteredBronzes.addAll(allBronzes);
+            }
+          },
+        ),
+      ),
+    );
+    List<MonthYearPair> pairs = <MonthYearPair>[];
+    pairs.addAll(allBronzes.map((e) => MonthYearPair(month: e.timestamp.month, year: e.timestamp.year)));
+    pairs = pairs.toSet().toList();
+    pairs.sort((p1, p2) => p2.compareTo(p1));
+    for (MonthYearPair pair in pairs) {
+      options.add(
+        Material(
+          child: ListTile(
+            tileColor: pair.toString() == filteredType.value ? const Color.fromARGB(255, 235, 235, 235) : Colors.white,
+            title: Text(
+              pair.toString(),
+              style: TextStyle(
+                fontWeight: pair.toString() == filteredType.value ? FontWeight.bold : FontWeight.normal,
+                fontSize: 18
+              ),
+            ),
+            trailing: const Icon(Icons.calendar_month),
+            onTap: () {
+              Navigator.pop(context);
+              if (pair.toString() != filteredType.value) {
+                filteredType.value = pair.toString();
+                filteredBronzes.clear();
+                filteredBronzes.addAll(allBronzes.where((bronze) => bronze.timestamp.month == pair.month && bronze.timestamp.year == pair.year));
+              }
+            },
+          ),
+        ),
+      );
+    }
+    return options;
   }
 }

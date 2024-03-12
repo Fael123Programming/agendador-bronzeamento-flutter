@@ -9,7 +9,7 @@ class Settings extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<SettingItem> settingItems = <SettingItem>[
       SettingItem(
-        title: 'Gerais',
+        title: 'Padrão',
         icon: Icons.settings,
         onTap: () => Navigator.pushNamed(context, RoutePaths.general),
       ),
@@ -21,7 +21,15 @@ class Settings extends StatelessWidget {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        centerTitle: true,
+        title: const Text(
+          'Ajustes',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DancingScript'
+          ),
+        ),
       ),
       body: Center(
         child: SafeArea(

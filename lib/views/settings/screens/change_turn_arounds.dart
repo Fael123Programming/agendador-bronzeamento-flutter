@@ -22,10 +22,11 @@ class ChangeTurnArounds extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Viradas Padrão',
+            'Viradas',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
+              fontFamily: 'DancingScript'
             ),
           ),
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Inferences extends StatelessWidget {
-  const Inferences({super.key});
+class Dashboard extends StatelessWidget {
+  const Dashboard({super.key});
 
   @override
   Widget build(context) {
@@ -11,7 +11,7 @@ class Inferences extends StatelessWidget {
           title: const Text(''),
         ),
         body: const Center(
-          child: Text('INFERENCES COMING SOON...'),
+          child: Text('Dashboard coming soon...'),
         ),
       ),
     );

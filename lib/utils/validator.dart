@@ -1,4 +1,6 @@
 class Validator {
+  static final List<String> monthStrs = <String>['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  
   static String? validatePhoneNumber(String? phoneNumber) {
     if (phoneNumber == null ||
         phoneNumber.isEmpty ||
@@ -33,7 +35,10 @@ class Validator {
   }
 
   static String getMonthAbbr(int monthNumber) {
-    List<String> monthStrs = <String>['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     return monthStrs[monthNumber - 1];
+  }
+
+  static int getMonthNumber(String monthAbbr) {
+    return monthStrs.indexOf(monthAbbr) + 1;
   }
 }

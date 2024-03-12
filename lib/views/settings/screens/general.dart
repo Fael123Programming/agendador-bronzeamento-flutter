@@ -9,24 +9,32 @@ class General extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<SettingItem> settingItems = <SettingItem>[
       SettingItem(
-        title: 'Viradas Padrão',
+        title: 'Viradas',
         icon: Icons.u_turn_left,
         onTap: () => Navigator.pushNamed(context, RoutePaths.changeTurnArounds),
       ),
       SettingItem(
-        title: 'Duração Padrão',
+        title: 'Duração',
         icon: Icons.timer,
         onTap: () => Navigator.pushNamed(context, RoutePaths.changeDuration),
       ),
       SettingItem(
-        title: 'Preço Padrão',
+        title: 'Preço',
         icon: Icons.monetization_on,
         onTap: () => Navigator.pushNamed(context, RoutePaths.changePrice),
       ),
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        centerTitle: true,
+        title: const Text(
+          'Padrão',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DancingScript'
+          ),
+        ),
       ),
       body: Center(
         child: SafeArea(

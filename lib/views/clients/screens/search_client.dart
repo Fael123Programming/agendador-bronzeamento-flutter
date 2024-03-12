@@ -92,7 +92,7 @@ class SearchClient extends StatelessWidget {
                       onPressed: () => Navigator.pushNamed(
                         context,
                         RoutePaths.clientHistory,
-                        arguments: clientController.clients[index],
+                        arguments: filtered[index],
                       ),
                     ),
                   ) : Container(),

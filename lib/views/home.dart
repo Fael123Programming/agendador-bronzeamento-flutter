@@ -18,6 +18,14 @@ class HomeController extends GetxController {
     goTo(BottomNavItem.beds);
   }
 
+  void goToBronzes() {
+    goTo(BottomNavItem.bronzes);
+  }
+
+  void goToDashboard() {
+    goTo(BottomNavItem.dashboard);
+  }
+
   void goToClients() {
     goTo(BottomNavItem.clients);
   }
@@ -33,15 +41,27 @@ class HomeController extends GetxController {
 
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
     BottomNavItem.beds: GlobalKey<NavigatorState>(),
+    BottomNavItem.bronzes: GlobalKey<NavigatorState>(),
+    BottomNavItem.dashboard: GlobalKey<NavigatorState>(),
     BottomNavItem.clients: GlobalKey<NavigatorState>(),
     BottomNavItem.config: GlobalKey<NavigatorState>(),
   };
 
   final Map<BottomNavItem, Map<String, dynamic>> items = {
     BottomNavItem.beds: {
-      'iconFocused': Icons.sunny,
-      'icon': Icons.wb_sunny_outlined,
+      'iconFocused': Icons.hotel,
+      'icon': Icons.hotel_outlined,
       'bottomNavItemLabel': 'Macas',
+    },
+    BottomNavItem.bronzes: {
+      'iconFocused': Icons.wb_sunny,
+      'icon': Icons.wb_sunny_outlined,
+      'bottomNavItemLabel': 'Bronzes',
+    },
+    BottomNavItem.dashboard: {
+      'iconFocused': Icons.query_stats,
+      'icon': Icons.query_stats_outlined,
+      'bottomNavItemLabel': 'Dashboard',
     },
     BottomNavItem.clients: {
       'iconFocused': Icons.person_2,
@@ -51,7 +71,7 @@ class HomeController extends GetxController {
     BottomNavItem.config: {
       'iconFocused': Icons.settings,
       'icon': Icons.settings_outlined,
-      'bottomNavItemLabel': 'Configurações'
+      'bottomNavItemLabel': 'Ajustes'
     },
   };
 }

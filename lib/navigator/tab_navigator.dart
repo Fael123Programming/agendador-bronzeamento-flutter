@@ -2,6 +2,8 @@ import 'package:agendador_bronzeamento/config/custom_router.dart';
 import 'package:agendador_bronzeamento/navigator/bottom_nav_item.dart';
 import 'package:agendador_bronzeamento/views/beds/beds.dart';
 import 'package:agendador_bronzeamento/views/clients/clients.dart';
+import 'package:agendador_bronzeamento/views/bronzes/bronzes.dart';
+import 'package:agendador_bronzeamento/views/dashboard/dashboard.dart';
 import 'package:agendador_bronzeamento/views/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +41,10 @@ class TabNavigator extends StatelessWidget {
     switch (item) {
       case BottomNavItem.beds:
         return const Beds();
+      case BottomNavItem.bronzes:
+        return const Bronzes();
+      case BottomNavItem.dashboard:
+        return const Dashboard(); 
       case BottomNavItem.clients:
         return const Clients();
       case BottomNavItem.config:

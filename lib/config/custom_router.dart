@@ -1,9 +1,8 @@
 import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
 import 'package:agendador_bronzeamento/views/beds/screens/search_bed.dart';
-import 'package:agendador_bronzeamento/views/clients/screens/bronzes.dart';
+import 'package:agendador_bronzeamento/views/bronzes/bronzes.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_history.dart';
-import 'package:agendador_bronzeamento/views/clients/screens/dashboard.dart';
-import 'package:agendador_bronzeamento/views/clients/screens/inferences.dart';
+import 'package:agendador_bronzeamento/views/dashboard/dashboard.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
@@ -121,11 +120,6 @@ class CustomRouter {
         return MaterialPageRoute(
           builder: (context) => const Bronzes(),
           settings: const RouteSettings(name: RoutePaths.bronzes),
-        );
-      case RoutePaths.inferences:
-        return MaterialPageRoute(
-          builder: (context) => const Inferences(),
-          settings: const RouteSettings(name: RoutePaths.inferences),
         );
       default:
         return _errorRoute();

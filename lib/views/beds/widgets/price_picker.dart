@@ -53,18 +53,21 @@ class PricePicker extends StatelessWidget {
                     textAlign: TextAlign.start,
                     onChanged: (value) {
                       if (value.isNotEmpty) {
-                        value = value.replaceAll(RegExp(r'[^\d\.,]'), '');
-                        try {
-                          Decimal dec = Decimal.parse(value);
-                          priceController.price.text = dec.toString();
-                        } on FormatException {
+                        // value = value.replaceAll(RegExp(r'[^\d,]'), '');
+                        // try {
+                        //   Decimal dec = Decimal.parse(value);
+                        //   priceController.price.text = dec.toString();
+                        // } on FormatException {
+                        //   priceController.price.text = '';
+                        // }
+                        if (!priceController.isValid()) {
                           priceController.price.text = '';
                         }
                       }
                     },
                     onEditingComplete: priceController.onEditingComplete,
                     focusNode: priceController.focusNode,
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     keyboardAppearance: Brightness.light,
                     decoration: const InputDecoration.collapsed(
                       hintText: 'Preço',

@@ -21,10 +21,11 @@ class ChangePrice extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Preço Padrão',
+            'Preço',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
+              fontFamily: 'DancingScript'
             ),
           ),
         ),

@@ -16,7 +16,15 @@ class Beds extends StatelessWidget {
     final ClientController clientController = Get.find();
     return Obx(() => Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        centerTitle: true,
+        title: const Text(
+          'Macas',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'DancingScript'
+          ),
+        ),
         actions: bedCardListController.list.isNotEmpty ? <Widget>[
           IconButton(
             onPressed: () =>

@@ -35,10 +35,11 @@ class ChangeDuration extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Duração Padrão',
+            'Duração',
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
+              fontFamily: 'DancingScript'
             ),
           ),
         ),
