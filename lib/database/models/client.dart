@@ -101,7 +101,7 @@ class ClientController extends GetxController {
     await DatabaseHelper().deleteClient(client);
     clients.remove(client);
     final BronzeController bronzeController = Get.find();
-    await bronzeController.fetch();
+    bronzeController.bronzes.removeWhere((bronze) => bronze.clientId == client.id);
   }
 
   Client? findById(int id) {

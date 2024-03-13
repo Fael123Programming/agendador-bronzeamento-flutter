@@ -67,7 +67,12 @@ class Beds extends StatelessWidget {
                       ),
                       onPressed: () {
                         homeController.goToClients();
-                        Get.to(const ClientDetails());
+                        Get.to(
+                          const ClientDetails(), 
+                          curve: Curves.easeInOutCubicEmphasized,
+                          duration: const Duration(seconds: 1),
+                          opaque: true
+                        );
                       },
                     ),
                   ) : Container()

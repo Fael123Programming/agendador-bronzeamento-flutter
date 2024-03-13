@@ -15,29 +15,38 @@ class HomeController extends GetxController {
     }
   }
 
-  void goToBeds() {
-    goTo(BottomNavItem.beds);
+  void goToBeds({bool animated = true}) async {
+    await goTo(BottomNavItem.beds, animated: animated);
   }
 
-  void goToBronzes() {
-    goTo(BottomNavItem.bronzes);
+  void goToBronzes({bool animated = true}) async {
+    await goTo(BottomNavItem.bronzes, animated: animated);
   }
 
-  void goToDashboard() {
-    goTo(BottomNavItem.dashboard);
+  void goToDashboard({bool animated = true}) async {
+    await goTo(BottomNavItem.dashboard, animated: animated);
   }
 
-  void goToClients() {
-    goTo(BottomNavItem.clients);
+  void goToClients({bool animated = true}) async {
+    await goTo(BottomNavItem.clients, animated: animated);
   }
 
-  void goToConfig() {
-    goTo(BottomNavItem.config);
+  void goToConfig({bool animated = true}) {
+    goTo(BottomNavItem.config, animated: animated);
   }
 
-  void goTo(BottomNavItem item) {
+  Future<void> goTo(BottomNavItem item, {bool animated = true}) async {
     clean(item);
     selectedItem.value = item;
+    if (animated) {
+      await pageViewController.animateToPage(
+      item.index, 
+      duration: const Duration(milliseconds: 100), 
+      curve: Curves.easeIn
+      );
+    } else {
+      pageViewController.jumpToPage(item.index);
+    }
   }
 
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {
@@ -117,10 +126,8 @@ class Home extends StatelessWidget {
               )
               .values
               .toList(),
-          onPageChanged: (index) {
-            final currentSelectedItem = BottomNavItem.values[index];
-            homeController.clean(currentSelectedItem);
-            homeController.goTo(currentSelectedItem);
+          onPageChanged: (index) async {
+            await homeController.goTo(BottomNavItem.values[index]);
           },
         ),
       ),
@@ -131,11 +138,8 @@ class Home extends StatelessWidget {
         currentIndex: BottomNavItem.values.indexOf(homeController.selectedItem.value),
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        onTap: (index) {
-          homeController.pageViewController.jumpToPage(index);
-          // final currentSelectedItem = BottomNavItem.values[index];
-          // homeController.clean(currentSelectedItem);
-          // homeController.goTo(currentSelectedItem);
+        onTap: (index) async {
+          await homeController.goTo(BottomNavItem.values[index], animated: false);
         },
         items: homeController.items
             .map(

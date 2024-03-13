@@ -170,7 +170,7 @@ class Bronzes extends StatelessWidget {
                                       children: [
                                         GestureDetector(
                                           onTap: () {
-                                            homeController.goToClients();
+                                            homeController.goToClients(animated: false);
                                             Get.to(ClientDetails(
                                               client: client,
                                             ));
@@ -184,8 +184,7 @@ class Bronzes extends StatelessWidget {
                                                   fontWeight: FontWeight.bold
                                                 ),
                                               ),
-                                              client.picture !=
-                                                      null
+                                              client.picture != null
                                                   ? FittedBox(
                                                       fit: BoxFit.cover,
                                                       child: CircleAvatar(

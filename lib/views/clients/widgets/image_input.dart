@@ -30,7 +30,7 @@ class ImageInput extends StatelessWidget {
           border: Border.all(width: 1, color: Colors.grey[400]!),
           shape: BoxShape.circle,
         ),
-        child: Obx(() => imageController.picked.value
+        child: Obx(() => imageController.picked.value && imageController.imageData.value != null
           ? 
           FittedBox(
             fit: BoxFit.cover,

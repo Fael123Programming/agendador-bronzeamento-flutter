@@ -40,7 +40,11 @@ class Splash extends StatelessWidget {
             ),
             Container(
               margin: const EdgeInsets.only(top: 50),
-              child: Obx(() => showCircularProgressIndicator.value ? const CircularProgressIndicator() : Container()),
+              child: Obx(() => showCircularProgressIndicator.value ? 
+                const SizedBox(
+                  height: 40, 
+                  child: CircularProgressIndicator()
+                ) : const SizedBox(height: 40)),
             ),
           ],
         ),

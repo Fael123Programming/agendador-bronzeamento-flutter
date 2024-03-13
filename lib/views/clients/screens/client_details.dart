@@ -51,7 +51,10 @@ class ClientDetails extends StatelessWidget {
       )
     );
     if (client == null) {
-      nameController.focusNode.requestFocus();
+      Timer.periodic(const Duration(seconds: 1), (timer) { 
+        nameController.focusNode.requestFocus();
+        timer.cancel();
+      });
     } else {
       nameController.name.text = client!.name;
       phoneNumberController.phoneNumber.text = client!.phoneNumber;

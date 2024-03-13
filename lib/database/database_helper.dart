@@ -32,6 +32,9 @@ class DatabaseHelper {
         await db.execute(clientTable);
         await db.execute(bronzeTable);
       },
+      onOpen: (db) {
+        db.execute(enableForeignKeys);
+      },
     );
   }
 

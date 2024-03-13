@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -12,7 +11,7 @@ import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 // import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-Future<void> main() async {
+Future<void> main() async { 
   // sqfliteFfiInit();
   // databaseFactory = databaseFactoryFfi;
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +26,7 @@ Future<void> main() async {
 
   final BronzeController bronzeController = Get.put(BronzeController());
   await bronzeController.fetch();
+
   // await bronzeController.insert(
   //   Bronze.toSave(
   //     clientId: 1, 
