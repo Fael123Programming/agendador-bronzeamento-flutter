@@ -47,22 +47,41 @@ class Bronzes extends StatelessWidget {
         ),
         body: Obx(() {
           if (bronzeController.bronzes.isEmpty) {
-            return const Center(
+            return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center, 
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.wb_sunny, 
                       size: 80, 
                       color: Colors.pink
                     ), 
-                    Text(
+                    const Text(
                       'Sem bronzes', 
                       style: TextStyle(
                         fontSize: 30, 
                         color: Colors.pink
                       ),
                     ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 50),
+                      child: TextButton(
+                        child: const Text(
+                          'Cada bronze feito vai aparecer aqui!',
+                          style: TextStyle(
+                            fontSize: 30, 
+                            color: Colors.black, 
+                            decoration: TextDecoration.underline,
+                            fontFamily: 'DancingScript',
+                            fontWeight: FontWeight.bold
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        onPressed: () {
+                          homeController.goToBeds();
+                        },
+                      ),
+                    )
                   ]
                 )
               );

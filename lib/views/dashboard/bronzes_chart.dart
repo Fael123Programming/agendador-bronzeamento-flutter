@@ -5,18 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BronzesChart extends StatelessWidget {
-  const BronzesChart({super.key});
+  final int year;
+
+  const BronzesChart({super.key, required this.year});
 
   @override
   Widget build(context) {
     final BronzeController bronzeController = Get.find();
-    List<int> months = <int>[DateTime.now().month];
-    for (int i = 1; i < months[months.length - 1]; i++) {
-      months.insert(months.length - 1, i);
+    int currYear = DateTime.now().year;
+    List<int> months = <int>[];
+    if (currYear == year) {
+      months.add(DateTime.now().month);
+      for (int i = 1; i < months[months.length - 1]; i++) {
+        months.insert(months.length - 1, i);
+      }
+    } else {
+      months.addAll([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     }
     List<int> bronzeCounts = <int>[];
+    List<Bronze> yearBronzes = bronzeController.bronzes.where((bronze) => bronze.timestamp.year == year).toList();
     for (int month in months) {
-      int bronzeCount = bronzeController.bronzes.where((bronze) => bronze.timestamp.month == month).length;
+      int bronzeCount = yearBronzes.where((bronze) => bronze.timestamp.month == month).length;
       bronzeCounts.add(bronzeCount);
     }
     // Sample data to test. 
@@ -32,9 +41,9 @@ class BronzesChart extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Bronzes por Mês',
-            style: TextStyle(
+          Text(
+            'Bronzes por Mês: $year',
+            style: const TextStyle(
               fontSize: 18,
             ),
           ),
@@ -88,7 +97,7 @@ class BronzesChart extends StatelessWidget {
                             return Text(
                               value.toInt().toString(), 
                               style: const TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black
                               ), 

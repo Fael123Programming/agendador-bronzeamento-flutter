@@ -69,7 +69,7 @@ class Beds extends StatelessWidget {
                         homeController.goToClients();
                         Get.to(
                           const ClientDetails(), 
-                          curve: Curves.easeInOutCubicEmphasized,
+                          curve: Curves.easeInOut,
                           duration: const Duration(seconds: 1),
                           opaque: true
                         );

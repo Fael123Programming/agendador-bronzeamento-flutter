@@ -23,10 +23,10 @@ class DatabaseHelper {
 
   Future<Database> initDatabase() async {
     final path = await getDatabasesPath();
-    final finalPath = join(path, 'dados.db');
+    final finalPath = join(path, 'base_de_dados.db');
     return await openDatabase(
       finalPath,
-      version: 3,
+      version: 1,
       onCreate: (db, version) async {
         await db.execute(enableForeignKeys);
         await db.execute(clientTable);
@@ -36,6 +36,19 @@ class DatabaseHelper {
         db.execute(enableForeignKeys);
       },
     );
+  }
+
+  Future<bool> isValidDatabase(String dbPath) async {
+    Database db = await openDatabase(dbPath);
+    List<Map<String, Object?>> clientInfo = await db.rawQuery('PRAGMA table_info(Client);');
+    List<Map<String, Object?>> bronzeInfo = await db.rawQuery('PRAGMA table_info(Bronze);');
+    String clientInfoStr = '[{cid: 0, name: id, type: INTEGER, notnull: 0, dflt_value: null, pk: 1}, {cid: 1, name: name, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 2, name: phoneNumber, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 3, name: since, type: TIMESTAMP, notnull: 0, dflt_value: null, pk: 0}, {cid: 4, name: bronzes, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 5, name: observations, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 6, name: picture, type: BLOB, notnull: 0, dflt_value: null, pk: 0}]';
+    String bronzeInfoStr = '[{cid: 0, name: id, type: INTEGER, notnull: 0, dflt_value: null, pk: 1}, {cid: 1, name: clientId, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 2, name: turnArounds, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 3, name: totalSecs, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 4, name: price, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 5, name: timestamp, type: TIMESTAMP, notnull: 0, dflt_value: null, pk: 0}]';
+    return clientInfo.toString() == clientInfoStr && bronzeInfo.toString() == bronzeInfoStr;
+  }
+
+  Future<void> migrateDatabase(String dbPath) async {
+    print('MIGRATING...');
   }
 
   static const clientTable = '''
@@ -119,5 +132,13 @@ class DatabaseHelper {
 
   Future<int> updateClient(Client client) async {
     return _updateWhere('Client', client.toMap(), 'id = ?', [client.id]);
+  }
+
+  Future<int> deleteBronzes(List<Bronze> bronzes) async {
+    int lastDeleted = -1;
+    for (Bronze bronze in bronzes) {
+      lastDeleted = await _deleteWhere('Bronze', 'id = ?', [bronze.id]);
+    }
+    return lastDeleted;
   }
 }

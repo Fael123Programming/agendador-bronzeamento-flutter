@@ -90,4 +90,22 @@ class BronzeController extends GetxController {
       return <Bronze>[];
     }
   }
+
+  Future<int> deleteBronzesOfYear(int year) async {
+    List<Bronze> bronzesOfYear = bronzes.where((bronze) => bronze.timestamp.year == year).toList();
+    if (bronzesOfYear.isEmpty) {
+      return -1;
+    }
+    int result = await DatabaseHelper().deleteBronzes(bronzesOfYear);
+    final ClientController clientController = Get.find();
+    for (Bronze bronze in bronzesOfYear) {
+      bronzes.remove(bronze);
+      Client? clientToUpdate = clientController.findById(bronze.clientId);
+      if (clientToUpdate != null) {
+        clientToUpdate.bronzes.value--;
+        clientController.doUpdate(clientToUpdate);
+      }
+    }
+    return result;
+  }
 }

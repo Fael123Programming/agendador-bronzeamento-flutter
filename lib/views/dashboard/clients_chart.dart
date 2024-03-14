@@ -5,18 +5,27 @@ import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 
 class ClientsChart extends StatelessWidget {
-  const ClientsChart({super.key});
+  final int year;
+
+  const ClientsChart({super.key, required this.year});
 
   @override
   Widget build(context) {
     final ClientController clientController = Get.find();
-    List<int> months = <int>[DateTime.now().month];
-    for (int i = 1; i < months[months.length - 1]; i++) {
-      months.insert(months.length - 1, i);
+    List<int> months = <int>[];
+    int currYear = DateTime.now().year;
+    if (year == currYear) {
+      months.add(DateTime.now().month);
+      for (int i = 1; i < months[months.length - 1]; i++) {
+        months.insert(months.length - 1, i);
+      }
+    } else {
+      months.addAll([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     }
     List<int> clientCounts = <int>[];
+    List<Client> yearClients = clientController.clients.where((client) => client.since.year == year).toList();
     for (int month in months) {
-      int clientCount = clientController.clients.where((client) => client.since.month == month).length;
+      int clientCount = yearClients.where((client) => client.since.month == month).length;
       clientCounts.add(clientCount);
     }
     // Sample data to test. 
@@ -32,9 +41,9 @@ class ClientsChart extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Clientes Cadastrados por Mês',
-            style: TextStyle(
+          Text(
+            'Clientes Cadastrados por Mês: $year',
+            style: const TextStyle(
               fontSize: 18,
             ),
           ),
@@ -88,7 +97,7 @@ class ClientsChart extends StatelessWidget {
                             return Text(
                               value.toInt().toString(), 
                               style: const TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black
                               ), 

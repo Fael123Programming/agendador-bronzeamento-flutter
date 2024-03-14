@@ -2,8 +2,8 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/settings/widgets/setting_item.dart';
 import 'package:flutter/material.dart';
 
-class General extends StatelessWidget {
-  const General({super.key});
+class DefaultValues extends StatelessWidget {
+  const DefaultValues({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class General extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Padrão',
+          'Valores Padrão',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

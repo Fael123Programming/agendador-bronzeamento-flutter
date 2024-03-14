@@ -6,14 +6,15 @@ import 'package:agendador_bronzeamento/views/dashboard/dashboard.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
-import 'package:agendador_bronzeamento/views/settings/screens/about.dart';
-import 'package:agendador_bronzeamento/views/settings/screens/change_duration.dart';
-import 'package:agendador_bronzeamento/views/settings/screens/change_price.dart';
-import 'package:agendador_bronzeamento/views/settings/screens/change_turn_arounds.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/about/about.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/database/database.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/default_values/change_duration.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/default_values/change_price.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/default_values/change_turn_arounds.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/views/splash/splash.dart';
-import 'package:agendador_bronzeamento/views/settings/screens/general.dart';
+import 'package:agendador_bronzeamento/views/settings/screens/default_values/default_values.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 
 class CustomRouter {
@@ -82,14 +83,14 @@ class CustomRouter {
           builder: (context) => const SearchBed(),
           settings: const RouteSettings(name: RoutePaths.searchBed)
         );
-      case RoutePaths.general:
+      case RoutePaths.defaultValues:
         // Map<dynamic, dynamic>? bedArgs;
         // if (settings.arguments != null) {
         //   bedArgs = settings.arguments as Map<dynamic, dynamic>;
         // }
         return MaterialPageRoute(
-          builder: (context) => const General(),
-          settings: const RouteSettings(name: RoutePaths.general),
+          builder: (context) => const DefaultValues(),
+          settings: const RouteSettings(name: RoutePaths.defaultValues),
         );
       case RoutePaths.about:
         return MaterialPageRoute(
@@ -120,6 +121,11 @@ class CustomRouter {
         return MaterialPageRoute(
           builder: (context) => const Bronzes(),
           settings: const RouteSettings(name: RoutePaths.bronzes),
+        );
+      case RoutePaths.database:
+        return MaterialPageRoute(
+          builder: (context) => const Database(),
+          settings: const RouteSettings(name: RoutePaths.database),
         );
       default:
         return _errorRoute();

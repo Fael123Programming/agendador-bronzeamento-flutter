@@ -4,12 +4,14 @@ class SettingItem extends StatelessWidget {
   final String title;
   final IconData icon;
   final void Function() onTap;
+  final bool showRightArrow;
 
   const SettingItem({
     super.key,
     required this.title,
     required this.icon,
     required this.onTap,
+    this.showRightArrow = true
   });
 
   final Color? tileColor = Colors.pink;
@@ -36,10 +38,10 @@ class SettingItem extends StatelessWidget {
           icon,
           color: Colors.white,
         ),
-        trailing: const Icon(
+        trailing: showRightArrow ? const Icon(
           Icons.arrow_right_rounded,
           color: Colors.white,
-        ),
+        ) : null,
       ),
     );
   }
