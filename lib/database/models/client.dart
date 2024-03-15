@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/database/database_helper.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
@@ -73,16 +72,35 @@ class Client {
   int get hashCode => id.hashCode;
 }
 
+enum Order {
+  increasing(factor: 1),
+  decreasing(factor: -1);
+
+  final int factor;
+  const Order({required this.factor});
+}
+
+enum SortingMethod {
+  name,
+  since,
+  bronzes;
+}
+
 class ClientController extends GetxController {
   RxList<Client> clients = <Client>[].obs;
-  late Map<String, void Function(int)> sortingMethods;
+  Rx<SortingMethod> sortingMethod = SortingMethod.name.obs;
+  Rx<Order> order = Order.increasing.obs;
 
-  ClientController() {
-    sortingMethods = {
-      'name': (factor) => clients.sort((client1, client2) => client1.name.compareTo(client2.name) * factor),
-      'since': (factor) => clients.sort((client1, client2) => client1.since.compareTo(client2.since) * factor),
-      'bronzes': (factor) => clients.sort((client1, client2) => client1.bronzes.value.compareTo(client2.bronzes.value) * factor),
-    };
+  void sortByName({Order order = Order.increasing}) {
+    clients.sort((client1, client2) => client1.name.compareTo(client2.name) * order.factor);
+  }
+
+  void sortBySince({Order order = Order.increasing}) {
+    clients.sort((client1, client2) => client1.since.compareTo(client2.since) * order.factor);
+  }
+
+  void sortByBronzes({Order order = Order.increasing}) {
+    clients.sort((client1, client2) => client1.bronzes.value.compareTo(client2.bronzes.value) * order.factor);
   }
 
   Future<void> fetch() async {
@@ -148,9 +166,16 @@ class ClientController extends GetxController {
   }
 
   void sort() {
-    final ConfigController configController = Get.find();
-    int factor = configController.getIncreasing() ? 1 : -1;
-    String sortingMethod = configController.getSortBy().toLowerCase();
-    sortingMethods[sortingMethod]!(factor);
+    switch (sortingMethod.value) {
+      case SortingMethod.name:
+        sortByName(order: order.value);
+        break;
+      case SortingMethod.since:
+        sortByName(order: order.value);
+        break;
+      case SortingMethod.bronzes:
+        sortByName(order: order.value);
+        break;
+    }
   }
 }

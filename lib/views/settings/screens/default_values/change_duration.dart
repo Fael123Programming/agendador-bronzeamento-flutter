@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/config/config.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/secs_picker.dart';
@@ -14,12 +14,12 @@ class ChangeDuration extends StatelessWidget {
   Widget build(BuildContext context) {
     final ConfigController configController = Get.find();
     final SecsPickerController secsController = Get.put(SecsPickerController());
-    secsController.secs.text = configController.getDefaultSecs();
+    secsController.secs.text = configController.config.value!.defaultSecs.toString();
     final MinsPickerController minsController = Get.put(MinsPickerController());
-    minsController.mins.text = configController.getDefaultMins();
+    minsController.mins.text = configController.config.value!.defaultMins.toString();
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
     final HoursPickerController hoursController = Get.put(HoursPickerController());
-    hoursController.hours.text = configController.getDefaultHours();
+    hoursController.hours.text = configController.config.value!.defaultHours.toString();
     hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
     minsController.focusNode.requestFocus();
     return PopScope(
@@ -70,9 +70,9 @@ class ChangeDuration extends StatelessWidget {
                               isValidDuration()
                           ) {
                             // await Future.delayed(const Duration(seconds: 1));
-                            await configController.setDefaultHours(hoursController.hours.text);
-                            await configController.setDefaultMins(minsController.mins.text);
-                            await configController.setDefaultSecs(secsController.secs.text);
+                            await configController.updateDefaultHours(int.parse(hoursController.hours.text));
+                            await configController.updateDefaultMins(int.parse(minsController.mins.text));
+                            await configController.updateDefaultSecs(int.parse(secsController.secs.text));
                             if (!context.mounted) {
                               return;
                             }

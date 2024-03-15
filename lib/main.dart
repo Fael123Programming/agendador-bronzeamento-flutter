@@ -1,8 +1,8 @@
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/config/custom_router.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
@@ -17,7 +17,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   ConfigController configController = Get.put(ConfigController());
-  await configController.init();
+  await configController.fetch();
 
   Get.put(HomeController());
 

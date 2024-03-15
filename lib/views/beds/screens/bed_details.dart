@@ -1,5 +1,5 @@
-import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/search_client_input.dart';
@@ -40,17 +40,16 @@ class BedDetails extends StatelessWidget {
     
     final SearchClientInputController searchController = Get.put(SearchClientInputController());
     searchController.onEditingComplete = () {
-      turnController.turnAround.text = configController.getTurnArounds();
-      hoursController.hours.text = configController.getDefaultHours();
-      minsController.mins.text = configController.getDefaultMins();
-      secsController.secs.text = configController.getDefaultSecs();
-      priceController.price.text = configController.getDefaultPrice();
+      turnController.turnAround.text = configController.config.value!.turnArounds.toString();
+      hoursController.hours.text = configController.config.value!.defaultHours.toString();
+      minsController.mins.text = configController.config.value!.defaultMins.toString();
+      secsController.secs.text = configController.config.value!.defaultSecs.toString();
+      priceController.price.text = configController.config.value!.price.toString();
     };
 
     final formKey = GlobalKey<FormState>();
 
     const twoSeconds = Duration(seconds: 2);
-    double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return PopScope(
       onPopInvoked: (didPop) {

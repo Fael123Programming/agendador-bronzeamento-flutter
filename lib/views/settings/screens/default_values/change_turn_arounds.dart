@@ -1,4 +1,4 @@
-import 'package:agendador_bronzeamento/config/config.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_input.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +11,7 @@ class ChangeTurnArounds extends StatelessWidget {
   Widget build(BuildContext context) {
     final ConfigController configController = Get.find();
     final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
-    turnController.turnAround.text = configController.getTurnArounds();
+    turnController.turnAround.text = configController.config.value!.turnArounds.toString();
     turnController.focusNode.requestFocus();
     return PopScope(
         onPopInvoked: (didPop) {
@@ -57,7 +57,7 @@ class ChangeTurnArounds extends StatelessWidget {
                               turnController.isValid()
                           ) {
                             // await Future.delayed(const Duration(seconds: 1));
-                            await configController.setTurnArounds(turnController.turnAround.text);
+                            await configController.updateTurnArounds(int.parse(turnController.turnAround.text));
                             if (!context.mounted) {
                               return;
                             }

@@ -1,4 +1,3 @@
-import 'package:agendador_bronzeamento/config/config.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ class Clients extends StatelessWidget {
 
   @override
   Widget build(context) {
-    final ConfigController configController = Get.find();
     final ClientController clientController = Get.find();
     double width = MediaQuery.of(context).size.width;
     return PopScope(
@@ -91,14 +89,17 @@ class Clients extends StatelessWidget {
                                   child: IconButton(
                                     color: Colors.pink,
                                     icon: Icon(
-                                      configController.getIncreasing() ?
+                                      clientController.order.value == Order.increasing ?
                                         Icons.arrow_upward :
                                         Icons.arrow_downward
                                       ),
                                     onPressed: () async {
-                                      await configController.setIncreasing(!configController.getIncreasing());
+                                      if (clientController.order.value == Order.increasing) {
+                                        clientController.order.value = Order.decreasing;
+                                      } else {
+                                        clientController.order.value = Order.increasing;
+                                      }
                                       clientController.sort();
-                                      // await clientController.fetch();
                                     }, 
                                   ),
                                 ),
@@ -107,24 +108,23 @@ class Clients extends StatelessWidget {
                                   child: IconButton(
                                     color: Colors.pink,
                                     icon: Icon(
-                                      configController.getSortBy() == ConfigController.name ?
+                                      clientController.sortingMethod.value == SortingMethod.name ?
                                         Icons.abc : 
-                                        configController.getSortBy() == ConfigController.since ? 
+                                        clientController.sortingMethod.value == SortingMethod.since ? 
                                         Icons.date_range :
                                         Icons.sunny
                                       ),
                                     onPressed: () async {
-                                      String newSortingMethod = '';
-                                      if (configController.getSortBy() == ConfigController.name) {
-                                        newSortingMethod = ConfigController.since;
-                                      } else if (configController.getSortBy() == ConfigController.since) {
-                                        newSortingMethod = ConfigController.bronzes;
+                                      SortingMethod sortingMethod;
+                                      if (clientController.sortingMethod.value == SortingMethod.name) {
+                                        sortingMethod = SortingMethod.since;
+                                      } else if (clientController.sortingMethod.value == SortingMethod.since) {
+                                        sortingMethod = SortingMethod.bronzes;
                                       } else {
-                                        newSortingMethod = ConfigController.name;
+                                        sortingMethod = SortingMethod.name;
                                       }
-                                      await configController.setSortBy(newSortingMethod);
+                                      clientController.sortingMethod.value = sortingMethod;
                                       clientController.sort();
-                                      // await clientController.fetch();
                                     }, 
                                   ),
                                 ),
@@ -140,11 +140,15 @@ class Clients extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 Widget? subtitle;
                                 const style = TextStyle(fontWeight: FontWeight.bold);
-                                if (configController.getSortBy() ==
-                                    ConfigController.since) {
-                                  subtitle = Obx(() => Text(Validator.formatDatetime(clientController.clients[index].since)));
-                                } else if (configController.getSortBy() ==
-                                    ConfigController.bronzes) {
+                                if (clientController.sortingMethod.value ==
+                                    SortingMethod.since) {
+                                  subtitle = Obx(() => Text(
+                                      Validator.formatDatetime(clientController.clients[index].since), 
+                                      style: style,
+                                    )
+                                  );
+                                } else if (clientController.sortingMethod.value ==
+                                    SortingMethod.bronzes) {
                                   subtitle = Obx(() => Text(clientController.clients[index].bronzes.value.toString(), style: style));
                                 }
                                 return Container(

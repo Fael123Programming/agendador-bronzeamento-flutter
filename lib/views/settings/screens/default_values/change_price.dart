@@ -1,5 +1,6 @@
-import 'package:agendador_bronzeamento/config/config.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/price_picker.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nice_buttons/nice_buttons.dart';
@@ -11,7 +12,7 @@ class ChangePrice extends StatelessWidget {
   Widget build(BuildContext context) {
     final ConfigController configController = Get.find();
     final priceController = Get.put(PricePickerController());
-    priceController.price.text = configController.getDefaultPrice();
+    priceController.price.text = configController.config.value!.price.toString();
     priceController.focusNode.requestFocus();
     return PopScope(
         onPopInvoked: (didPop) {
@@ -56,7 +57,7 @@ class ChangePrice extends StatelessWidget {
                               priceController.isValid()
                           ) {
                             // await Future.delayed(const Duration(seconds: 1));
-                            await configController.setDefaultPrice(priceController.price.text);
+                            await configController.updatePrice(Decimal.parse(priceController.price.text));
                             if (!context.mounted) {
                               return;
                             }

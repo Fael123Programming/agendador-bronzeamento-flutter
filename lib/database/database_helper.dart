@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:agendador_bronzeamento/database/exceptions/unique_constraint_exception.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
+import 'package:agendador_bronzeamento/database/models/config.dart';
+import 'package:decimal/decimal.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -31,6 +33,7 @@ class DatabaseHelper {
         await db.execute(enableForeignKeys);
         await db.execute(clientTable);
         await db.execute(bronzeTable);
+        await db.execute(configTable);
       },
       onOpen: (db) {
         db.execute(enableForeignKeys);
@@ -73,6 +76,15 @@ class DatabaseHelper {
       price TEXT,
       timestamp TIMESTAMP, 
       FOREIGN KEY (clientId) REFERENCES Client(id) ON DELETE CASCADE
+    );
+  ''';
+
+  static const configTable = '''
+    CREATE TABLE IF NOT EXISTS Config (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      totalSecs INTEGER,
+      turnArounds INTEGER,
+      price TEXT
     );
   ''';
 
@@ -124,6 +136,31 @@ class DatabaseHelper {
   Future<List<Client>> selectAllClients() async {
     List<Map<String, dynamic>> mapList = await _selectAll('Client');
     return mapList.map((map) => Client.fromMap(map)).toList();
+  }
+
+  Future<Config> selectConfig() async {
+    List<Map<String, Object?>> mapList = await _selectAll('Config');
+    if (mapList.isEmpty) {
+      return await insertConfig(await DatabaseHelper().insertConfig(
+        Config.toSave(
+          defaultHours: 0,
+          defaultMins: 0,
+          defaultSecs: 1, 
+          turnArounds: 1, 
+          price: Decimal.ten
+        )
+      ));
+    }
+    return Config.fromMap(mapList[0]);
+  }
+
+  Future<Config> insertConfig(Config config) async {
+    await _insert('Config', config.toMap());
+    return await selectConfig();
+  }
+
+  Future<int> updateConfig(Config config) async {
+    return await _updateWhere('Config', config.toMap(), 'id = ?', [config.id]);
   }
 
   Future<int> deleteClient(Client client) async {
