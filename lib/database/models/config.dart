@@ -1,14 +1,10 @@
 import 'package:agendador_bronzeamento/database/database_helper.dart';
-import 'package:decimal/decimal.dart';
 import 'package:get/get.dart';
 
 class Config {
   late int id;
-  int defaultHours;
-  int defaultMins;
-  int defaultSecs;
-  int turnArounds;
-  Decimal price;
+  int defaultHours, defaultMins, defaultSecs, turnArounds;
+  String price;
 
   Config({
     required this.id, 
@@ -36,7 +32,7 @@ class Config {
       defaultMins: map['defaultMins'],
       defaultSecs: map['defaultSecs'],
       turnArounds: map['turnArounds'],
-      price: Decimal.parse(map['price'])
+      price: map['price'].toString()
     );
   }
 
@@ -46,7 +42,7 @@ class Config {
       'defaultMins': defaultMins,
       'defaultSecs': defaultSecs,
       'turnArounds': turnArounds,
-      'price': price.toString()
+      'price': price
     };
   }
 
@@ -65,51 +61,49 @@ class Config {
 }
 
 class ConfigController extends GetxController {
-  late Rx<Config?> config;
+  late Rx<Config> _config;
+  bool started = false;
 
-  Future<void> fetch() async {
-    config = (await DatabaseHelper().selectConfig()).obs;
+  Future<Config> get config async {
+    if (started) {
+      return _config.value;
+    }
+    await fetch();
+    started = true;
+    return _config.value;
   }
 
-  Future<void> assertInit(Function() func) async {
-    if (config.value == null) {
-      await fetch();
-    }
-    await func();
+  Future<void> fetch() async {
+    _config = (await DatabaseHelper().selectConfig()).obs;
   }
 
   Future<void> updateTurnArounds(int turnArounds) async {
-    await assertInit(() async {
-      config.value!.turnArounds = turnArounds;
-      await DatabaseHelper().updateConfig(config.value!);
-    });
+    Config localConfig = await config;
+    localConfig.turnArounds = turnArounds;
+    await DatabaseHelper().updateConfig(localConfig);
   }
 
   Future<void> updateDefaultHours(int hours) async {
-    await assertInit(() async {
-      config.value!.defaultHours = hours;
-      await DatabaseHelper().updateConfig(config.value!);
-    });
+    Config localConfig = await config;
+    localConfig.defaultHours = hours;
+    await DatabaseHelper().updateConfig(localConfig);
   }
   
   Future<void> updateDefaultMins(int mins) async {
-    await assertInit(() async {
-      config.value!.defaultMins = mins;
-      await DatabaseHelper().updateConfig(config.value!);
-    });
+    Config localConfig = await config;
+    localConfig.defaultMins = mins;
+    await DatabaseHelper().updateConfig(localConfig);
   }
   
   Future<void> updateDefaultSecs(int secs) async {
-    await assertInit(() async {
-      config.value!.defaultSecs = secs;
-      await DatabaseHelper().updateConfig(config.value!);
-    });
+    Config localConfig = await config;
+    localConfig.defaultSecs = secs;
+    await DatabaseHelper().updateConfig(localConfig);
   }
 
-  Future<void> updatePrice(Decimal price) async {
-    await assertInit(() async {
-      config.value!.price = price;
-      await DatabaseHelper().updateConfig(config.value!);
-    });
+  Future<void> updatePrice(String price) async {
+    Config localConfig = await config;
+    localConfig.price = price;
+    await DatabaseHelper().updateConfig(localConfig);
   }
 }

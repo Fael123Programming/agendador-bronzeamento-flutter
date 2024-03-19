@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:agendador_bronzeamento/navigator/bottom_nav_item.dart';
 import 'package:agendador_bronzeamento/navigator/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:move_to_background/move_to_background.dart';
 
 class HomeController extends GetxController {
   final pageViewController = PageController();
@@ -92,73 +95,123 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.find();
-    return Obx(() => Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(''),
-      // ),
-      body: PopScope(
-        canPop: false,
-        onPopInvoked: (pop) async {
-          homeController.navigatorKeys[homeController.selectedItem.value]
-              ?.currentState
-              ?.popUntil((route) => route.isFirst);
-        },
-      //   child: Stack(
-          // children: homeController.items
-          //     .map(
-          //       (item, _) => MapEntry(
-          //         item,
-          //         _buildOffstageNavigator(item, item == homeController.selectedItem.value),
-          //       ),
-          //     )
-          //     .values
-          //     .toList(),
-      //   ),
-      // ),
-        child: PageView(
-          controller: homeController.pageViewController,
-          children: homeController.items
+    return Obx(() {
+      return PopScope(
+      onPopInvoked: (didPop) async {
+        if (Get.isOverlaysClosed) {
+          Get.dialog(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(73, 255, 255, 255),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Material(
+                        color: Color.fromARGB(0, 255, 255, 255),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Novamente para minimizar',
+                              style: TextStyle(
+                                fontSize: 20, 
+                                fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            transitionDuration: const Duration(milliseconds: 100),
+            transitionCurve: Curves.easeInOut
+          );
+          Timer(const Duration(seconds: 1), () async {
+            if (Get.isOverlaysOpen) {
+              Get.back();
+            } else {
+              await MoveToBackground.moveTaskToBack();
+            }
+          });
+        }
+      },
+      child: Scaffold(
+        body: PopScope(
+          canPop: false,
+          onPopInvoked: (pop) async {
+            homeController.navigatorKeys[homeController.selectedItem.value]
+                ?.currentState
+                ?.popUntil((route) => route.isFirst);
+          },
+        //   child: Stack(
+            // children: homeController.items
+            //     .map(
+            //       (item, _) => MapEntry(
+            //         item,
+            //         _buildOffstageNavigator(item, item == homeController.selectedItem.value),
+            //       ),
+            //     )
+            //     .values
+            //     .toList(),
+        //   ),
+        // ),
+          child: PageView(
+            controller: homeController.pageViewController,
+            children: homeController.items
+                .map(
+                  (item, _) => MapEntry(
+                    item,
+                    _buildOffstageNavigator(item, item == homeController.selectedItem.value),
+                  ),
+                )
+                .values
+                .toList(),
+            onPageChanged: (index) async {
+              await homeController.goTo(BottomNavItem.values[index]);
+            },
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Theme.of(context).primaryColorLight,
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.grey,
+          currentIndex: BottomNavItem.values.indexOf(homeController.selectedItem.value),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          onTap: (index) async {
+            await homeController.goTo(BottomNavItem.values[index], animated: false);
+          },
+          items: homeController.items
               .map(
-                (item, _) => MapEntry(
-                  item,
-                  _buildOffstageNavigator(item, item == homeController.selectedItem.value),
+                (item, itemData) => MapEntry(
+                  item.toString(),
+                  BottomNavigationBarItem(
+                    label: itemData['bottomNavItemLabel'],
+                    icon: Icon(
+                      item == homeController.selectedItem.value ? itemData['iconFocused'] : itemData['icon'],
+                      size: item == homeController.selectedItem.value ? 35.0 : 30.0,
+                      color: item == homeController.selectedItem.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               )
               .values
               .toList(),
-          onPageChanged: (index) async {
-            await homeController.goTo(BottomNavItem.values[index]);
-          },
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.pink,
-        unselectedItemColor: Colors.grey,
-        currentIndex: BottomNavItem.values.indexOf(homeController.selectedItem.value),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        onTap: (index) async {
-          await homeController.goTo(BottomNavItem.values[index], animated: false);
-        },
-        items: homeController.items
-            .map(
-              (item, itemData) => MapEntry(
-                item.toString(),
-                BottomNavigationBarItem(
-                  label: itemData['bottomNavItemLabel'],
-                  icon: Icon(
-                    item == homeController.selectedItem.value ? itemData['iconFocused'] : itemData['icon'],
-                    size: item == homeController.selectedItem.value ? 35.0 : 30.0,
-                    color: item == homeController.selectedItem.value ? Colors.pink : Colors.grey,
-                  ),
-                ),
-              ),
-            )
-            .values
-            .toList(),
-      ),
-    ));
+      );
+    });
   }
 
   Widget _buildOffstageNavigator(BottomNavItem currentItem, bool isSelected) {

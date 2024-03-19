@@ -11,7 +11,7 @@ class ChangeTurnArounds extends StatelessWidget {
   Widget build(BuildContext context) {
     final ConfigController configController = Get.find();
     final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
-    turnController.turnAround.text = configController.config.value!.turnArounds.toString();
+    (() async => turnController.turnAround.text = (await configController.config).turnArounds.toString())();
     turnController.focusNode.requestFocus();
     return PopScope(
         onPopInvoked: (didPop) {

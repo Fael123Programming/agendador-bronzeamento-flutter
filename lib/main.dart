@@ -1,4 +1,7 @@
 import 'package:agendador_bronzeamento/database/models/config.dart';
+import 'package:agendador_bronzeamento/utils/background_service.dart';
+import 'package:agendador_bronzeamento/utils/notification_service.dart';
+import 'package:agendador_bronzeamento/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -9,84 +12,64 @@ import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/bed_card.dart';
-// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+// class LifecycleEventHandler extends WidgetsBindingObserver {
+//   LifecycleEventHandler({
+//     required this.resumeCallBack, 
+//     required this.detachedCallBack
+//   });
+
+//   final Future<void> Function() resumeCallBack;
+//   final Future<void> Function() detachedCallBack;
+
+//  @override
+//  Future<bool> didPopRoute()
+
+//  @override
+//  void didHaveMemoryPressure()
+
+//   @override
+//   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+//     switch (state) {
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.detached:
+//         await detachedCallBack();
+//         break;
+//       case AppLifecycleState.resumed:
+//         await resumeCallBack();
+//         break;
+//       default:
+//         break;
+//     }
+//   }
+// }
 
 Future<void> main() async {
-  // sqfliteFfiInit();
-  // databaseFactory = databaseFactoryFfi;
   WidgetsFlutterBinding.ensureInitialized();
-
-  ConfigController configController = Get.put(ConfigController());
+  // WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+  //   detachedCallBack: () async {
+  //     // print('APP IS GOING TO DIE');
+  //   },
+  //   resumeCallBack: () async {
+  //     // print('WE ARE BACK AGAIN');
+  //   }));
+  await BackgroundService().init();
+  await NotificationService().init();
+  final ConfigController configController = Get.put(ConfigController());
   await configController.fetch();
-
-  Get.put(HomeController());
-
   final ClientController clientController = Get.put(ClientController());
   await clientController.fetch();
-
   final BronzeController bronzeController = Get.put(BronzeController());
   await bronzeController.fetch();
-
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('5'), 
-  //     timestamp: DateTime.parse('2023-12-19 10:23:30.100')
-  //   )
-  // );
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('15'), 
-  //     timestamp: DateTime.parse('2023-12-25 07:30:10.200')
-  //   )
-  // );
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('17'), 
-  //     timestamp: DateTime.parse('2024-01-05 07:00:45.100')
-  //   )
-  // );
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('23'), 
-  //     timestamp: DateTime.parse('2024-01-25 09:23:10.321')
-  //   )
-  // );
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('67'), 
-  //     timestamp: DateTime.parse('2024-02-10 08:30:20.123')
-  //   )
-  // );
-  // await bronzeController.insert(
-  //   Bronze.toSave(
-  //     clientId: 1, 
-  //     totalSecs: 1, 
-  //     turnArounds: 1, 
-  //     price: Decimal.parse('40'), 
-  //     timestamp: DateTime.parse('2024-02-20 15:20:40.500')
-  //   )
-  // );
+  Get.put(HomeController());
   Get.put(BedCardListController());
   runApp(
-    const GetMaterialApp(
+    GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: theme,
       onGenerateRoute: CustomRouter.onGenerateRoute,
-      initialRoute: RoutePaths.splash,
+      initialRoute: RoutePaths.splash
     ),
   );
 }

@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+        <!--
+            Permission to use here depends on the value you picked for foregroundServiceType - see the Android documentation.
+            Eg, if you picked 'location', use 'android.permission.FOREGROUND_SERVICE_LOCATION'
+        -->
+    <!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE_..." /> -->
     <application
-        android:label="Meu Bronze"
+        android:label="Fabi Bronze"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -39,12 +39,12 @@ class BedDetails extends StatelessWidget {
     turnController.onEditingComplete = () => hoursController.focusNode.requestFocus();
     
     final SearchClientInputController searchController = Get.put(SearchClientInputController());
-    searchController.onEditingComplete = () {
-      turnController.turnAround.text = configController.config.value!.turnArounds.toString();
-      hoursController.hours.text = configController.config.value!.defaultHours.toString();
-      minsController.mins.text = configController.config.value!.defaultMins.toString();
-      secsController.secs.text = configController.config.value!.defaultSecs.toString();
-      priceController.price.text = configController.config.value!.price.toString();
+    searchController.onEditingComplete = () async {
+      turnController.turnAround.text = (await configController.config).turnArounds.toString();
+      hoursController.hours.text = (await configController.config).defaultHours.toString();
+      minsController.mins.text = (await configController.config).defaultMins.toString();
+      secsController.secs.text = (await configController.config).defaultSecs.toString();
+      priceController.price.text = (await configController.config).price;
     };
 
     final formKey = GlobalKey<FormState>();
@@ -122,12 +122,10 @@ class BedDetails extends StatelessWidget {
                                   totalSecs: secs,
                                   remainingSecs: secs,
                                   turnArounds: int.parse(turnController.turnAround.text),
-                                  turnsDone: 0.obs
-                                );
-                                BedCard bedCard = BedCard(
-                                  bedCardController: bedCardController,
+                                  turnsDone: 0.obs,
                                   bedNumber: bedCardListController.list.length + 1,
                                 );
+                                BedCard bedCard = BedCard(bedCardController: bedCardController);
                                 bedCardListController.list.add(bedCard);
                                 bedCardController.startTimer();
                                 // await Future.delayed(const Duration(seconds: 1));

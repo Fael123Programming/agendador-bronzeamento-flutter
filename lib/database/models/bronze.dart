@@ -31,14 +31,19 @@ class Bronze {
   }
 
   static Bronze fromMap(Map<String, dynamic> map) {
-    return Bronze(
-      id: map['id'],
-      clientId: map['clientId'],
-      totalSecs: map['totalSecs'],
-      turnArounds: map['turnArounds'],
-      price: Decimal.parse(map['price']),
-      timestamp: DateTime.parse(map['timestamp'])
-    );
+    try {
+      return Bronze(
+        id: map['id'],
+        clientId: map['clientId'],
+        totalSecs: map['totalSecs'],
+        turnArounds: map['turnArounds'],
+        price: Decimal.parse(map['price'].toString()),
+        timestamp: DateTime.parse(map['timestamp'])
+      );
+    } catch (e) {
+      print(map);
+      throw 'Problem my dude';
+    }
   }
 
   Map<String, Object?> toMap() {

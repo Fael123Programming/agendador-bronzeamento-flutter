@@ -14,12 +14,12 @@ class ChangeDuration extends StatelessWidget {
   Widget build(BuildContext context) {
     final ConfigController configController = Get.find();
     final SecsPickerController secsController = Get.put(SecsPickerController());
-    secsController.secs.text = configController.config.value!.defaultSecs.toString();
+    (() async => secsController.secs.text = (await configController.config).defaultSecs.toString())();
     final MinsPickerController minsController = Get.put(MinsPickerController());
-    minsController.mins.text = configController.config.value!.defaultMins.toString();
+    (() async => minsController.mins.text = (await configController.config).defaultMins.toString())();
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
     final HoursPickerController hoursController = Get.put(HoursPickerController());
-    hoursController.hours.text = configController.config.value!.defaultHours.toString();
+    (() async => hoursController.hours.text = (await configController.config).defaultHours.toString())();
     hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
     minsController.focusNode.requestFocus();
     return PopScope(

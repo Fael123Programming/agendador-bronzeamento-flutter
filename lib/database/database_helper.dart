@@ -1,25 +1,27 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:agendador_bronzeamento/database/exceptions/unique_constraint_exception.dart';
 import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/database/models/config.dart';
-import 'package:decimal/decimal.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._();
-  static Database? _database;
+  static late Database _database;
+  static bool started = false;
 
   DatabaseHelper._();
 
   factory DatabaseHelper() => _instance;
 
-  Future<Database?> get database async {
-    if (_database != null) {
+  Future<Database> get database async {
+    if (started) {
       return _database;
     }
     _database = await initDatabase();
+    started = true;
     return _database;
   }
 
@@ -28,7 +30,7 @@ class DatabaseHelper {
     final finalPath = join(path, 'base_de_dados.db');
     return await openDatabase(
       finalPath,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute(enableForeignKeys);
         await db.execute(clientTable);
@@ -42,39 +44,67 @@ class DatabaseHelper {
   }
 
   Future<bool> isValidDatabase(String dbPath) async {
-    Database db = await openDatabase(dbPath);
-    List<Map<String, Object?>> clientInfo = await db.rawQuery('PRAGMA table_info(Client);');
-    List<Map<String, Object?>> bronzeInfo = await db.rawQuery('PRAGMA table_info(Bronze);');
-    String clientInfoStr = '[{cid: 0, name: id, type: INTEGER, notnull: 0, dflt_value: null, pk: 1}, {cid: 1, name: name, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 2, name: phoneNumber, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 3, name: since, type: TIMESTAMP, notnull: 0, dflt_value: null, pk: 0}, {cid: 4, name: bronzes, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 5, name: observations, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 6, name: picture, type: BLOB, notnull: 0, dflt_value: null, pk: 0}]';
-    String bronzeInfoStr = '[{cid: 0, name: id, type: INTEGER, notnull: 0, dflt_value: null, pk: 1}, {cid: 1, name: clientId, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 2, name: turnArounds, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 3, name: totalSecs, type: INTEGER, notnull: 0, dflt_value: null, pk: 0}, {cid: 4, name: price, type: TEXT, notnull: 0, dflt_value: null, pk: 0}, {cid: 5, name: timestamp, type: TIMESTAMP, notnull: 0, dflt_value: null, pk: 0}]';
-    return clientInfo.toString() == clientInfoStr && bronzeInfo.toString() == bronzeInfoStr;
+    Database otherDb = await openDatabase(dbPath);
+    Database db = await database;
+    List<String> queries = [
+      'PRAGMA table_info(Client);',
+      'PRAGMA table_info(Bronze);',
+      'PRAGMA table_info(Config);'
+    ];
+    for (String query in queries) {
+      final answerOtherDb = await otherDb.rawQuery(query);
+      final answerDb = await db.rawQuery(query);
+      // print(answerOtherDb);
+      // print(answerDb);
+      if (answerOtherDb.toString() != answerDb.toString()) {
+        // print('------------------------------');
+        // print(answerOtherDb);
+        // print('------------------------------');
+        // print(answerDb);
+        // print('------------------------------');
+        print('INVALID DATABASE');
+        return false;
+      }
+    }
+    return true;
   }
 
-  Future<void> migrateDatabase(String dbPath) async {
-    print('MIGRATING...');
+  Future<bool> migrateDatabase(String dbPath) async {
+    final path = await getDatabasesPath();
+    final finalPath = join(path, 'base_de_dados.db');
+    try {
+      final sourceFile = File(dbPath); 
+      final targetFile = File(finalPath);
+      await targetFile.writeAsBytes(await sourceFile.readAsBytes());
+      return true;
+    } catch (e) {
+      print('MIGRATION PROBLEM');
+      return false;
+    }
   }
 
+  static const enableForeignKeys = 'PRAGMA foreign_keys = ON;';
+  
   static const clientTable = '''
     CREATE TABLE IF NOT EXISTS Client (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT UNIQUE,
-      phoneNumber TEXT,
-      since TIMESTAMP,
-      bronzes INTEGER,
+      phoneNumber TEXT NOT NULL,
+      since TIMESTAMP NOT NULL,
+      bronzes INTEGER NOT NULL DEFAULT 0 CHECK (bronzes >= 0),
       observations TEXT NULL,
       picture BLOB NULL
-    );''';
-
-  static const enableForeignKeys = 'PRAGMA foreign_keys = ON;';
+    );
+  ''';
   
   static const bronzeTable = '''
     CREATE TABLE IF NOT EXISTS Bronze (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      clientId INTEGER,
-      turnArounds INTEGER,
-      totalSecs INTEGER,
-      price TEXT,
-      timestamp TIMESTAMP, 
+      clientId INTEGER NOT NULL,
+      turnArounds INTEGER NOT NULL CHECK(turnArounds > 0),
+      totalSecs INTEGER NOT NULL CHECK(totalSecs > 0),
+      price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
+      timestamp TIMESTAMP NOT NULL, 
       FOREIGN KEY (clientId) REFERENCES Client(id) ON DELETE CASCADE
     );
   ''';
@@ -82,35 +112,38 @@ class DatabaseHelper {
   static const configTable = '''
     CREATE TABLE IF NOT EXISTS Config (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      totalSecs INTEGER,
-      turnArounds INTEGER,
-      price TEXT
+      defaultHours INTEGER NOT NULL,
+      defaultMins INTEGER NOT NULL,
+      defaultSecs INTEGER NOT NULL,
+      turnArounds INTEGER NOT NULL CHECK(turnArounds > 0),
+      price DECIMAL(10, 2) NOT NULL CHECK(price >= 0),
+      CHECK (defaultHours + defaultMins + defaultSecs > 0)
     );
   ''';
 
   Future<int> _insert(String table, Map<String ,dynamic> row) async {
     final db = await database;
-    return await db!.insert(table, row);
+    return await db.insert(table, row);
   }
 
   Future<List<Map<String, dynamic>>> _selectAll(String table) async {
     final db = await database;
-    return await db!.query(table);
+    return await db.query(table);
   }
 
   Future<Map<String, dynamic>> _selectId(String table, int id) async {
     final db = await database;
-    return (await db!.query(table, where: 'id = ?', whereArgs: [id])).first;
+    return (await db.query(table, where: 'id = ?', whereArgs: [id])).first;
   }
 
   Future<int> _deleteWhere(String table, String where, List<Object?> whereArgs) async {
     final db = await database;
-    return await db!.delete(table, where: where, whereArgs: whereArgs);
+    return await db.delete(table, where: where, whereArgs: whereArgs);
   }
 
   Future<int> _updateWhere(String table, Map<String, Object?> values, String where, List<Object?> whereArgs) async {
     final db = await database;
-    return await db!.update(table, values, where: where, whereArgs: whereArgs);
+    return await db.update(table, values, where: where, whereArgs: whereArgs);
   }
 
   Future<int> insertBronze(Bronze bronze) async {
@@ -139,17 +172,16 @@ class DatabaseHelper {
   }
 
   Future<Config> selectConfig() async {
-    List<Map<String, Object?>> mapList = await _selectAll('Config');
+    List<Map<String, dynamic>> mapList = await _selectAll('Config');
     if (mapList.isEmpty) {
-      return await insertConfig(await DatabaseHelper().insertConfig(
-        Config.toSave(
+      return await insertConfig(Config.toSave(
           defaultHours: 0,
           defaultMins: 0,
           defaultSecs: 1, 
           turnArounds: 1, 
-          price: Decimal.ten
+          price: '60.00'
         )
-      ));
+      );
     }
     return Config.fromMap(mapList[0]);
   }
