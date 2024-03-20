@@ -39,7 +39,7 @@ class NotificationService {
         );
       } else if (lowercased.contains('virada') && lowercased.contains('finalizada')) {
         final BedCardListController listController = Get.find();
-        final bedCard = listController.list.where((bedCard) => bedCard.bedCardController.bedNumber == response.id).first;  // response.id is the bed number.
+        final bedCard = listController.list.where((bedCard) => bedCard.bedCardController.bedNumber == response.id).first;
         bedCard.bedCardController.startTimer();
       }
     }

@@ -2,13 +2,13 @@ import 'package:agendador_bronzeamento/utils/sender.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:styled_text/styled_text.dart';
+import 'package:agendador_bronzeamento/animation/rotating_sun.dart';
 
 class About extends StatelessWidget {
   const About({super.key});
 
   @override
   Widget build(context) {
-    RxBool pinkBox = false.obs;
     RxBool showPrivacy = false.obs;
     RxBool showUse = false.obs;
     return Scaffold(
@@ -19,7 +19,7 @@ class About extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Meu Bronze',
+              'Fabi Bronze',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 25,
@@ -29,7 +29,7 @@ class About extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               child: const Text(
-                'v1.0.30',
+                'v2.0.1',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 10,
@@ -37,26 +37,7 @@ class About extends StatelessWidget {
                 ),
               )
             ),
-            GestureDetector(
-              onTapDown: (details) => pinkBox.value = true,
-              onTapUp: (details) => pinkBox.value = false,
-              child: Obx(() => Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  color: pinkBox.value ? Colors.pink : Colors.white,
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(100),
-                  ),
-                ),
-                // color: Colors.white,
-                child: const Image(
-                  image: AssetImage('assets/tanning.png'),
-                  width: 80,
-                  height: 80,
-                ),
-              )),
-            ),
+            const RotatingSun(size: 150),
             Container(
               padding: const EdgeInsets.all(30),
               child: const Text('Este é um aplicativo criado para facilitar a gestão de macas e clientes em centros de estética, oferecendo controle total de temporizadores para as macas, barras de pesquisa de clientes e relatório de bronzeamentos feitos.',

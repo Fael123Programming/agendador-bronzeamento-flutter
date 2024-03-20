@@ -81,7 +81,7 @@ class Beds extends StatelessWidget {
             )
         : ListView(
           padding: const EdgeInsets.only(bottom: 50),
-          children: bedCardListController.list.toList()
+          children: bedCardListController.list
         ),
       floatingActionButton: clientController.clients.isNotEmpty ? FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, RoutePaths.bedDetails),

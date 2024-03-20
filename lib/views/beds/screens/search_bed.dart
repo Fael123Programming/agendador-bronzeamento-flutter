@@ -26,10 +26,8 @@ class SearchBed extends StatelessWidget {
                 if (s.isNotEmpty) {
                   filtered.addAll(
                     bedCardListController.list.where(
-                          (bedCard) => bedCard.bedCardController.client.name.toLowerCase().contains(
-                        s.toLowerCase(),
-                      ),
-                    ),
+                      (bedCard) => bedCard.bedCardController.client.name.toLowerCase().contains(s.toLowerCase())
+                    )
                   );
                 }
               },

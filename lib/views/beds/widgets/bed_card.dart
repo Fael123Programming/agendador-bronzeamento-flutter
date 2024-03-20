@@ -9,7 +9,52 @@ import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/views/beds/widgets/turn_around_blocks.dart';
 
 class BedCardListController extends GetxController {
-  RxList<BedCard> list = <BedCard>[].obs;
+  final RxList<BedCard> list = <BedCard>[].obs;
+  
+  // void add(BedCard bedCard) {
+  //   _list.add(bedCard);
+  //   isEmpty = _list.isEmpty;
+  // }
+
+  // void remove(BedCard bedCard) {
+  //   _list.remove(bedCard);
+  //   isEmpty = _list.isEmpty;
+  // }
+
+  // BedCard? findByClientName(String clientName) {
+  //   try {
+  //     return _list.where((bedCard) => bedCard.bedCardController.client.name == clientName).first;
+  //   } catch(err) {
+  //     return null;
+  //   }
+  // }
+
+  // BedCard? findByBedNumber(int bedNumber) {
+  //   try {
+  //     return _list.where((bedCard) => bedCard.bedCardController.bedNumber == bedNumber).first;
+  //   } catch(err) {
+  //     return null;
+  //   }
+  // }
+
+  // List<BedCard> findContainingClientName(String clientName) {
+  //   return _list.where(
+  //         (bedCard) => bedCard.bedCardController.client.name.toLowerCase().contains(
+  //       clientName.toLowerCase(),
+  //     ),
+  //   ).toList();
+  // }
+
+  // List<BedCard> toList() {
+  //   return _list.toList();
+  // }
+
+  // List<String> getNameOfAllClients({bool lowercase = true}) {
+  //   if (lowercase) {
+  //     return _list.map((bedCard) => bedCard.bedCardController.client.name.toLowerCase()).toList();
+  //   }
+  //   return _list.map((bedCard) => bedCard.bedCardController.client.name).toList();
+  // }
 }
 
 class BedCardController extends GetxController {

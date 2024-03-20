@@ -59,7 +59,6 @@ class BackgroundService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
-
     await service.configure(
       androidConfiguration: AndroidConfiguration(
         onStart: onStart,

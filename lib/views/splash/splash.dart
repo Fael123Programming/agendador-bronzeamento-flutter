@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/animation/rotating_sun.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,39 +19,28 @@ class Splash extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(color: Colors.grey),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(100),
+            const Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                RotatingSun(size: 150),
+                Text(
+                  'Fabi Bronze',
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontFamily: 'DancingScript',
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
-              ),
-              // color: Colors.black,
-              width: 150,
-              height: 150,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: CircleAvatar(
-                  backgroundImage: Image.asset(
-                          'assets/fabi.png')
-                      .image,
-                  radius: 20,
-                ),
-              ),
+              ],
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 50),
-              child: Obx(() => showCircularProgressIndicator.value ? 
+            Obx(() => showCircularProgressIndicator.value ? 
                 const SizedBox(
                   height: 35, 
                   child: CircularProgressIndicator()
                 ) : const SizedBox(height: 35)),
-            ),
           ],
         ),
       ),
