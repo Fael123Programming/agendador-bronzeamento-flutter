@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/hours_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,7 @@ class SecsPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HoursPickerController hoursController = Get.find();
     final SecsPickerController secsController = Get.find();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -30,6 +32,7 @@ class SecsPicker extends StatelessWidget {
               valStr = '';
             }
             secsController.secs.text = valStr;
+            hoursController.updateOnChangedValueMayProceed();
           },
           onEditingComplete: secsController.onEditingComplete,
           focusNode: secsController.focusNode,

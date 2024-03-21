@@ -171,10 +171,10 @@ class ClientController extends GetxController {
         sortByName(order: order.value);
         break;
       case SortingMethod.since:
-        sortByName(order: order.value);
+        sortBySince(order: order.value);
         break;
       case SortingMethod.bronzes:
-        sortByName(order: order.value);
+        sortByBronzes(order: order.value);
         break;
     }
   }

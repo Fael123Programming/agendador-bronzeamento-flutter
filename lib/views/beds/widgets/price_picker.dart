@@ -6,14 +6,19 @@ class PricePickerController extends GetxController {
   final TextEditingController price = TextEditingController();
   final FocusNode focusNode = FocusNode();
   Function()? onEditingComplete;
+  final RxBool onChangedValueMayProceed = false.obs;
 
   bool isValid() {
     try {
-      Decimal.parse(price.text);
-      return true;
+      Decimal dec = Decimal.parse(price.text);
+      return dec >= Decimal.zero;
     } on FormatException {
       return false;
     }
+  }
+
+  void updateOnChangedValueMayProceed() {
+    onChangedValueMayProceed.value = isValid();
   }
 }
 
@@ -53,17 +58,11 @@ class PricePicker extends StatelessWidget {
                     textAlign: TextAlign.start,
                     onChanged: (value) {
                       if (value.isNotEmpty) {
-                        // value = value.replaceAll(RegExp(r'[^\d,]'), '');
-                        // try {
-                        //   Decimal dec = Decimal.parse(value);
-                        //   priceController.price.text = dec.toString();
-                        // } on FormatException {
-                        //   priceController.price.text = '';
-                        // }
                         if (!priceController.isValid()) {
                           priceController.price.text = '';
                         }
                       }
+                      priceController.updateOnChangedValueMayProceed();
                     },
                     onEditingComplete: priceController.onEditingComplete,
                     focusNode: priceController.focusNode,

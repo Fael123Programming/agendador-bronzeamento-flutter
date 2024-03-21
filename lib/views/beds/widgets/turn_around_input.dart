@@ -5,11 +5,13 @@ import 'package:get/get.dart';
 class TurnAroundInputController extends GetxController {
   final TextEditingController turnAround = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  final RxBool onChangedValueMayProceed = false.obs;
   Function()? onEditingComplete;
 
-  bool isValid() {
-    String turn = turnAround.text;
-    return turn.isNum && int.parse(turn) > 0;
+  bool isValid() => turnAround.text.isNum && int.parse(turnAround.text) > 0;
+
+  void updateOnChangedValueMayProceed(String value) {
+    onChangedValueMayProceed.value = value.isNotEmpty && Validator.isInteger(value) && int.parse(value) > 0 && int.parse(value) < 5;
   }
 }
 
@@ -48,11 +50,13 @@ class TurnAroundInput extends StatelessWidget {
                   controller: turnAroundController.turnAround,
                   textAlign: TextAlign.start,
                   onChanged: (value) {
+                    turnAroundController.updateOnChangedValueMayProceed(value);
                     if (value.isNotEmpty) {
-                      if (!Validator.isInteger(value)) {
+                      if (!Validator.isInteger(value) || int.parse(value) < 1 || int.parse(value) > 4 && int.parse(value) < 10) {
                         turnAroundController.turnAround.text = '';
-                      } else if (int.parse(value) < 1 || int.parse(value) > 4) {
-                        turnAroundController.turnAround.text = '';
+                      } else {
+                        turnAroundController.turnAround.text = value[0];
+                        turnAroundController.updateOnChangedValueMayProceed(turnAroundController.turnAround.text);
                       }
                     }
                   },

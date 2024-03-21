@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/database/database_helper.dart';
 import 'package:agendador_bronzeamento/database/models/config.dart';
 import 'package:agendador_bronzeamento/utils/background_service.dart';
 import 'package:agendador_bronzeamento/utils/notification_service.dart';
@@ -14,13 +15,19 @@ import 'package:agendador_bronzeamento/database/models/bronze.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper().initDatabase();
   Get.put(HomeController());
   Get.put(BedCardListController());
-  WidgetsFlutterBinding.ensureInitialized();
   await BackgroundService().init();
   await NotificationService().init();
   final ConfigController configController = Get.put(ConfigController());
-  await configController.fetch();
+  bool firstTimeRunning = false;
+  try {
+    await configController.fetch();
+  } catch(err) {
+    firstTimeRunning = true;
+  }
   final ClientController clientController = Get.put(ClientController());
   await clientController.fetch();
   final BronzeController bronzeController = Get.put(BronzeController());
@@ -30,7 +37,8 @@ Future<void> main() async {
       debugShowCheckedModeBanner: false,
       theme: theme,
       onGenerateRoute: CustomRouter.onGenerateRoute,
-      initialRoute: RoutePaths.splash
+      initialRoute: firstTimeRunning ? RoutePaths.welcome : RoutePaths.splash
+      // initialRoute: RoutePaths.welcome
     ),
   );
 }

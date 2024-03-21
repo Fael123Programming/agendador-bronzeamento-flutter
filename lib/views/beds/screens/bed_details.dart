@@ -123,7 +123,7 @@ class BedDetails extends StatelessWidget {
                                   remainingSecs: secs,
                                   turnArounds: int.parse(turnController.turnAround.text),
                                   turnsDone: 0.obs,
-                                  bedNumber: bedCardListController.list.length + 1,
+                                  bedNumber: bedCardListController.list.isEmpty ? 1 : bedCardListController.list[bedCardListController.list.length - 1].bedCardController.bedNumber + 1,
                                 );
                                 BedCard bedCard = BedCard(bedCardController: bedCardController);
                                 bedCardListController.list.add(bedCard);

@@ -46,7 +46,7 @@ class NotificationService {
   }
 
   Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('drawable/ic_stat_wb_sunny');
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('ic_bg_service_small');
     const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,

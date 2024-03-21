@@ -30,7 +30,7 @@ class DatabaseHelper {
     final finalPath = join(path, 'base_de_dados.db');
     return await openDatabase(
       finalPath,
-      version: 2,
+      version: 1,
       onCreate: (db, version) async {
         await db.execute(enableForeignKeys);
         await db.execute(clientTable);
@@ -54,15 +54,7 @@ class DatabaseHelper {
     for (String query in queries) {
       final answerOtherDb = await otherDb.rawQuery(query);
       final answerDb = await db.rawQuery(query);
-      // print(answerOtherDb);
-      // print(answerDb);
       if (answerOtherDb.toString() != answerDb.toString()) {
-        // print('------------------------------');
-        // print(answerOtherDb);
-        // print('------------------------------');
-        // print(answerDb);
-        // print('------------------------------');
-        print('INVALID DATABASE');
         return false;
       }
     }
@@ -78,7 +70,6 @@ class DatabaseHelper {
       await targetFile.writeAsBytes(await sourceFile.readAsBytes());
       return true;
     } catch (e) {
-      print('MIGRATION PROBLEM');
       return false;
     }
   }
@@ -173,16 +164,16 @@ class DatabaseHelper {
 
   Future<Config> selectConfig() async {
     List<Map<String, dynamic>> mapList = await _selectAll('Config');
-    if (mapList.isEmpty) {
-      return await insertConfig(Config.toSave(
-          defaultHours: 0,
-          defaultMins: 0,
-          defaultSecs: 1, 
-          turnArounds: 1, 
-          price: '60.00'
-        )
-      );
-    }
+    // if (mapList.isEmpty) {
+    //   return await insertConfig(Config.toSave(
+    //       defaultHours: 0,
+    //       defaultMins: 0,
+    //       defaultSecs: 1, 
+    //       turnArounds: 1, 
+    //       price: '60.00'
+    //     )
+    //   );
+    // }
     return Config.fromMap(mapList[0]);
   }
 

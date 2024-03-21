@@ -55,7 +55,7 @@ class Beds extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 50),
                     child: TextButton(
                       child: const Text(
-                        'Comece adicionando um novo cliente!',
+                        'Comece adicionando uma nova cliente!',
                         style: TextStyle(
                           fontSize: 30, 
                           color: Colors.black, 

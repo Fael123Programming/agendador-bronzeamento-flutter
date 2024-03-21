@@ -1,11 +1,35 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/mins_picker.dart';
+import 'package:agendador_bronzeamento/views/beds/widgets/time_picker/secs_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HoursPickerController extends GetxController {
   final TextEditingController hours = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  final RxBool onChangedValueMayProceed = false.obs;
   Function()? onEditingComplete;
+
+  void updateOnChangedValueMayProceed() {
+    bool mayProceed;
+    if (hours.text.isEmpty) {
+      mayProceed = false;
+    } else {
+      final MinsPickerController minsController = Get.find();
+      final SecsPickerController secsController = Get.find();
+      if (minsController.mins.text.isEmpty || secsController.secs.text.isEmpty) {
+        mayProceed = false;
+      } else {
+        try {
+          int hoursInt = int.parse(hours.text), minsInt = int.parse(minsController.mins.text), secsInt = int.parse(secsController.secs.text);
+          mayProceed = hoursInt + minsInt + secsInt > 0;
+        } catch(err) {
+          mayProceed = false;
+        }
+      }
+    }
+    onChangedValueMayProceed.value = mayProceed;
+  }
 }
 
 class HoursPicker extends StatelessWidget {
@@ -34,6 +58,7 @@ class HoursPicker extends StatelessWidget {
                       valStr = '';
                     }
                     hoursController.hours.text = valStr;
+                    hoursController.updateOnChangedValueMayProceed();
                   },
                   onEditingComplete: hoursController.onEditingComplete,
                   focusNode: hoursController.focusNode,

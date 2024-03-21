@@ -6,6 +6,8 @@ import 'package:agendador_bronzeamento/views/dashboard/dashboard.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/search_client.dart';
 import 'package:agendador_bronzeamento/views/home.dart';
 import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
+import 'package:agendador_bronzeamento/views/initialization/screens/set_default_values.dart';
+import 'package:agendador_bronzeamento/views/initialization/screens/welcome.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/about/about.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/database/database.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/default_values/change_duration.dart';
@@ -13,7 +15,7 @@ import 'package:agendador_bronzeamento/views/settings/screens/default_values/cha
 import 'package:agendador_bronzeamento/views/settings/screens/default_values/change_turn_arounds.dart';
 import 'package:flutter/material.dart';
 import 'package:agendador_bronzeamento/config/route_paths.dart';
-import 'package:agendador_bronzeamento/views/splash/splash.dart';
+import 'package:agendador_bronzeamento/views/initialization/screens/splash.dart';
 import 'package:agendador_bronzeamento/views/settings/screens/default_values/default_values.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 
@@ -34,6 +36,13 @@ class CustomRouter {
             name: RoutePaths.home,
           ),
         );
+      case RoutePaths.welcome:
+        return MaterialPageRoute(
+          builder: (context) => const Welcome(),
+          settings: const RouteSettings(
+            name: RoutePaths.welcome,
+          ),
+        );
       case RoutePaths.splash:
         return MaterialPageRoute(
           builder: (context) => Splash(),
@@ -42,6 +51,15 @@ class CustomRouter {
             arguments: settings.arguments,
           ),
         );
+      case RoutePaths.setDefaultValues:
+        return MaterialPageRoute(
+          builder: (context) => const SetDefaultValues(),
+          settings: RouteSettings(
+            name: RoutePaths.setDefaultValues,
+            arguments: settings.arguments,
+          ),
+        );
+      
       default:
         return _errorRoute();
     }

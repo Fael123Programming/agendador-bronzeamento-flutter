@@ -14,4 +14,6 @@ class RoutePaths {
   static const String dashboard = '/dashboard';
   static const String bronzes = '/bronzes';
   static const String database = '/database';
+  static const String welcome = '/welcome';
+  static const String setDefaultValues = '/set_default_values';
 }
