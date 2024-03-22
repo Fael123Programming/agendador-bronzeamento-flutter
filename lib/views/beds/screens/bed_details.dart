@@ -12,32 +12,38 @@ import 'package:flutter/material.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:get/get.dart';
 
+class BedDetailsController extends GetxController {
+  final RxBool validValues = false.obs;
+
+  void checkValues() {
+    final SearchClientInputController searchController = Get.find();
+    final TurnAroundInputController turnController = Get.find();
+    final PricePickerController priceController = Get.find();
+    validValues.value = searchController.chosen.value && turnController.isValid() && isValidDuration() && priceController.isValid();
+  }
+}
+
 class BedDetails extends StatelessWidget {
   const BedDetails({super.key});
 
-  final separator = const SizedBox(height: 50);
+  final _separator = const SizedBox(height: 50);
 
   @override
   Widget build(context) {
+    final BedDetailsController bedDetailsController = Get.put(BedDetailsController());
     final ConfigController configController = Get.find();
     final BedCardListController bedCardListController = Get.find();
     final ClientController clientController = Get.find();
-
     final PricePickerController priceController = Get.put(PricePickerController());
     priceController.onEditingComplete = () => priceController.focusNode.unfocus();
-
     final SecsPickerController secsController = Get.put(SecsPickerController());
     secsController.onEditingComplete = () => priceController.focusNode.requestFocus();
-
     final MinsPickerController minsController = Get.put(MinsPickerController());
     minsController.onEditingComplete = () => secsController.focusNode.requestFocus();
-
     final HoursPickerController hoursController = Get.put(HoursPickerController());
     hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
-    
     final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
     turnController.onEditingComplete = () => hoursController.focusNode.requestFocus();
-    
     final SearchClientInputController searchController = Get.put(SearchClientInputController());
     searchController.onEditingComplete = () async {
       turnController.turnAround.text = (await configController.config).turnArounds.toString();
@@ -45,12 +51,10 @@ class BedDetails extends StatelessWidget {
       minsController.mins.text = (await configController.config).defaultMins.toString();
       secsController.secs.text = (await configController.config).defaultSecs.toString();
       priceController.price.text = (await configController.config).price;
+      bedDetailsController.checkValues();
     };
-
     final formKey = GlobalKey<FormState>();
-
-    const twoSeconds = Duration(seconds: 2);
-    double height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
     return PopScope(
       onPopInvoked: (didPop) {
         searchController.focusNode.dispose();
@@ -65,6 +69,7 @@ class BedDetails extends StatelessWidget {
         Get.delete<MinsPickerController>();
         Get.delete<SecsPickerController>();
         Get.delete<PricePickerController>();
+        Get.delete<BedDetailsController>();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -78,90 +83,151 @@ class BedDetails extends StatelessWidget {
           ),
         ),
         body: GestureDetector(
-              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 40),
-                            child: const SearchClientInput()
-                          ),
-                          const TurnAroundInput(),
-                          Container(
-                            margin: EdgeInsets.only(top: height * 0.08),
-                            child: const TimePicker()
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: height * 0.08),
-                            child: const PricePicker()
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: height * 0.08),
-                            child: NiceButtons(
-                            startColor: Colors.pink,
-                            endColor: Colors.pink,
-                            borderColor: Colors.pink,
-                            stretch: false,
-                            progress: false,
-                            gradientOrientation: GradientOrientation.Horizontal,
-                            onTap: (finish) async {
-                              finish();
-                              if (
-                                searchController.chosen.value &&
-                                turnController.isValid() &&
-                                isValidDuration()
-                              ) {
-                                int secs = int.parse(hoursController.hours.text) * 3600 + int.parse(minsController.mins.text) * 60 + int.parse(secsController.secs.text);
-                                BedCardController bedCardController = BedCardController(
-                                  client: clientController.findByName(searchController.controller.text)!,
-                                  price: priceController.price.text,
-                                  totalSecs: secs,
-                                  remainingSecs: secs,
-                                  turnArounds: int.parse(turnController.turnAround.text),
-                                  turnsDone: 0.obs,
-                                  bedNumber: bedCardListController.list.isEmpty ? 1 : bedCardListController.list[bedCardListController.list.length - 1].bedCardController.bedNumber + 1,
-                                );
-                                BedCard bedCard = BedCard(bedCardController: bedCardController);
-                                bedCardListController.list.add(bedCard);
-                                bedCardController.startTimer();
-                                // await Future.delayed(const Duration(seconds: 1));
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                Navigator.of(context).pop();
-                              } else {
-                                Get.showSnackbar(
-                                  const GetSnackBar(
-                                    title: 'Humm... Algum Dado está Incorreto',
-                                    message: 'Por favor, selecione uma cliente, defina quantas viradas e a duração',
-                                    duration: twoSeconds,
-                                    backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                                  )
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'Adicionar',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          )
-                          ),
-                        ],
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 40),
+                        child: const SearchClientInput()
                       ),
-                    ),
-                    separator
-                  ],
+                      const TurnAroundInput(),
+                      Container(
+                        margin: EdgeInsets.only(top: height * 0.08),
+                        child: const TimePicker()
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: height * 0.08),
+                        child: const PricePicker()
+                      ),
+                      Obx(() => Container(
+                        margin: EdgeInsets.only(top: height * 0.08),
+                        child: NiceButtons(
+                        startColor: bedDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        endColor: bedDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        borderColor: bedDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        stretch: false,
+                        disabled: !bedDetailsController.validValues.value,
+                        progress: false,
+                        gradientOrientation: GradientOrientation.Horizontal,
+                        onTap: (finish) async {
+                          if (!bedDetailsController.validValues.value) {
+                            return;
+                          }
+
+                          int secs = int.parse(hoursController.hours.text) * 3600 + int.parse(minsController.mins.text) * 60 + int.parse(secsController.secs.text);
+                          Client client = clientController.findByName(searchController.controller.text)!;
+                          BedCardController bedCardController = BedCardController(
+                            client: client,
+                            price: priceController.price.text,
+                            totalSecs: secs,
+                            remainingSecs: secs,
+                            turnArounds: int.parse(turnController.turnAround.text),
+                            turnsDone: 0.obs,
+                            bedNumber: bedCardListController.list.isEmpty ? 1 : bedCardListController.list[bedCardListController.list.length - 1].bedCardController.bedNumber + 1,
+                          );
+                          BedCard bedCard = BedCard(bedCardController: bedCardController);
+                          if (client.observations != null && client.observations!.isNotEmpty) {
+                            Get.dialog(
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Material(
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              const Text(
+                                                'Detalhes de Cliente',
+                                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              const SizedBox(height: 15),
+                                              Text(
+                                                'Cuidados a tomar baseado nas observações: ${client.observations}',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              const SizedBox(height: 20),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        minimumSize: const Size(0, 45),
+                                                        backgroundColor: const Color.fromARGB(255, 0, 255, 8),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        Get.back();
+                                                        bedCardListController.list.add(bedCard);
+                                                        bedCardController.startTimer();
+                                                        // await Future.delayed(const Duration(seconds: 1));
+                                                        if (!context.mounted) {
+                                                          return;
+                                                        }
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: const Text(
+                                                        'Ok',
+                                                        style: TextStyle(color: Colors.white)
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            bedCardListController.list.add(bedCard);
+                            bedCardController.startTimer();
+                            // await Future.delayed(const Duration(seconds: 1));
+                            if (!context.mounted) {
+                              return;
+                            }
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text(
+                          'Adicionar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      )
+                      )),
+                    ],
+                  ),
                 ),
-              ),
-            )
-        ),
+                _separator
+              ],
+            ),
+          ),
+        )
+      ),
     );
   }
 }

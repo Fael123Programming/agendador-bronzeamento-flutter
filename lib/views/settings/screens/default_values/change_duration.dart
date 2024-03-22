@@ -22,6 +22,7 @@ class ChangeDuration extends StatelessWidget {
     (() async => hoursController.hours.text = (await configController.config).defaultHours.toString())();
     hoursController.onEditingComplete = () => minsController.focusNode.requestFocus();
     minsController.focusNode.requestFocus();
+    hoursController.onChangedValueMayProceed.value = true;
     return PopScope(
         onPopInvoked: (didPop) {
           secsController.focusNode.dispose();
@@ -54,39 +55,30 @@ class ChangeDuration extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 20),
                     child: const TimePicker()
                   ),
-                  Container(
+                  Obx(() => Container(
                     margin: const EdgeInsets.only(top: 40),
                     child: Center(
                       child: NiceButtons(
-                        startColor: Colors.pink,
-                        endColor: Colors.pink,
-                        borderColor: Colors.pink,
+                        startColor: hoursController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                        endColor: hoursController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                        borderColor: hoursController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
                         stretch: false,
                         progress: false,
+                        disabled: !hoursController.onChangedValueMayProceed.value,
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) async {
                           finish();
-                          if (
-                              isValidDuration()
-                          ) {
-                            // await Future.delayed(const Duration(seconds: 1));
-                            await configController.updateDefaultHours(int.parse(hoursController.hours.text));
-                            await configController.updateDefaultMins(int.parse(minsController.mins.text));
-                            await configController.updateDefaultSecs(int.parse(secsController.secs.text));
-                            if (!context.mounted) {
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                          } else {
-                            Get.showSnackbar(
-                              const GetSnackBar(
-                                title: 'Humm... Algum Dado está Incorreto',
-                                message: 'Por favor, verifique os valores padrão e tente novamente!',
-                                duration: Duration(seconds: 2),
-                                backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                              )
-                            );
+                          if (!isValidDuration()) {
+                            return;
                           }
+                          // await Future.delayed(const Duration(seconds: 1));
+                          await configController.updateDefaultHours(int.parse(hoursController.hours.text));
+                          await configController.updateDefaultMins(int.parse(minsController.mins.text));
+                          await configController.updateDefaultSecs(int.parse(secsController.secs.text));
+                          if (!context.mounted) {
+                            return;
+                          }
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
                           'Atualizar',
@@ -97,7 +89,7 @@ class ChangeDuration extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 50)
                 ],
               ),

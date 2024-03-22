@@ -22,12 +22,7 @@ Future<void> main() async {
   await BackgroundService().init();
   await NotificationService().init();
   final ConfigController configController = Get.put(ConfigController());
-  bool firstTimeRunning = false;
-  try {
-    await configController.fetch();
-  } catch(err) {
-    firstTimeRunning = true;
-  }
+  await configController.fetch();
   final ClientController clientController = Get.put(ClientController());
   await clientController.fetch();
   final BronzeController bronzeController = Get.put(BronzeController());
@@ -37,8 +32,7 @@ Future<void> main() async {
       debugShowCheckedModeBanner: false,
       theme: theme,
       onGenerateRoute: CustomRouter.onGenerateRoute,
-      initialRoute: firstTimeRunning ? RoutePaths.welcome : RoutePaths.splash
-      // initialRoute: RoutePaths.welcome
+      initialRoute: configController.firstTimeRunning ? RoutePaths.welcome : RoutePaths.splash
     ),
   );
 }

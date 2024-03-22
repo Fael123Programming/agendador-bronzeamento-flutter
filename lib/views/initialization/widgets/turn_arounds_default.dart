@@ -32,7 +32,7 @@ class TurnAroundsDefault extends StatelessWidget {
             Container(
               margin: EdgeInsets.only(top: height * .05),
               child: const Text(
-                'Defina o valor padrão para as viradas',
+                'São quantas viradas em cada bronze?',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

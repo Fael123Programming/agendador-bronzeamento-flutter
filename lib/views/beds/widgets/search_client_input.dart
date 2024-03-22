@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
@@ -17,11 +18,12 @@ class SearchClientInput extends StatelessWidget {
   
   @override
   Widget build(context) {
+    final BedDetailsController bedController = Get.find();
     final ClientController clientController = Get.find();
     final SearchClientInputController searchController = Get.find();
     searchController.focusNode.requestFocus();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Obx(() => Column(
       children: [
         Center(
@@ -63,6 +65,7 @@ class SearchClientInput extends StatelessWidget {
                           searchController.clientsToShow.clear();
                           searchController.chosen.value = false;
                         }
+                        bedController.checkValues();
                       },
                       // onEditingComplete: searchController.onEditingComplete,
                       focusNode: searchController.focusNode,
@@ -107,8 +110,8 @@ class SearchClientInput extends StatelessWidget {
 
   List<Widget> _drawClientCards(List<Client> clients, BuildContext context) {
     final SearchClientInputController searchController = Get.find();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     List<Widget> clientCards = clients.map(
         (client) => GestureDetector(
           onTap: () {

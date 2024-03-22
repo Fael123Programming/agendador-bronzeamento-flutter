@@ -22,6 +22,30 @@ class PriceDefault extends StatelessWidget {
     final MinsPickerController minsController = Get.find();
     final SecsPickerController secsController = Get.find();
     final PricePickerController priceController = Get.find();
+    priceController.onEditingComplete = () async {
+      if (priceController.onChangedValueMayProceed.value) {
+        await DatabaseHelper().insertConfig(
+          Config.toSave(
+            defaultHours: int.parse(hoursController.hours.text), 
+            defaultMins: int.parse(minsController.mins.text), 
+            defaultSecs: int.parse(secsController.secs.text), 
+            turnArounds: int.parse(turnController.turnAround.text), 
+            price: priceController.price.text
+          )
+        );
+        await configController.fetch();
+        Get.delete<SecsPickerController>();
+        Get.delete<MinsPickerController>();
+        Get.delete<HoursPickerController>();
+        Get.delete<PageViewController>();
+        Get.delete<TurnAroundInputController>();
+        Get.delete<PricePickerController>();
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.pushReplacementNamed(context, RoutePaths.splash);
+      }
+    };
     priceController.focusNode.requestFocus();
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -33,7 +57,7 @@ class PriceDefault extends StatelessWidget {
             Container(
               margin: EdgeInsets.only(top: height * .05),
               child: const Text(
-                'Defina o preço padrão para os bronzes',
+                'Quanto está o seu bronze?',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

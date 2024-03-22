@@ -86,6 +86,9 @@ class BronzeController extends GetxController {
     final ClientController clientController = Get.find();
     Client client = clientController.clients.where((client) => client.id == bronze.clientId).first;
     client.bronzes++;
+    if (clientController.sortingMethod.value == SortingMethod.bronzes) {
+      clientController.sort();
+    }
   }
 
   List<Bronze> findBronzesOfClient(int clientId) {

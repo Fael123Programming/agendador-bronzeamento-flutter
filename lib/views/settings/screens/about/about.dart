@@ -29,7 +29,7 @@ class About extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(bottom: 20),
               child: const Text(
-                'v2.0.1',
+                'v2.0.5',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 10,
@@ -90,7 +90,7 @@ class About extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.all(30),
                       child: const Text(
-                        'O aplicativo móvel para centros de estética ("Meu Bronze") é desenvolvido e mantido por Rafael Guimarães. Esta política de privacidade descreve como o Aplicativo coleta, utiliza e protege as informações pessoais dos usuários.',
+                        'O aplicativo móvel para centros de estética ("Fabi Bronze") é desenvolvido e mantido por Rafael Guimarães. Esta política de privacidade descreve como o Aplicativo coleta, utiliza e protege as informações pessoais dos usuários.',
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontSize: 18,
@@ -415,7 +415,7 @@ class About extends StatelessWidget {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => sendMail('Suporte para Meu Bronze', 'Olá, sou cliente do App Meu Bronze e estou precisando de suporte! Pode me ajudar?'),
+                            onTap: () => sendMail('Suporte para Fabi Bronze', 'Olá, sou cliente do App Fabi Bronze e estou precisando de suporte! Pode me ajudar?'),
                             child: const Text(
                               'rafaelfonseca1020@gmail.com.',
                               textAlign: TextAlign.justify,
@@ -497,7 +497,7 @@ class About extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.all(30),
                       child: const Text(
-                        'Bem-vindo ao aplicativo móvel para centros de estética ("Meu Bronze"). Esta política de uso descreve as condições e diretrizes para o uso do Aplicativo por empresárias de centros de estética.',
+                        'Bem-vindo ao aplicativo móvel para centros de estética ("Fabi Bronze"). Esta política de uso descreve as condições e diretrizes para o uso do Aplicativo por empresárias de centros de estética.',
                         textAlign: TextAlign.justify,
                         style: TextStyle(
                           fontSize: 18,
@@ -736,7 +736,7 @@ class About extends StatelessWidget {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => sendMail('Suporte para Meu Bronze', 'Olá, sou cliente do App Meu Bronze e estou precisando de suporte! Pode me ajudar?'),
+                            onTap: () => sendMail('Suporte para Fabi Bronze', 'Olá, sou cliente do App Fabi Bronze e estou precisando de suporte! Pode me ajudar?'),
                             child: const Text(
                               'rafaelfonseca1020@gmail.com.',
                               textAlign: TextAlign.justify,

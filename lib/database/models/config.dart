@@ -63,7 +63,10 @@ class Config {
 class ConfigController extends GetxController {
   late Rx<Config> _config;
   bool started = false;
+  final RxBool _firstTimeRunning = false.obs; 
 
+  bool get firstTimeRunning => _firstTimeRunning.value;
+  
   Future<Config> get config async {
     if (started) {
       return _config.value;
@@ -74,7 +77,11 @@ class ConfigController extends GetxController {
   }
 
   Future<void> fetch() async {
-    _config = (await DatabaseHelper().selectConfig()).obs;
+    try {
+      _config = (await DatabaseHelper().selectConfig()).obs;
+    } catch (err) {
+      _firstTimeRunning.value = true;
+    }
   }
 
   Future<void> updateTurnArounds(int turnArounds) async {

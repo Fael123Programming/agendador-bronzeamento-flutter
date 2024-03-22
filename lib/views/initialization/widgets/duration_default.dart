@@ -34,7 +34,7 @@ class DurationDefault extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: height * .05),
                 child: const Text(
-                  'Defina o tempo padrão para as viradas',
+                  'Qual é a duração de cada virada?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

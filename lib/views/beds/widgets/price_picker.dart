@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:decimal/decimal.dart';
@@ -27,9 +28,13 @@ class PricePicker extends StatelessWidget {
   
   @override
   Widget build(context) {
+    BedDetailsController? bedController;
+    try {
+      bedController = Get.find<BedDetailsController>();
+    } catch(err) { /** Do nothing */}
     final PricePickerController priceController = Get.find();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
         width: width * 0.8,
@@ -63,6 +68,7 @@ class PricePicker extends StatelessWidget {
                         }
                       }
                       priceController.updateOnChangedValueMayProceed();
+                      if (bedController != null) bedController.checkValues();
                     },
                     onEditingComplete: priceController.onEditingComplete,
                     focusNode: priceController.focusNode,

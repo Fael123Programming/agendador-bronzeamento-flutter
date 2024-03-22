@@ -13,6 +13,7 @@ class ChangePrice extends StatelessWidget {
     final priceController = Get.put(PricePickerController());
     (() async => priceController.price.text = (await configController.config).price)();
     priceController.focusNode.requestFocus();
+    priceController.onChangedValueMayProceed.value = true;
     return PopScope(
         onPopInvoked: (didPop) {
           Get.delete<PricePickerController>();
@@ -32,59 +33,50 @@ class ChangePrice extends StatelessWidget {
         body: GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: const PricePicker()
-                  ),
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 40),
-                      child: NiceButtons(
-                        startColor: Colors.pink,
-                        endColor: Colors.pink,
-                        borderColor: Colors.pink,
-                        stretch: false,
-                        progress: false,
-                        gradientOrientation: GradientOrientation.Horizontal,
-                        onTap: (finish) async {
-                          finish();
-                          if (
-                              priceController.isValid()
-                          ) {
-                            // await Future.delayed(const Duration(seconds: 1));
-                            await configController.updatePrice(priceController.price.text);
-                            if (!context.mounted) {
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                          } else {
-                            Get.showSnackbar(
-                              const GetSnackBar(
-                                title: 'Humm... Algum Dado está Incorreto',
-                                message: 'Por favor, verifique os valores padrão e tente novamente!',
-                                duration: Duration(seconds: 2),
-                                backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                              )
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Atualizar',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  child: const PricePicker()
+                ),
+                Obx(() => Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 40),
+                    child: NiceButtons(
+                      startColor: priceController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                      endColor: priceController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                      borderColor: priceController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                      stretch: false,
+                      progress: false,
+                      disabled: !priceController.onChangedValueMayProceed.value,
+                      gradientOrientation: GradientOrientation.Horizontal,
+                      onTap: (finish) async {
+                        finish();
+                        if (!priceController.isValid()) {
+                          return;
+                        }
+                        // await Future.delayed(const Duration(seconds: 1));
+                        await configController.updatePrice(priceController.price.text);
+                        if (!context.mounted) {
+                          return;
+                        }
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Atualizar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 50)
-                ],
-              ),
+                )),
+                const SizedBox(height: 50)
+              ],
+            ),
           ),
         ),
       )

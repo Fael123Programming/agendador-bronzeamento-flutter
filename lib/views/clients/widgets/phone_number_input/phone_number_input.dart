@@ -1,3 +1,4 @@
+import 'package:agendador_bronzeamento/views/clients/screens/client_details.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/name_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/phone_number_input/br_phone_number_formatter.dart';
@@ -22,11 +23,11 @@ class PhoneNumberInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ClientDetailsController clientDetailsController = Get.find();
     final FormController formController = Get.find();
     final PhoneNumberInputController phoneNumberController = Get.find();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
         width: width * 0.8,
@@ -51,6 +52,7 @@ class PhoneNumberInput extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
+                  onChanged: (value) => clientDetailsController.checkValues(),
                   onEditingComplete: phoneNumberController.onEditingComplete,
                   focusNode: phoneNumberController.focusNode,
                   enableInteractiveSelection: false,

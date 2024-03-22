@@ -13,6 +13,7 @@ class ChangeTurnArounds extends StatelessWidget {
     final TurnAroundInputController turnController = Get.put(TurnAroundInputController());
     (() async => turnController.turnAround.text = (await configController.config).turnArounds.toString())();
     turnController.focusNode.requestFocus();
+    turnController.onChangedValueMayProceed.value = true;
     return PopScope(
         onPopInvoked: (didPop) {
           turnController.focusNode.dispose();
@@ -41,37 +42,28 @@ class ChangeTurnArounds extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 20),
                     child: const TurnAroundInput()
                   ),
-                  Center(
+                  Obx(() => Center(
                     child: Container(
                       margin: const EdgeInsets.only(top: 40),
                       child: NiceButtons(
-                        startColor: Colors.pink,
-                        endColor: Colors.pink,
-                        borderColor: Colors.pink,
+                        startColor: turnController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                        endColor: turnController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
+                        borderColor: turnController.onChangedValueMayProceed.value ? Colors.pink : Colors.grey,
                         stretch: false,
                         progress: false,
+                        disabled: !turnController.onChangedValueMayProceed.value,
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) async {
                           finish();
-                          if (
-                              turnController.isValid()
-                          ) {
-                            // await Future.delayed(const Duration(seconds: 1));
-                            await configController.updateTurnArounds(int.parse(turnController.turnAround.text));
-                            if (!context.mounted) {
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                          } else {
-                            Get.showSnackbar(
-                              const GetSnackBar(
-                                title: 'Humm... Algum Dado está Incorreto',
-                                message: 'Por favor, verifique os valores padrão e tente novamente!',
-                                duration: Duration(seconds: 2),
-                                backgroundColor: Color.fromARGB(255, 255, 17, 0),
-                              )
-                            );
+                          if (!turnController.isValid()) {
+                            return;
                           }
+                          // await Future.delayed(const Duration(seconds: 1));
+                          await configController.updateTurnArounds(int.parse(turnController.turnAround.text));
+                          if (!context.mounted) {
+                            return;
+                          }
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
                           'Atualizar',
@@ -82,7 +74,7 @@ class ChangeTurnArounds extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                   const SizedBox(height: 50)
                 ],
               ),

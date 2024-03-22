@@ -18,12 +18,13 @@ class NameInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ClientDetailsController clientDetailsController = Get.find();
     final UpdatingClientController updatingController = Get.find();
     final ClientController clientController = Get.find();
     final FormController formController = Get.find();
     final NameInputController nameController = Get.find();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
         width: width * 0.8,
@@ -48,6 +49,7 @@ class NameInput extends StatelessWidget {
               ),
               Expanded(
                 child: TextFormField(
+                  onChanged: (value) => clientDetailsController.checkValues(),
                   onTap: () {
                     if (formController.error.value) {
                       final PhoneNumberInputController phoneController = Get.find();

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:agendador_bronzeamento/utils/validator.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/image_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/name_input.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/observations_input.dart';
@@ -9,6 +10,16 @@ import 'package:get/get.dart';
 import 'package:nice_buttons/nice_buttons.dart';
 import 'package:agendador_bronzeamento/database/models/client.dart';
 import 'package:agendador_bronzeamento/views/clients/widgets/form_controller.dart';
+
+class ClientDetailsController extends GetxController {
+  final RxBool validValues = false.obs;
+
+  void checkValues() {
+    final NameInputController nameController = Get.find();
+    final PhoneNumberInputController phoneController = Get.find();
+    validValues.value = nameController.name.text.isNotEmpty && Validator.validatePhoneNumber(phoneController.phoneNumber.text) == null;
+  }
+}
 
 class UpdatingClientController extends GetxController {
   final bool isUpdating;
@@ -24,6 +35,7 @@ class ClientDetails extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final ClientDetailsController clientDetailsController = Get.put(ClientDetailsController());
     final UpdatingClientController updatingController = Get.put(
       UpdatingClientController(
         isUpdating: client != null,
@@ -51,7 +63,7 @@ class ClientDetails extends StatelessWidget {
       )
     );
     if (client == null) {
-      Timer.periodic(const Duration(seconds: 1), (timer) { 
+      Timer.periodic(const Duration(milliseconds: 500), (timer) { 
         nameController.focusNode.requestFocus();
         timer.cancel();
       });
@@ -63,6 +75,7 @@ class ClientDetails extends StatelessWidget {
         imageController.imageData.value = client!.picture;
         imageController.picked.value = true;
       }
+      clientDetailsController.validValues.value = true;
     }
     return PopScope(
       onPopInvoked: (didPop) {
@@ -75,6 +88,7 @@ class ClientDetails extends StatelessWidget {
         Get.delete<FormController>();
         Get.delete<ImageInputController>();
         Get.delete<UpdatingClientController>();
+        Get.delete<ClientDetailsController>();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -192,15 +206,16 @@ class ClientDetails extends StatelessWidget {
                       const SizedBox(
                         height: 25,
                       ),
-                      NiceButtons(
-                        startColor: Colors.pink,
-                        endColor: Colors.pink,
-                        borderColor: Colors.pink,
+                      Obx(() => NiceButtons(
+                        startColor: clientDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        endColor: clientDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        borderColor: clientDetailsController.validValues.value ? Colors.pink : Colors.grey,
+                        disabled: !clientDetailsController.validValues.value,
                         stretch: false,
                         progress: false,
                         gradientOrientation: GradientOrientation.Horizontal,
                         onTap: (finish) async {
-                          if (formController.formKey.currentState!.validate()) {
+                          if (clientDetailsController.validValues.value && formController.formKey.currentState!.validate()) {
                             if (client == null) {
                               await clientController.insert(
                                 Client.toSave(
@@ -239,7 +254,7 @@ class ClientDetails extends StatelessWidget {
                             fontSize: 18,
                           ),
                         ),
-                      )
+                      ))
                     ],
                   ),
                 )

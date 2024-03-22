@@ -1,4 +1,5 @@
 import 'package:agendador_bronzeamento/utils/validator.dart';
+import 'package:agendador_bronzeamento/views/beds/screens/bed_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,9 +21,13 @@ class TurnAroundInput extends StatelessWidget {
 
   @override
   Widget build(context) {
+    BedDetailsController? bedController;
+    try {
+      bedController = Get.find<BedDetailsController>();
+    } catch(err) {/** Do nothing */ }
     final TurnAroundInputController turnAroundController = Get.find();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Center(
       child: Container(
         width: width * 0.8,
@@ -59,6 +64,7 @@ class TurnAroundInput extends StatelessWidget {
                         turnAroundController.updateOnChangedValueMayProceed(turnAroundController.turnAround.text);
                       }
                     }
+                    if (bedController != null) bedController.checkValues();
                   },
                   onEditingComplete: turnAroundController.onEditingComplete,
                   focusNode: turnAroundController.focusNode,

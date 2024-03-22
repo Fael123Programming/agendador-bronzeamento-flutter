@@ -204,9 +204,9 @@ class Database extends StatelessWidget {
                                                                     child: ElevatedButton(
                                                                       style: ElevatedButton.styleFrom(
                                                                         minimumSize: const Size(0, 45),
-                                                                        backgroundColor: const Color.fromARGB(255, 0, 255, 8),
+                                                                        backgroundColor: const Color.fromARGB(255, 255, 17, 0),
                                                                         shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(8),
+                                                                          borderRadius: BorderRadius.circular(8)
                                                                         ),
                                                                       ),
                                                                       onPressed: () async {
@@ -483,11 +483,8 @@ class Database extends StatelessWidget {
           child: SafeArea(
             child: ListView.separated(
               itemCount: activeItems.length,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-              itemBuilder: (BuildContext context, int index) {
-                return activeItems[index]['settingItem'];
-              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+              itemBuilder: (BuildContext context, int index) => activeItems[index]['settingItem']
             ),
           ),
         );
