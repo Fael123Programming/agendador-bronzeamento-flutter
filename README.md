@@ -1,16 +1,14 @@
-# agendador_bronzeamento
+# Tanning Scheduler
 
-A new Flutter project.
+Have you ever thought of having an app to fully manage the scheduling/timing of tanning 
+customers lied down on their beds and let you know when is time to change position?
 
-## Getting Started
+Well, this app does just that and much, much more!
 
-This project is a starting point for a Flutter application.
+## Bed Timer: Place a client on a stretcher and receive notifications when to turn and finish the tanning.
 
-A few resources to get you started if this is your first Flutter project:
+## Customer Recording: Register your clients and maintain a history of their tanning sessions.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Dashboard: Gain valuable business insights such as the months of the year with the most tanning sessions, the most profitable months, and much more.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## WhatsApp: Send pre-defined messages to your clients with a simple click of a button.
